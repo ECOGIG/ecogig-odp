@@ -1,0 +1,4 @@
+.modal-content #taxonomy-form-term .collapsible,
+.hidden{
+  display: none;
+}

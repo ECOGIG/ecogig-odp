@@ -1,0 +1,19 @@
+.term-with-date-wrapper{
+	margin: 10px 0;
+}
+
+.term-with-date-wrapper .form-item label {
+  display: inline;
+  margin-right:20px;
+  float:left;
+  width:30px;
+}
+
+.term-with-date-wrapper .container-inline-date .date-padding{
+	padding:0;
+}
+
+.term-with-date-wrapper .container-inline-date .date-padding label,
+.term-with-date-wrapper .container-inline-date .date-padding .description{
+	display: none;
+}

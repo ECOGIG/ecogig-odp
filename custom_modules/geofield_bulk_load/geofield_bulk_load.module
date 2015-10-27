@@ -1,0 +1,279 @@
+<?php
+
+function geofield_bulk_load_form_alter(&$form, &$form_state, $form_id){
+  // Add instance setting to field edit form
+  if($form_id == 'field_ui_field_edit_form'){
+    if(!empty($form['#instance']['widget']['module']) && $form['#instance']['widget']['module'] == 'geofield'){
+      if(!empty($form['#instance']['widget']['type']) && $form['#instance']['widget']['type'] === 'geofield_latlon'){
+        geofield_bulk_load_alter_field_settings_form($form);
+      }
+    }
+  } 
+  else{
+    foreach($form as $key => $element){
+      // Get fields only
+      if(substr($key, 0, strlen('field_')) === 'field_'){
+        $field = $element;
+        if(!empty($element['#type']) && $element['#type'] === 'container'){
+          $field = $element[LANGUAGE_NONE];
+        }
+        // Geofields are structured a little differently - get the correct field element
+        if(!empty($field[0])){
+          $field = $field[0];
+        }
+        
+        $entity_type = !empty($field['#entity_type']) ? $field['#entity_type'] : NULL;
+        $bundle = !empty($field['#bundle']) ? $field['#bundle'] : NULL;
+        $field_name = !empty($field['#field_name']) ? $field['#field_name'] : NULL;
+
+        $info = field_info_instance($entity_type, $field_name, $bundle);
+
+        $widget_type = !empty($info['widget']['type']) ? $info['widget']['type'] : NULL;
+        $bulk_load_enabled = !empty($info['settings']['geofield_bulk_load_enable']) ? $info['settings']['geofield_bulk_load_enable'] : false;
+
+        // Currently only active for latitude/longitude widget
+        if($bulk_load_enabled){
+          $field_name_html = "edit-" . drupal_html_id($field_name);
+
+          $form['geofield_bulk_load_fieldset'] = array(
+            '#type' => 'fieldset',
+            '#collapsible' => TRUE,
+            '#collapsed' => TRUE,
+            '#title' => t('Coordinate Bulk Load'),
+            '#weight' => $form[$field_name]['#weight'],
+            '#states' => array(
+              'visible' => array(
+                '#' . $field_name_html => array('visible' => true),
+              ),
+            ),
+          );
+
+          $bulk_field_signed = 'geofield_bulk_load_signed_' . $field_name;
+          $form['geofield_bulk_load_fieldset'][$bulk_field_signed] = array(
+            '#type' => 'textarea',
+            '#title' => t($info['label'] . ' Bulk Load (Decimal Degrees)'),
+            '#description' => t('Enter comma-separated pairs of latitude/longitude values, one pair per line. <br/>Example: <br/>33.906553,-84.206311<br/>33.810659,-84.607964<br/>33.77429,-84.260712'),
+            '#weight' => 10,
+            '#states' => array(
+              'visible' => array(
+                '#' . $field_name_html => array('visible' => true),
+              ),
+            ),
+            '#geofield' => $field_name,
+          );
+
+          $bulk_field_dms = 'geofield_bulk_load_dms_' . $field_name;
+          $form['geofield_bulk_load_fieldset'][$bulk_field_dms] = array(
+            '#type' => 'textarea',
+            '#title' => t($info['label'] . ' Bulk Load (Degrees, Minutes and Seconds)'),
+            '#description' => t('Enter comma-separated pairs of latitude/longitude values in DMS + compass direction format, one pair per line. <br/>Example: <br/>33 54 24N, 84 12 23W<br/>33 48 38N, 84 36 29W<br/>33 46 27N, 84 15 39W'),
+            '#weight' => 20,
+            '#states' => array(
+              'visible' => array(
+                '#' . $field_name_html => array('visible' => true),
+              ),
+            ),
+            '#geofield' => $field_name,
+          );
+
+          $group = !empty($form['#group_children'][$field_name]) ? $form['#group_children'][$field_name] : '';
+          if(!empty($group)){
+            $form['#group_children']['geofield_bulk_load_fieldset'] = $group;
+          }
+          $form['#submit'][] = 'geofield_bulk_load_dataset_form_submit';
+          $form['#validate'][] = 'geofield_bulk_load_dataset_form_validate';
+        }
+      }
+    }
+
+  }
+}
+
+function geofield_bulk_load_alter_field_settings_form(&$form){
+  $entity_type = $form['#instance']['entity_type'];
+  $field_name = $form['#instance']['field_name'];
+  $bundle = $form['#instance']['bundle'];
+
+  $info = field_info_instance($entity_type, $field_name, $bundle);
+  $bulk_load_enabled = !empty($info['settings']['geofield_bulk_load_enable']) ? $info['settings']['geofield_bulk_load_enable'] : false;
+  $form['instance']['geofield_bulk_load_enable'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable Bulk Load?'),
+    '#description' => t('If checked, additional textarea elements will be added to this field to allow bulk loading of lat/long coordinates.'),
+    '#default_value' => $bulk_load_enabled,
+  );
+
+  $form['#submit'][] = 'geofield_bulk_load_alter_field_settings_form_submit';
+}
+
+function geofield_bulk_load_alter_field_settings_form_submit($form, $form_state){
+  $entity_type = $form_state['values']['instance']['entity_type'];
+  $field_name = $form_state['values']['instance']['field_name'];
+  $bundle = $form_state['values']['instance']['bundle'];
+
+  $info = field_info_instance($entity_type, $field_name, $bundle);
+
+  $bulk_load_enabled = !empty($form_state['values']['instance']['geofield_bulk_load_enable']) ? $form_state['values']['instance']['geofield_bulk_load_enable'] : false;
+  $info['settings']['geofield_bulk_load_enable'] = $bulk_load_enabled;
+  field_update_instance($info);
+}
+
+function geofield_bulk_load_dataset_form_validate($form, &$form_state){
+  $errors = array();
+  $points = array();
+
+  $fields = array();
+  foreach($form_state['values'] as $key => $element){
+    if(substr($key, 0, strlen('geofield_bulk_load_')) === 'geofield_bulk_load_'){
+      $fields[$key] = $element;
+    }
+  }
+
+  foreach($fields as $key => $geofield){
+    $title = !empty($form[$key]['#title']) ? $form[$key]['#title'] : t('Coordinate List');
+    $all_coords = explode(PHP_EOL, $geofield);
+    foreach($all_coords as $set){
+      $valid = TRUE;
+      if(strlen($set) > 1){
+        $set_stripped = str_replace(" ", "", $set);
+        $coords = explode(",", $set_stripped);
+
+        if(count($coords) > 2 || count($coords) < 2){
+          $valid = FALSE;
+        }
+        else{
+          if(strpos($key, 'geofield_bulk_load_signed') !== FALSE){
+            $lat = floatval($coords[0]);
+            $lon = floatval($coords[1]);
+
+            if(($lat < -90 || $lat > 90) || ($lon < -180 || $lon > 180)){
+                $valid = FALSE;
+            }
+            else{
+              $point = array(
+                'lat' => $lat,
+                'lon' => $lon,
+              );
+              array_push($points, $point);
+            }
+          }
+          if(strpos($key, 'geofield_bulk_load_dms') !== FALSE){
+            $set_spaced = preg_replace('!\s+!', ' ', $set);
+            $coords = explode(",", $set_spaced);
+            if(count($coords) != 2){
+              $valid = FALSE;
+            }
+            else{
+              $lat_dms = explode(' ', trim($coords[0]));
+              $lon_dms = explode(' ', trim($coords[1]));
+
+              $lat = geofield_convert_from_dms($lat_dms);
+              $lon = geofield_convert_from_dms($lon_dms);
+
+              if(!empty($lat) && !empty($lon)){
+                if(($lat < -90 || $lat > 90) || ($lon < -180 || $lon > 180)){
+                    $valid = FALSE;
+                }
+                else{
+                  $point = array(
+                    'lat' => $lat,
+                    'lon' => $lon,
+                  );
+                  array_push($points, $point);
+                }
+              }
+              else{
+                $valid = FALSE;
+              }
+            }
+          }
+        }
+
+        if(!$valid){
+          array_push($errors, $set);
+        }
+      }
+    }
+
+    if(count($errors) > 0){
+      $error_string = '<ul>';
+      foreach($errors as $error){
+        $error_string .= '<li>' . $error . '</li>';
+      }
+      $error_string .= '</ul>';
+
+      form_set_error($key, t('Invalid values in %title:', array('%title' => $title)) . $error_string);
+    }
+    else{
+      $form_state['values'][$key] = !empty($points) ? $points : NULL;
+      $points = array();
+    }
+  }
+}
+
+function geofield_convert_from_dms($dms){
+  $converted = NULL;
+  $prefix = NULL;
+  $direction = '';
+  //Allow for two possible formats: <degree> <minute> <second><direction> (no space) OR <degree> <minute> <second> <direction>
+  if(count($dms) == 3 || count($dms) == 4){
+    $degree = is_numeric($dms[0]) ? floatval($dms[0]) : NULL;
+    $minute = is_numeric($dms[1]) ? floatval($dms[1]) : NULL;
+
+    // Assuming format <degree> <minute> <second><direction>
+    if(count($dms) === 3){
+      $length = strlen($dms[2]);
+      $second = substr($dms[2], 0, $length - 1);
+      $direction = substr($dms[2], $length - 1, 1);
+
+      // Second should always be numeric, direction should always be alpha
+      $second = is_numeric($second) ? floatval($second) : NULL;
+      $direction = !is_numeric($direction) ? strtoupper($direction) : NULL;
+    }
+
+    // Assuming format <degree> <minute> <second> <direction>
+    if(count($dms) === 4){
+      $second = is_numeric($dms[2]) ? floatval($dms[2]) : NULL;
+      $direction = !is_numeric($dms[3]) ? strtoupper($dms[3]) : NULL;
+    }
+
+    // Make sure direction is a valid cardinal direction
+    if(in_array($direction, array('N', 'S', 'E', 'W'))){
+      $prefix = '';
+      if($direction == 'S' || $direction == 'W'){
+        $prefix = '-';
+      }
+    }
+  }
+
+  if(!empty($degree) && !empty($minute) && !empty($second) && isset($prefix)){
+    $converted = $prefix . ($degree + ($minute / 60) + ($second/3600));
+  }
+
+  return $converted;
+}
+
+
+function geofield_bulk_load_dataset_form_submit($form, &$form_state){
+  $fields = array();
+  foreach($form_state['values'] as $key => $value){
+    if(substr($key, 0, strlen('geofield_bulk_load_')) === 'geofield_bulk_load_'){
+      $geofield = !empty($form['geofield_bulk_load_fieldset'][$key]['#geofield']) ? $form['geofield_bulk_load_fieldset'][$key]['#geofield'] : NULL;
+      $points = !empty($value) ? $value : array();
+
+      if(!empty($geofield) && !empty($points)){
+        foreach($points as $point){
+          $form_state['values'][$geofield][LANGUAGE_NONE][] = array(
+            'input_format' => 'lat/lon',
+            'geom' => array(
+              'lat' => $point['lat'],
+              'lon' => $point['lon'],
+            ),
+            '_weight' => 0,
+          );
+        }
+      }
+    }
+  }
+}
+

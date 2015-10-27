@@ -1,0 +1,6 @@
+name = Geofield Bulk Load
+description = Load values into Geofield via comma-separated list of points.
+package = fields
+core = 7.x
+version = 7.x-1.0
+dependencies[] = geofield

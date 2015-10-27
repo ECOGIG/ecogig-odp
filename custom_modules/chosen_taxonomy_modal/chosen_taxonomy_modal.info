@@ -1,0 +1,8 @@
+name = Chosen Taxonomy Modal
+description = Allow modal-based creation of taxonomy items for Chosen elements.
+package = User interface
+core = 7.x
+version = 7.x-1.0
+dependencies[] = chosen
+dependencies[] = ctools
+dependencies[] = taxonomy_access_fix

@@ -1,0 +1,261 @@
+<?php
+
+function chosen_taxonomy_modal_init(){
+  drupal_add_css(drupal_get_path('module', 'chosen_taxonomy_modal') . '/css/chosen_taxonomy_modal.css', array('group' => CSS_THEME, 'every_page' => TRUE, 'weight' => 999));
+  drupal_add_js(drupal_get_path('module', 'chosen_taxonomy_modal') . '/js/chosen_taxonomy_modal.js');
+}
+
+/**
+ * Implements hook_menu
+ */
+function chosen_taxonomy_modal_menu(){
+  $items = array();
+  $items['admin/vocabulary/%/create-term/%ctools_js/%'] = array(
+    'page callback' => 'chosen_taxonomy_modal_create_term_callback',
+    'page arguments' => array(4, 5, 2),
+    'access arguments' => array('administer taxonomy'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_field_widget_info_alter().
+ */
+function chosen_taxonomy_modal_field_widget_info_alter(&$info) {
+  $widget_defaults = array(
+    'options_select' => '',
+    'select_or_other' => '',
+    'date_combo' => 0,
+  );
+
+  foreach ($widget_defaults as $widget => $default) {
+    if (isset($info[$widget])) {
+      $info[$widget]['settings']['chosen_taxonomy_modal'] = $default;
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function chosen_taxonomy_modal_form_field_ui_field_edit_form_alter(&$form, $form_state) {
+  if (empty($form['#field']['locked']) && isset($form['#instance']['widget']['settings']['chosen_taxonomy_modal'])) {
+    $form['instance']['widget']['settings']['chosen_taxonomy_modal'] = array(
+      '#type' => 'select',
+      '#title' => t('Allow modal-based creation of new taxonomy terms?'),
+      '#options' => array(
+        0 => t('No'),
+        1 => t('Yes'),
+      ),
+      '#default_value' => $form['#instance']['widget']['settings']['chosen_taxonomy_modal'],
+      '#disabled' => !$form['#instance']['widget']['settings']['apply_chosen'],
+      '#empty_option' => t('No'),
+      '#empty_value' => 0,
+      '#chosen' => FALSE,
+    );
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function chosen_taxonomy_modal_field_widget_form_alter(&$element, &$form_state, $context) {
+  if (isset($context['instance']['widget']['settings']['chosen_taxonomy_modal'])) {
+    $value = $context['instance']['widget']['settings']['chosen_taxonomy_modal'];
+    if ($value === '') {
+      return;
+    }
+    else {
+      $element['#chosen_taxonomy_modal'] = !empty($value);
+    }
+  }
+}
+
+function chosen_taxonomy_modal_form_alter(&$form, &$form_state, $form_id){
+
+  if($form_id == 'taxonomy_form_term'){
+    if(!empty($form_state['ajax'])){
+      // TODO: Add configuration option for Name Description text
+      $name_description = t('The friendly name for this item. This will be what shows up in dropdowns or other selection elements.');
+
+      $form['name']['#default_value'] = '';
+      $form['name']['#description'] = $name_description;
+      $form['tvi']['#access'] = FALSE;
+      $form['relations']['#access'] = FALSE;
+      $form['access']['#access'] = FALSE;
+      $form['description']['#access'] = FALSE;
+      $form['xmlsitemap']['#access'] = FALSE;
+      $form['path']['#access'] = FALSE;
+      $form['metatags']['#access'] = FALSE;
+    }
+  }
+  else{
+    $has_vocab = FALSE;
+
+    foreach($form as $item_name => $form_item){
+      if(strrpos($item_name, 'field_', -strlen($item_name)) !== FALSE){
+        $is_select = !empty($form_item[LANGUAGE_NONE]['#type']) ? $form_item[LANGUAGE_NONE]['#type'] == "select" : FALSE;
+        $is_chosen = !empty($form_item[LANGUAGE_NONE]['#chosen']) ? $form_item[LANGUAGE_NONE]['#chosen'] : FALSE;
+        $is_taxonomy = !empty($form_item[LANGUAGE_NONE]['#columns'][0]) ? $form_item[LANGUAGE_NONE]['#columns'][0] == 'tid' : FALSE;
+        $allow_modal = !empty($form_item[LANGUAGE_NONE]['#chosen_taxonomy_modal']) ? $form_item[LANGUAGE_NONE]['#chosen_taxonomy_modal'] : FALSE;
+
+        if($is_select && $is_chosen && $is_taxonomy && $allow_modal){
+          $info = field_info_field($item_name);
+          $vocab_machine_name = $info['settings']['allowed_values'][0]['vocabulary'];
+
+          if(user_access('add terms in ' . $vocab_machine_name)){
+            ctools_include('modal');
+            ctools_modal_add_js();
+
+            $has_vocab = TRUE;
+            $vocab = taxonomy_vocabulary_machine_name_load($vocab_machine_name);
+            $vid = $vocab->vid;
+
+            $field_name_html = str_replace('_', '-', $item_name);
+            $pnl_name = 'pnl-' . $field_name_html . '-select';
+            $modal_link = '<span id="modal-create-term-link">' . l(t("Add new " . $form_item[LANGUAGE_NONE]['#title']), 'admin/vocabulary/' . $vid . '/create-term/nojs/' . $field_name_html, array('attributes' => array('class' => 'ctools-use-modal lnk-profile-modal', 'data-form-id' => $form_id, 'data-target-field' => $field_name_html))) . '</span>';
+            $form[$item_name][LANGUAGE_NONE]['#description'] = $form_item[LANGUAGE_NONE]['#description'] .   "<br/>Don't see the item you're looking for? " . $modal_link;
+            $form[$item_name]['#prefix'] = '<div id="' . $pnl_name . '">';
+            $form[$item_name]['#suffix'] = '</div>';
+
+            $form[$item_name][$item_name . '_refresh'] = array(
+              '#type' => 'button',
+              '#value' => t('Refresh ' . $form_item[LANGUAGE_NONE]['#title']),
+              '#attributes' => array(
+                'class' => array(
+                  'btn-refresh-term',
+                  'hidden',
+                ),
+              ),
+              '#ajax' => array(
+                'callback' => 'chosen_taxonomy_modal_rebuild_callback',
+                'wrapper' => $pnl_name,
+              ),
+              '#name' => $item_name,
+              '#limit_validation_errors' => array(),
+              '#weight' => $form[$item_name]['#weight'] + 1,
+            );
+
+          }
+        }
+      }
+    }
+
+    if($has_vocab){
+      $form['hdn-term-added'] = array(
+        '#type' => 'hidden',
+        '#prefix' => '<div id="pnl-hdn-term-added">',
+        '#suffix' => '</div>',
+      );
+
+      $form['hdn-term-name-added'] = array(
+        '#type' => 'hidden',
+        '#prefix' => '<div id="pnl-hdn-term-name-added">',
+        '#suffix' => '</div>',
+      );
+
+      $form['hdn-term-field'] = array(
+        '#type' => 'hidden',
+        '#prefix' => '<div id="pnl-hdn-term-field">',
+        '#suffix' => '</div>',
+      );
+    }
+  }
+}
+
+// Modal for taxonomy term creation.
+function chosen_taxonomy_modal_create_term_callback($ajax, $target_field = NULL, $vid = NULL){
+  $vocab = taxonomy_vocabulary_load($vid);
+  form_load_include($form_state, 'inc', 'taxonomy', 'taxonomy.admin');
+
+  if($ajax){
+    ctools_include('ajax');
+    ctools_include('modal');
+
+    if(!empty($vocab)){
+      $form_state = array(
+        'ajax' => TRUE,
+        'title' => t('Add ' . $vocab->name),
+        'target_field' => $target_field,
+        'vid' => $vid,
+        'build_info' => array(
+          'args' => array(
+            $vocab,
+          ),
+        ),
+      );
+    }
+
+    $form_state['build_info']['args'] = array($vocab);
+
+    $output = ctools_modal_form_wrapper('taxonomy_form_term', $form_state);
+
+    if(!empty($form_state['ajax_commands'])){
+      $output = $form_state['ajax_commands'];
+    }
+
+    if($form_state['executed']){
+      $tid = !empty($form_state['tid']) ? $form_state['tid'] : '';
+      $term = taxonomy_term_load($tid);
+
+      // Add newly created values to hidden fields used to select new term on modal close
+      $output = array(
+        ctools_modal_command_dismiss(),
+        ajax_command_invoke('#pnl-hdn-term-added input[type=hidden]', 'val', array($tid)),
+        ajax_command_invoke('#pnl-hdn-term-name-added input[type=hidden]', 'val', array($term->name)),
+        ajax_command_invoke('#pnl-hdn-term-field input[type=hidden]', 'val', array($target_field)),
+        ajax_command_invoke('.btn-refresh-term', 'mousedown'),
+      );
+    }
+
+    print ajax_render($output);
+    drupal_exit();
+  }
+
+  else{
+      $form_state = array(
+        'title' => t('Add ' . $vocab->name),
+        'build_info' => array(
+          'args' => array(
+            $vocab,
+          ),
+        ),
+      );
+    $taxonomy_form = drupal_get_form('taxonomy_form_term', $form_state, $vocab);
+    return drupal_render($taxonomy_form);
+  }
+}
+
+function chosen_taxonomy_modal_rebuild_callback($form, &$form_state){
+  $elem = !empty($form_state['triggering_element']['#name']) ? $form_state['triggering_element']['#name'] : '';
+  if(!empty($form[$elem])){
+    $field_name_html = str_replace('_', '-', $elem);
+    $pnl_name = 'pnl-' . $field_name_html . '-select';
+
+    $info = field_info_field($elem);
+    $vocab_machine_name = $info['settings']['allowed_values'][0]['vocabulary'];
+
+    $vocab = taxonomy_vocabulary_machine_name_load($vocab_machine_name);
+    $vid = $vocab->vid;
+    $terms = taxonomy_get_tree($vid);
+
+    $options = array();
+    foreach($terms as $term){
+      $options[$term->tid] = $term->name;
+    }
+
+    $vocab_select = array(
+      '#type' => 'select',
+      '#options' => $options,
+    );
+
+    $target_elem = "";
+
+    $form[$elem]['#prefix'] = '<div id="' . $pnl_name . '">';
+    $form[$elem]['#suffix'] = '</div>';
+    $form[$elem][LANGUAGE_NONE]['#options'] = $options;
+
+    return $form[$elem];
+  }
+}

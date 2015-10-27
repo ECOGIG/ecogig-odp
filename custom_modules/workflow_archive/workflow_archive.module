@@ -1,0 +1,202 @@
+<?php
+
+/**
+ * Implement hook_form_FORM_ID_alter().
+ */
+function workflow_archive_form_node_type_form_alter(&$form, $form_state) {
+  if (!user_access('administer content types')) return;
+
+  module_load_include('inc', 'workflow', 'workflow.entity');
+  $workflows = workflow_load_multiple();
+  $options = array();
+  $type = 'allow_archive_type_' . $form['#node_type']->type;
+
+  $workflow_fields = array();
+
+  $instances = field_info_instances('node', $form['#node_type']->type);
+  foreach($instances as $instance){
+    if($instance['widget']['module'] === 'workflowfield'){
+      $workflow_fields[$instance['field_name']] = $instance;
+    }
+  }
+
+  // Only get fields that are tied to workflows, and workflows that have states defined.
+  if(count($workflow_fields) > 0){
+    $workflow_field_options = array();
+    foreach($workflow_fields as $field){
+      $field_info = field_info_field($field['field_name']);
+      $field_wid = !empty($field_info['settings']['wid']) ? $field_info['settings']['wid'] : 0;
+      
+      foreach($workflows as $workflow){
+        if($workflow->wid === $field_wid && count($workflow->states) > 0){
+          $options[$workflow->label] = array();
+          foreach($workflow->states as $state){
+            $options[$workflow->label][$state->sid] = $state->state;
+          }
+        }
+      }
+
+      $workflow_field_options[$field['field_name']] = $field['label'];
+    }
+
+    if(count($options) > 0 && count($workflow_field_options) > 0){
+      $form['allow_archive'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Deletion Settings'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+        '#tree' => TRUE,
+        '#group' => 'additional_settings',
+      );
+
+      $form['allow_archive']['override'] = array(
+        '#type' => 'checkboxes',
+        '#title' => t('Override delete?'),
+        '#description' => t('If checked, performing "Delete" functions on this type will set the node to a specified workflow state rather than deleting it.'),
+        '#options' => array(
+          'override' => t('Override'),
+        ),
+        '#default_value' => variable_get('allow_archive_type_' . $form['#node_type']->type . '_override', 0) ? array('override') : array(),
+      );
+
+      $form['allow_archive']['title'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Button Title'),
+        '#default_value' => variable_get('allow_archive_type_' . $form['#node_type']->type . '_title', ''),
+        '#description' => t('Optional value used to replace "Delete" on the delete button and associated messages. This works best as a verb ("Delete", "Archive", etc.) since it is used on buttons and in messages.'),
+        '#size' => 60,
+        '#maxlength' => 128,
+      );
+
+      $form['allow_archive']['workflow_field'] = array(
+        '#type' => 'select',
+        '#title' => t('Workflow Field'),
+        '#default_value' => variable_get('allow_archive_type_' . $form['#node_type']->type . '_workflow_field', ''),
+        '#description' => t('Choose the workflow field to use for this type.'),
+        '#options' => $workflow_field_options,
+      );
+
+      $form['allow_archive']['workflow'] = array(
+        '#type' => 'select',
+        '#title' => t('Workflow State'),
+        '#default_value' => variable_get('allow_archive_type_' . $form['#node_type']->type . '_workflow', ''),
+        '#description' => t('Choose the workflow state used to override delete functionality.'),
+        '#options' => $options,
+      );
+
+      $form['#submit'][] = 'workflow_archive_node_type_form_submit';
+    }
+    else{
+      $form['no_workflows'] = array(
+        '#markup' => t('There were no workflows found. A content type must have at least one workflow field, and the associated workflow must have at least one workflow configured in order to enable delete overrides.'),
+      );
+    }
+  }
+}
+
+/**
+ * Submit handler for the node_type_form element added in the hook_form_FORM_ID_alter() above.
+ */
+function workflow_archive_node_type_form_submit($form, &$form_state) {
+  $show_field = $form_state['values']['allow_archive']['override']['override'] ? 1 : 0;
+
+  $type = 'allow_archive_type_' . $form['#node_type']->type;
+  variable_set('allow_archive_type_' . $form_state['values']['type'] . '_override', $show_field);
+  variable_set('allow_archive_type_' . $form_state['values']['type'] . '_workflow_field', $form_state['values']['allow_archive']['workflow_field']);
+  variable_set('allow_archive_type_' . $form_state['values']['type'] . '_workflow', $form_state['values']['allow_archive']['workflow']);
+  variable_set('allow_archive_type_' . $form_state['values']['type'] . '_title', $form_state['values']['allow_archive']['title']);
+
+  // For some reason the node module adds the fieldset as a separate entry in the variables table... we dont want this!
+  variable_del('allow_archive_type_' . $form_state['values']['type']);
+}
+
+function workflow_archive_form_alter(&$form, $form_state, $form_id){
+  $type = !empty($form['type']['#value']) ? $form['type']['#value'] : NULL;
+
+  $override = variable_get('allow_archive_type_' . $type . '_override', 0);
+  $action_title = variable_get('allow_archive_type_' . $type . '_title', t('Archive'));
+
+  if ($override === 1) { 
+    $form['actions']['delete']['#value'] = $action_title;
+    $form['actions']['delete']['#submit'] = array('workflow_archive_node_form_delete_submit');
+  }
+}
+
+function workflow_archive_node_form_delete_submit($form, &$form_state) {
+  $destination = '';
+  if (isset($_GET['destination'])) {
+    $destination = drupal_get_destination();
+    unset($_GET['destination']);
+  }
+  $node = $form['#node'];
+
+  drupal_goto('node/'. $node->nid .'/archive', array('query' => $destination));
+}
+
+function workflow_archive_menu() {
+  $items = array();
+  $items['node/%node/archive'] = array(
+    'title' => 'Archive',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('workflow_archive_archive_confirm', 1),
+    'access arguments' => array('create dataset content'),
+    'type' => MENU_CALLBACK,
+    'weight' => 1,
+  );
+  return $items;
+}
+
+function workflow_archive_archive_confirm($form, &$form_state, $node){
+  $form = array();
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $node->nid,
+  );
+  $type = !empty($form_state['build_info']['args'][0]->type) ? $form_state['build_info']['args'][0]->type : NULL;
+  $action_title = variable_get('allow_archive_type_' . $type . '_title', t('delete'));
+
+  return confirm_form($form,
+    t('Are you sure you want to %action %title ?', array('%action' => strtolower($action_title), '%title' => $node->title)),
+    isset($_GET['destination']) ? $_GET['destination'] : 'node/'. $node->nid,
+    t(''),
+    t($action_title),
+    t('Cancel')
+  );
+
+  return $form;
+}
+
+function workflow_archive_archive_confirm_submit($form, &$form_state) {
+  $nid = !empty($form_state['values']['nid']) ? $form_state['values']['nid'] : '';
+  $dest = isset($_GET['destination']) ? $_GET['destination'] : 'node/'. $nid;
+
+  if(!empty($nid)){
+    $node = node_load($nid);
+    $type = !empty($form_state['build_info']['args'][0]->type) ? $form_state['build_info']['args'][0]->type : NULL;
+    $field = variable_get('allow_archive_type_' . $type . '_workflow_field', NULL);
+    $workflow = variable_get('allow_archive_type_' . $type . '_workflow', NULL);
+
+    if(!empty($workflow) && !empty($field)){
+      $wrapper = entity_metadata_wrapper('node', $node, array('bundle' => $type));
+      $wrapper->$field->set($workflow);
+
+      global $user;
+      $original_user = $user;
+      $old_state = drupal_save_session();
+      drupal_save_session(FALSE);
+      $user = user_load(1);
+
+      $wrapper->save();
+
+      $user = $original_user;
+      drupal_save_session($old_state);
+
+      $action_title = variable_get('allow_archive_type_' . $type . '_title', t('Delete'));
+
+      drupal_set_message(t('%title has been set to status: %action_title.', array('%title' => $node->title, '%action_title' => $action_title)));
+    }
+  }
+  drupal_goto($dest);
+}
+
+?>

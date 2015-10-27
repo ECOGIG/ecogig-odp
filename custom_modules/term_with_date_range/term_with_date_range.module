@@ -1,0 +1,553 @@
+<?php
+
+/**
+* Implements hook_init().
+*/
+function term_with_date_range_init() {
+  drupal_add_css(drupal_get_path('module', 'term_with_date_range') . '/css/term_with_date_range.css', array('weight' => CSS_THEME));
+}
+
+/**
+* Implements hook_views_api().
+*/
+function term_with_date_range_views_api(){
+  return array(
+    'api' => 3,
+    'template path' => drupal_get_path('module', 'term_with_date_range') . '/templates',
+    'path' => drupal_get_path('module', 'term_with_date_range') . '/views',
+  );
+}
+
+/**
+* Implements hook_field_info().
+*/
+function term_with_date_range_field_info() {
+  return array(
+    'term_with_date_range' => array(
+      'label' => t('Term with Date Range'),
+      'description' => t("This field stores a taxonomy term and a time period associated with that term."),
+      'settings' => array('allowed_values' => array(), 'allowed_values_function' => ''),
+      'default_widget' => 'term_with_date_range',
+      'default_formatter' => 'term_with_date_range',
+      'property_type' => 'term_with_date_range',
+      'property_callbacks' => array('term_with_date_range_property_info_callback'),
+    ),
+  );
+}
+
+/**
+* Implements hook_field_validate().
+*/
+function term_with_date_range_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors){
+  if($field['type'] == 'term_with_date_range'){
+    $date_from_label = !empty($instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_label']) ? $instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_label'] : t('Date From');
+    $date_to_label = !empty($instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_label']) ? $instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_label'] : t('Date To');
+
+    foreach($items as $delta => $item){
+      if(!empty($item['tid']) && $item['tid'] != '_none' && empty($item['date_from_timestamp'])){
+        $errors[$field['field_name']][$langcode][$delta][] = array(
+          'error' => 'date_invalid',
+          'message' => t('%name: You must enter a value for %date_from.', array('%name' => $instance['label'], '%date_from' => $date_from_label)),
+        );
+      }
+
+      if(empty($item['date_from_timestamp']) && !empty($item['date_to_timestamp'])){
+        $errors[$field['field_name']][$langcode][$delta][] = array(
+          'error' => 'date_incomplete',
+          'message' => t('%name: %date_from cannot be empty if %date_to has a value.', array('%name' => $instance['label'], '%date_from' => $date_from_label, '%date_to' => $date_to_label)),
+        );
+      }
+
+      if(!empty($item['date_from_timestamp']) && !empty($item['date_to_timestamp'])){
+        $date_from = term_with_date_range_convert_to_unix($item['date_from_timestamp']);
+        $date_to = term_with_date_range_convert_to_unix($item['date_to_timestamp']);
+
+        if($date_from > $date_to){
+          $errors[$field['field_name']][$langcode][$delta][] = array(
+            'error' => 'date_invalid',
+            'message' => t('%name: %date_from cannot be greater than %date_to.', array('%name' => $instance['label'], '%date_from' => $date_from_label, '%date_to' => $date_to_label)),
+          );
+        }
+      }
+    }
+  }
+}
+
+/**
+* Implements hook_field_is_empty().
+*/
+function term_with_date_range_field_is_empty($item, $field){
+  if($field['type'] == 'term_with_date_range'){
+    return $item['tid'] == '_none';
+  }
+}
+
+/**
+* Implements hook_field_widget_info().
+*/
+function term_with_date_range_field_widget_info(){
+  return array(
+    'term_with_date_range' => array(
+      'label' => t('Term with Date Range'),
+      'field types' => array('term_with_date_range'),
+    ),
+  );
+}
+
+/**
+* Implements hook_field_widget_form().
+*/
+function term_with_date_range_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  switch ($instance['widget']['type']) {
+    case 'term_with_date_range':
+      $fields = array(
+        'tid' => t('Taxonomy Term'),
+        'date_from_timestamp' => t('From'),
+        'date_to_timestamp' => t('To'),
+      );
+
+      $date = new DateTime();
+      $date_format = !empty($instance['widget']['settings']['twdr_date_format']) ? $instance['widget']['settings']['twdr_date_format'] : 'm/d/Y';
+      $date_select_type = !empty($instance['widget']['settings']['twdr_date_type']) ? $instance['widget']['settings']['twdr_date_type'] : 'date_select';
+
+      // Each field that makes up the compound field can have its own widget display settings:
+      // Label, label display style, CSS class, wrapper CSS class
+      foreach ($fields as $key => $label) {
+        switch($key) {
+          case 'tid':
+            $vid = !empty($instance['widget']['settings']['fieldset_vocab']['term_with_date_range_vocab']) ? $instance['widget']['settings']['fieldset_vocab']['term_with_date_range_vocab'] : '';
+            $style = !empty($instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_style']) ? $instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_style'] : '';
+            $class = !empty($instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_class']) ? $instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_class'] : '';
+            $wrapper_class = !empty($instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_wrapper_class']) ? $instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_wrapper_class'] : '';
+            $label = !empty($instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_label']) ? $instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_label'] : $label;
+
+            $options = array('_none' => '-None-');
+            $terms = taxonomy_get_tree($vid);
+            foreach ($terms as $term) {
+              $options[$term->tid] = $term->name;
+            }
+
+            $element[$key] = array(
+              '#prefix' => '<div class="' . $wrapper_class . '">',
+              '#suffix' => '</div>',
+              '#type' => 'select',
+              '#title' => $label,
+              '#options' => $options,
+              '#default_value' => isset($items[$delta][$key]) ? $items[$delta][$key] : '',
+              '#attributes' => array(
+                'class' => array(
+                  $class,
+                ),
+              ),
+            );
+            break;
+            case 'date_from_timestamp':
+              $style = !empty($instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_style']) ? $instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_style'] : '';
+              $class = !empty($instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_class']) ? $instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_class'] : '';
+              $wrapper_class = !empty($instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_wrapper_class']) ? $instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_wrapper_class'] : '';
+              $label = !empty($instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_label']) ? $instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_label'] : $label;
+
+              $element[$key] = array(
+                '#prefix' => '<div class="' . $wrapper_class . '">',
+                '#suffix' => '</div>',
+                '#type' => $date_select_type,
+                '#title' => $label,
+                '#date_format' => $date_format,
+                '#date_year_range' => '-5:+3',
+                '#default_value' => isset($items[$delta][$key]) ? format_date($items[$delta][$key], 'custom', 'Y-m-d h:i:s') : NULL,
+                '#attributes' => array(
+                  'class' => array(
+                    $class,
+                  ),
+                ),
+              );
+              break;
+            case 'date_to_timestamp':
+              $style = !empty($instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_style']) ? $instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_style'] : '';
+              $class = !empty($instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_class']) ? $instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_class'] : '';
+              $wrapper_class = !empty($instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_wrapper_class']) ? $instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_wrapper_class'] : '';
+              $label = !empty($instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_label']) ? $instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_label'] : $label;
+
+              $element[$key] = array(
+                '#prefix' => '<div class="' . $wrapper_class . '">',
+                '#suffix' => '</div>',
+                '#type' => $date_select_type,
+                '#title' => $label,
+                '#date_format' => $date_format,
+                '#date_increment' => 1,
+                '#date_year_range' => '-5:+3',
+                '#default_value' => isset($items[$delta][$key]) ? format_date($items[$delta][$key], 'custom', 'Y-m-d h:i:s') : NULL,
+                '#attributes' => array(
+                  'class' => array(
+                    $class,
+                  ),
+                ),
+              );
+		
+		          $date_to = !empty($items[$delta][$key]) ? format_date($items[$delta][$key], 'custom', 'Y-m-d h:i:s') : NULL;
+          		if(!empty($date_to)){
+          			$element[$key]['#default_value'] = $date_to;
+          		}
+              break;
+          default:
+            break;
+        }
+      }
+    break;
+  }
+
+  return $element;
+}
+
+/**
+* Implements hook_field_formatter_info().
+*/
+function term_with_date_range_field_formatter_info() {
+  return array(
+    'term_with_date_range' => array(
+      'label' => t('Term with date range'),
+      'field types' => array('term_with_date_range'),
+    ),
+  );
+}
+
+/**
+* Implements hook_field_formatter_view().
+*/
+function term_with_date_range_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  $node = menu_get_object();
+
+  if (!empty($node)) {
+    switch ($display['type']) {
+      case 'term_with_date_range':
+        // Only display field if it has a value defined (associated term)
+        if(!empty($items[0]['tid'])){
+          $element['term_list'] = array(
+            '#type' => 'markup',
+            '#prefix' => '<ul class="list-terms-with-dates">',
+            '#suffix' => '</ul>',
+          );
+
+          // Default to "medium" date type/format defined for site unless a format is defined at the field level
+          $display_format = !empty($instance['widget']['settings']['twdr_date_format_display']) ? $instance['widget']['settings']['twdr_date_format_display'] : '';
+          $display_type = !empty($display_format) ? 'custom' : 'medium';
+
+          foreach ($items as $key => $item) {
+            $tid = !empty($item['tid']) ? $item['tid'] : '';
+            $term = taxonomy_term_load($tid);
+
+            if(!empty($term)){
+              $str_date_from = !empty($item['date_from_timestamp']) ? format_date($item['date_from_timestamp'], $display_type, $display_format) : NULL;
+              $str_date_to = !empty($item['date_to_timestamp']) ? format_date($item['date_to_timestamp'], $display_type, $display_format) : NULL;
+
+              // Some default values in case our values are empty
+              $str_date_from = !empty($str_date_from) ? $str_date_from : 'N/A';
+              $str_date_to = !empty($str_date_to) ? $str_date_to : t('Present');
+
+              $element[$key] = array(
+                '#type' => 'markup',
+                '#markup' => t($term->name) . ' (' . $str_date_from . ' - ' . $str_date_to . ')',
+              );
+            }
+          }
+        }
+        break;
+    }
+  }
+
+  return $element;
+}
+
+/**
+* Custom callback function for metadata.
+*
+* @param $info
+* @param $entity_type
+* @param $field
+* @param $instance
+* @param $field_type
+*/
+function term_with_date_range_property_info_callback(&$info, $entity_type, $field, $instance, $field_type) {
+  $property = &$info[$entity_type]['bundles'][$instance['bundle']]['properties'][$field['field_name']];
+
+  $property['getter callback'] = 'entity_metadata_field_verbatim_get';
+  $property['setter callback'] = 'entity_metadata_field_verbatim_set';
+
+  unset($property['query callback']);
+
+  $property['property info']['tid'] = array(
+    'type' => 'int',
+    'label' => t('Taxonomy Term'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'getter callback' => 'entity_property_verbatim_get',
+  );
+  $property['property info']['date_from'] = array(
+    'type' => 'date',
+    'label' => t('Date from'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'getter callback' => 'entity_property_verbatim_get',
+  );
+  $property['property info']['date_to'] = array(
+    'type' => 'date',
+    'label' => t('Date to'),
+    'setter callback' => 'entity_property_verbatim_set',
+    'getter callback' => 'entity_property_verbatim_get',
+  );
+}
+
+/**
+* Implements hook_field_widget_settings_form().
+*/
+function term_with_date_range_field_widget_settings_form($field, $instance){
+  $options = array();
+  $v = taxonomy_get_vocabularies();
+  foreach ($v as $item) {
+    $options[$item->vid] = $item->name;
+  }
+
+  // Available display options for widget labels
+  $style_options = array(
+    'inline' => 'Inline',
+    'inline-block' => 'Inline Block',
+    'block' => 'Block',
+    'none' => 'Hidden',
+  );
+
+  $element = array();
+  $element['fieldset_vocab'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Term Selection'),
+  );
+
+  $element['fieldset_date_from'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Date From'),
+  );
+
+  $element['fieldset_date_to'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Date To'),
+  );
+
+  // Date Selection Settings
+  $element['twdr_date_type'] = array(
+    '#type' => 'select',
+    '#title' => t('Date Select Type'),
+    '#description' => t('The type of form element used to select a date range.'),
+    '#options' => array(
+      'date_select' => 'Date Select',
+      'date_popup' => 'Date Popup',
+    ),
+    '#default_value' => isset($instance['widget']['settings']['twdr_date_type']) ? $instance['widget']['settings']['twdr_date_type'] : 'date_select',
+  );
+
+  // Date Format Settings
+  $element['twdr_date_format'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Widget Date Format'),
+    '#description' => t('The date format used for the date range widget.'),
+    '#default_value' => isset($instance['widget']['settings']['twdr_date_format']) ? $instance['widget']['settings']['twdr_date_format'] : 'm/d/Y',
+  );
+
+  $element['twdr_date_format_display'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Display Date Format'),
+    '#description' => t('The date format used for the date range front-end display.'),
+    '#default_value' => isset($instance['widget']['settings']['twdr_date_format_display']) ? $instance['widget']['settings']['twdr_date_format_display'] : NULL,
+  );
+
+  // Vocabulary Settings
+  $element['fieldset_vocab']['term_with_date_range_vocab'] = array(
+    '#type' => 'select',
+    '#title' => t('Term vocabulary'),
+    '#description' => t('The vocabulary that contains the taxonomy terms for this instance.'),
+    '#options' => $options,
+    '#default_value' => isset($instance['widget']['settings']['fieldset_vocab']['term_with_date_range_vocab']) ? $instance['widget']['settings']['fieldset_vocab']['term_with_date_range_vocab'] : '',
+  );
+  $element['fieldset_vocab']['term_with_date_range_dropdown_label'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Term element label'),
+    '#description' => t('Custom label for the taxonomy dropdown field.'),
+    '#default_value' => isset($instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_label']) ? $instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_label'] : '',
+  );
+  $element['fieldset_vocab']['term_with_date_range_dropdown_style'] = array(
+    '#type' => 'select',
+    '#title' => t('Term element style'),
+    '#description' => t('How to display the term selection dropdown element on the form.'),
+    '#options' => $style_options,
+    '#default_value' => isset($instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_style']) ? $instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_style'] : '',
+  );
+  $element['fieldset_vocab']['term_with_date_range_dropdown_class'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Term element CSS class'),
+    '#description' => t('CSS class to apply to the term selection dropdown element on the form.'),
+    '#default_value' => isset($instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_class']) ? $instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_class'] : '',
+  );
+  $element['fieldset_vocab']['term_with_date_range_dropdown_wrapper_class'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Term element wrapper CSS class'),
+    '#description' => t('CSS class to apply to the term selection wrapper.'),
+    '#default_value' => isset($instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_wrapper_class']) ? $instance['widget']['settings']['fieldset_vocab']['term_with_date_range_dropdown_wrapper_class'] : '',
+  );
+
+  // Date From Settings
+  $element['fieldset_date_from']['term_with_date_range_date_from_label'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Date From element label'),
+    '#description' => t('Custom label for the Date From field.'),
+    '#default_value' => isset($instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_label']) ? $instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_label'] : '',
+  );
+  $element['fieldset_date_from']['term_with_date_range_date_from_style'] = array(
+    '#type' => 'select',
+    '#title' => t('Date From element style'),
+    '#description' => t('How to display the Date From element on the form.'),
+    '#options' => $style_options,
+    '#default_value' => isset($instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_style']) ? $instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_style'] : '',
+  );
+  $element['fieldset_date_from']['term_with_date_range_date_from_class'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Date From element CSS class'),
+    '#description' => t('CSS class to apply to the Date From element on the form.'),
+    '#default_value' => isset($instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_class']) ? $instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_class'] : '',
+  );
+  $element['fieldset_date_from']['term_with_date_range_date_from_wrapper_class'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Date From element wrapper CSS class'),
+    '#description' => t('CSS class to apply to the Date From wrapper.'),
+    '#default_value' => isset($instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_wrapper_class']) ? $instance['widget']['settings']['fieldset_date_from']['term_with_date_range_date_from_wrapper_class'] : '',
+  );
+
+  // Date To Settings
+  $element['fieldset_date_to']['term_with_date_range_date_to_label'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Date To element label'),
+    '#description' => t('Custom label for the Date To field.'),
+    '#default_value' => isset($instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_label']) ? $instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_label'] : '',
+  );
+  $element['fieldset_date_to']['term_with_date_range_date_to_style'] = array(
+    '#type' => 'select',
+    '#title' => t('Date To element style'),
+    '#description' => t('How to display the Date To element on the form.'),
+    '#options' => $style_options,
+    '#default_value' => isset($instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_style']) ? $instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_style'] : '',
+  );
+  $element['fieldset_date_to']['term_with_date_range_date_to_class'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Date To element CSS class'),
+    '#description' => t('CSS class to apply to the Date To element on the form.'),
+    '#default_value' => isset($instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_class']) ? $instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_class'] : '',
+  );
+  $element['fieldset_date_to']['term_with_date_range_date_to_wrapper_class'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Date To element wrapper CSS class'),
+    '#description' => t('CSS class to apply to the Date To wrapper.'),
+    '#default_value' => isset($instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_wrapper_class']) ? $instance['widget']['settings']['fieldset_date_to']['term_with_date_range_date_to_wrapper_class'] : '',
+  );
+  return $element;
+}
+
+/**
+* Implements hook_form_alter.
+* Prevent deletion of taxonomy terms if they are in use.
+*/
+function term_with_date_range_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    case 'taxonomy_form_term':
+      if (isset($form['delete'])) {
+        $tid = $form['#term']->tid;
+        $limit = 30;
+
+        $results = array();
+
+        $fields = field_read_fields(array('type' => 'term_with_date_range'));
+        foreach($fields as $fid => $field){
+          $instances = field_read_instances(array('field_name' => $fid));
+          foreach($instances as $i){
+            $query = new EntityFieldQuery();
+            $query->entityCondition('entity_type', $i['entity_type'])
+              ->entityCondition('bundle', $i['bundle'])
+              ->fieldCondition($field['field_name'], 'tid', $tid, '=');
+            $result = $query->execute();
+            if (isset($result[$i['entity_type']])) {
+              $result = $result[$i['entity_type']];
+            }
+          }
+        }
+
+        if (count($result) > 0) {
+          $markup = t('This term is being used in nodes and cannot be deleted. Please remove this taxonomy term from the following nodes first:') . '<ul>';
+
+          foreach($result as $nid => $node_val) {
+            $node = node_load($nid);
+            if (!$node)
+              continue;
+            $markup .= '<li>' . l($node->title, 'node/' . $node->nid, array('attributes' => array('target'=>'_blank'))) . '</li>';
+          }
+
+          if (count($result) >= $limit)
+            $markup .= '<li>' . t("... only the first @limit results are displayed.", array('@limit' => $limit)) . '</li>';
+          $markup .= '</ul>';
+
+          $form['description']['#markup'] = $markup;
+          $form['actions']['submit']['#access'] = FALSE;
+        }
+      }
+      break;
+  }
+}
+
+/**
+* Implements hook_multiple_field_remove_button_field_widgets_alter()
+* Hook for Multiple Fields Remove Button (if enabled) - https://www.drupal.org/project/multiple_fields_remove_button
+*/
+function term_with_date_range_multiple_field_remove_button_field_widgets_alter(&$fieldwidgets) {
+  array_push($fieldwidgets, 'term_with_date_range');
+}
+
+/**
+* Implements hook_field_presave().
+* Date field values are in Y-m-d format by default - convert to UNIX timestamp format.
+*/
+function term_with_date_range_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items){
+  foreach ($items as $delta => $item) {
+    $items[$delta]['date_from_timestamp'] = !empty($item['date_from_timestamp']) ? term_with_date_range_convert_to_unix($item['date_from_timestamp']) : NULL;
+    $items[$delta]['date_to_timestamp'] = !empty($item['date_to_timestamp']) ? term_with_date_range_convert_to_unix($item['date_to_timestamp']) : NULL;
+
+  }
+}
+
+/**
+* Converts date strings (default Y-m-d format) to Unix timestamps.
+*/
+function term_with_date_range_convert_to_unix($str_date, $format = 'Y-m-d'){
+  $timestamp = NULL;
+  if(!empty($str_date)){
+    $arr_date = explode('-', $str_date);
+    
+    // In case we're missing the day
+    if(count($arr_date) < 3){
+      $str_date .= '-01';
+    }
+
+    $date = DateTime::createFromFormat($format, $str_date);
+    if($date instanceof DateTime){
+      $timestamp = $date->format('U');
+    }
+  }
+  return $timestamp;
+}
+
+/**
+  * Returns all fields of types defined in this module.
+  */
+function term_with_date_range_get_fields() {
+  $types = array_keys(term_with_date_range_field_info());
+  $fields = array();
+  foreach (field_info_fields() as $field) {
+    if (in_array($field['type'], $types)) {
+      $fields[] = $field;
+    }
+  }
+  return $fields;
+}

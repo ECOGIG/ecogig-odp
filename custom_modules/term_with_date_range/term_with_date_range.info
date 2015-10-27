@@ -1,0 +1,8 @@
+name = Term with Date Range
+description = Custom compound field to associate a taxonomy term with a date range.
+core = 7.x
+version = 7.x-1.0
+package = Date/Time
+dependencies[] = date
+files[] = views/term_with_date_range.views.inc
+files[] = handlers/views_handler_field_term_with_date_range_tid.inc

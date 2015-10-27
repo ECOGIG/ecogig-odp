@@ -1,0 +1,6 @@
+name = Workflow Archive
+description = Override node delete functionality and instead set a Workflow state used to archive configured types.
+core = 7.x
+version = 7.x-1.0
+dependencies[] = workflow
+package = Workflow

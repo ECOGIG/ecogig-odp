@@ -1,0 +1,5 @@
+name = Node Clone Excluded Fields
+description = Exclude fields from Node Clone operations
+package = Ecogig
+core = 7.x
+dependencies[] = clone

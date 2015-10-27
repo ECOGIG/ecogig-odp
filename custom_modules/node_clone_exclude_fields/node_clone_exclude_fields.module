@@ -1,0 +1,57 @@
+<?php
+function node_clone_exclude_fields_menu(){
+  $items = array();
+
+  $items['admin/config/content/node-clone-exclude'] = array(
+    'title' => 'Node Clone excluded fields',
+    'description' => 'Choose fields to exclude from Node Clone operations',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('node_clone_exclude_fields_admin'),
+    'access arguments' => array('clone node'),
+  );
+
+  return $items;
+}
+
+function node_clone_exclude_fields_form_alter(&$form, &$form_state){
+  if(!empty($form['#node_edit_form'])){
+      if(!empty($form['clone_from_original_nid']['#value'])){
+        $excluded_fields = variable_get('node_clone_exclude_fields_select');
+
+        foreach($excluded_fields as $field => $exclude){
+          if(!empty($exclude)){
+            if(!empty($form[$field][LANGUAGE_NONE])){
+              $form[$field][LANGUAGE_NONE]['#default_value'] = NULL;
+            }
+
+            if($field === 'title'){
+              $form['title']['#default_value'] = '';
+              drupal_set_title(' ');
+            }
+          }
+        }
+      }
+  }
+
+}
+
+function node_clone_exclude_fields_admin(){
+  $form = array();
+  $fields = field_info_field_map();
+  $field_options = array();
+
+  $field_options['title'] = 'title';
+  foreach($fields as $key => $value){
+    $field_options[$key] = $key;
+  }
+  ksort($field_options);
+
+  $form['node_clone_exclude_fields_select'] = array(
+    '#type' => 'checkboxes',
+    '#options' => $field_options,
+    '#title' => t('Exclude these fields from clone operations: '),
+    '#default_value' => variable_get('node_clone_exclude_fields_select', array()),
+    '#required' => FALSE,
+  );
+  return system_settings_form($form);
+}
