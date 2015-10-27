@@ -1,0 +1,49 @@
+<?php
+
+function node_title_override_node_presave($node){
+  if(!empty($node) && $node->type == 'profile' && $node->is_new){
+    $node->title = preg_replace('/\s+/', ' ', $node->title);
+    $title = $node->title;
+    $name_arr = preg_split('/\s+/', $title);
+
+
+    $first_name = '';
+    $last_name = '';
+    $middle_name = '';
+
+    if(count($name_arr) == 2){
+      $first_name = $name_arr[0];
+      $last_name = $name_arr[1];
+    }
+
+    if(count($name_arr) == 3){
+      $first_name = $name_arr[0];
+      $middle_name = $name_arr[1];      
+      $last_name = $name_arr[2];      
+    }
+
+    if(!empty($first_name)){
+      $node->field_first_name['und'][0]['value'] = ucfirst($first_name); 
+    }
+    
+    if(!empty($middle_name)){
+      $node->field_middle_name['und'][0]['value'] = ucfirst($middle_name);
+    }
+    
+    if(!empty($last_name)){
+      $node->field_last_name['und'][0]['value'] = ucfirst($last_name);
+    }
+  }
+
+  if($node->type == 'participant' && $node->is_new){
+    $profile_id = !empty($node->field_participant_name['und'][0]['target_id']) ? $node->field_participant_name['und'][0]['target_id'] : '';
+    $email = !empty($node->field_email['und'][0]['email']) ? $node->field_email['und'][0]['email'] : '';
+    if(!empty($profile_id)){
+      $profile_node = node_load($profile_id);
+      if(!empty($email)){
+        $profile_node->field_email['und'][0]['email'] = $email;
+        node_save($profile_node);
+      }
+    }
+  }
+}

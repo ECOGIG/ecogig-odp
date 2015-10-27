@@ -1,0 +1,4 @@
+name = Dataset Nothing to Report
+description = Allows for creation of "Nothing to Report" entries for quarterly reporting purposes.
+package = Ecogig
+core = 7.x

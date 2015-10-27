@@ -1,0 +1,5 @@
+name = Delete Override
+description = Override node delete functionality to archive selected types.
+package = Research Pipe
+core = 7.x
+version = 7.x-1.0

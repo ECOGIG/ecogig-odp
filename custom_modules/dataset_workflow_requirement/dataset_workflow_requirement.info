@@ -1,0 +1,4 @@
+name = Dataset Workflow Requirement
+description = Prevent Dataset nodes from being updated if the workflow status has not been changed.
+core = 7.x
+package = Ecogig

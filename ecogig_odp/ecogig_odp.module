@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the ecogig_odp feature.
+ */
+
+include_once 'ecogig_odp.features.inc';

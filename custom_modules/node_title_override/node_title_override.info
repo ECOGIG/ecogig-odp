@@ -1,0 +1,4 @@
+name = Node Title Autogenerate Override
+description = Overrides automatic node title generation to populate additional fields.
+package = Ecogig
+core = 7.x

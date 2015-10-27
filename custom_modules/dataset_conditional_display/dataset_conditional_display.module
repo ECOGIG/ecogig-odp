@@ -1,0 +1,192 @@
+<?php
+
+define('DS_CON_NEW_REQUEST', 7);
+define('DS_CON_GRIIDC_UDI_ASSIGNED', 9);
+define('DS_CON_METADATA_SUPPLIED', 11);
+define('DS_CON_METADATA_RETURN', 13);
+define('DS_CON_METADATA_APPROVED', 20);
+define('DS_CON_NEED_DATA_FILES', 14);
+define('DS_CON_DATA_FILES_SUPPLIED', 15);
+define('DS_CON_DATA_FILES_RETURN', 16);
+define('DS_CON_DATA_FILES_APPROVED', 22);
+define('DS_CON_DATA_SUBMITTED_TO_GRIIDC', 21);
+define('DS_CON_DATA_LISTED_PRIVATE', 17);
+define('DS_CON_DATA_LIST_DATA_AS_PUBLIC', 23);
+define('DS_CON_DATA_LISTED_PUBLIC', 18);
+define('DS_CON_MARKED_FOR_DELETION', 19);
+
+function dataset_conditional_display_hide_fieldset(&$element, $fieldset){
+    $group_str = 'group_';
+    $group_len = strlen($group_str);
+
+    $field_str = 'field_';
+    $field_len = strlen($field_str);
+
+    foreach($element['#groups'] as $key => $value){
+        if($key == $fieldset){
+            if(substr($key, 0, $group_len) === $group_str){
+                foreach($value->children as $field){
+                    if(substr($field, 0, $group_len) === $group_str){
+                        dataset_conditional_display_hide_fieldset($element, $field);
+                    }
+                    if(substr($field, 0, $field_len) === $field_str){
+                        if(!empty($element[$field]['und'])){
+    	                   $element[$field]['und']['#required'] = FALSE;
+    	                   $element[$field]['und'][0]['#required'] = FALSE;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+function dataset_conditional_display_dataset_submit(&$form, &$form_state){
+  unset($form_state['values']['field_dataset_workflow']);
+  $form_state['values']['field_dataset_workflow']['und'][0]['workflow']['workflow_sid'] = DS_CON_DATA_FILES_SUPPLIED;
+}
+
+function dataset_conditional_display_form_dataset_node_form_alter(&$form, &$form_state, $form_id){
+  $nid = !empty($form['nid']['#value']) ? $form['nid']['#value'] : '';
+  $params = drupal_get_query_parameters();
+  $mode = !empty($params['mode']) ? $params['mode'] : '';
+  $readonly = FALSE;
+  if($mode != 'complete'){
+    if(!user_access('override dataset edit')){
+      if(empty($form['nid']['#value'])){
+        $form['field_dataset_workflow']['#prefix'] = '<div class="hidden">';
+        $form['field_dataset_workflow']['#suffix'] = '</div>';
+      }
+
+      $form['submit_complete'] = array(
+	'#markup' => '<a class="btn btn-complete-dataset" href="?mode=complete" onclick="return confirm(\'This will reload the page and any unsaved changes will be lost! Continue?\');">Enter as Complete Dataset</a>',
+      );
+    }
+
+    $workflow_sid = 0;
+    if(isset($form['field_dataset_workflow']['und'][0]['#default_value'])){
+        $workflow_sid = (int) $form['field_dataset_workflow']['und'][0]['#default_value'];
+    }
+
+
+    $fs_udi = 'group_udi_information';
+    $fs_metadata = 'group_metadata_information';
+    $fs_data = 'group_data_information';
+
+    $node = node_load($nid);
+    if(!empty($node) && !(user_access('override dataset edit'))){
+      $form['field_task']['#disabled'] = TRUE;
+    }
+
+    if(empty($workflow_sid) || $workflow_sid <= DS_CON_NEW_REQUEST){
+        dataset_conditional_display_hide_fieldset($form, $fs_metadata);
+        dataset_conditional_display_hide_fieldset($form, $fs_data);
+    }
+
+    else if($workflow_sid < DS_CON_GRIIDC_UDI_ASSIGNED){
+        dataset_conditional_display_hide_fieldset($form, $fs_metadata);
+        dataset_conditional_display_hide_fieldset($form, $fs_data);
+    }
+
+    else if($workflow_sid < DS_CON_NEED_DATA_FILES){
+        dataset_conditional_display_hide_fieldset($form, $fs_data);
+    }
+    else if($workflow_sid < DS_CON_DATA_FILES_SUPPLIED){
+    }
+    if(!user_access('override dataset edit')){
+
+      if(!empty($form['nid']['#value']) && ($workflow_sid == DS_CON_NEW_REQUEST
+        || $workflow_sid == DS_CON_METADATA_SUPPLIED
+        || $workflow_sid == DS_CON_METADATA_APPROVED
+        || $workflow_sid == DS_CON_DATA_FILES_SUPPLIED
+        || $workflow_sid == DS_CON_DATA_FILES_APPROVED
+        || $workflow_sid == DS_CON_DATA_SUBMITTED_TO_GRIIDC
+        || $workflow_sid == DS_CON_DATA_LIST_DATA_AS_PUBLIC
+        || $workflow_sid == DS_CON_DATA_LISTED_PUBLIC
+        || $workflow_sid == DS_CON_MARKED_FOR_DELETION))
+        {
+	  $readonly = TRUE;
+          unset($form['#submit']);
+          unset($form['actions']);
+
+          $form['no_edit_notice'] = array(
+            '#markup' => '<div class="pnl-redirect-notice">' . t('NOTICE: This record is currently under the ownership of the Data Management role and cannot be edited at this time.' . '</div>'),
+            '#weight' => -99,
+          );
+
+          foreach(element_children($form) as $key) {
+            $form[$key]['#disabled'] = TRUE;
+          }
+        }
+    }
+  }
+  else{
+    unset($form['field_dataset_workflow']);
+    //unset($form['field_use_this_dataset_as_a_temp']);
+    $form['#submit'][] = 'dataset_conditional_display_dataset_submit';
+  }
+
+  if(!empty($nid) && !$readonly){
+    $form['workflow_orig'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $workflow_sid,
+    );
+ 
+    $form['#attached']['js'][] = array(
+      'type' => 'file',
+      'data' => drupal_get_path('module', 'dataset_conditional_display') . '/js/dataset_conditional_display.js',
+    );
+ 
+    $form['workflow_warning'] = array(
+      '#markup' => '<div class="pnl-redirect-notice pnl-workflow-alert">You have not made any changes to the Workflow State for this dataset record. Please make sure that this is             intentional.</div>',
+      '#weight' => $form['field_email_contact_on_update']['#weight'] + 1,
+    );
+  }
+}
+
+function dataset_conditional_display_field_group_build_pre_render_alter(&$element) {
+  $params = drupal_get_query_parameters();
+  $mode = !empty($params['mode']) ? $params['mode'] : '';
+  if($mode != 'complete'){
+
+    if(!empty($element['#form_id']) && $element['#form_id'] == 'dataset_node_form'){
+        $workflow_sid = 0;
+        if(isset($element['field_dataset_workflow']['und'][0]['#default_value'])){
+            $workflow_sid = (int) $element['field_dataset_workflow']['und'][0]['#default_value'];
+        }
+
+        $fs_udi = 'group_udi_information';
+        $fs_metadata = 'group_metadata_information';
+        $fs_data = 'group_data_information';
+
+        if(empty($workflow_sid) || $workflow_sid <= DS_CON_NEW_REQUEST){
+            $element[$fs_metadata]['#attributes']['class'][] = 'collapsed';
+            $element[$fs_data]['#attributes']['class'][] = 'collapsed';
+        }
+
+        else if($workflow_sid < DS_CON_GRIIDC_UDI_ASSIGNED){
+            $element[$fs_metadata]['#attributes']['class'][] = 'collapsed';
+            $element[$fs_data]['#attributes']['class'][] = 'collapsed';
+        }
+
+        else if($workflow_sid < DS_CON_NEED_DATA_FILES){
+            //$element[$fs_udi]['#attributes']['class'][] = 'collapsed';
+            $element[$fs_data]['#attributes']['class'][] = 'collapsed';
+        }
+
+        else if($workflow_sid < DS_CON_DATA_FILES_SUPPLIED){
+            //$element[$fs_udi]['#attributes']['class'][] = 'collapsed';
+            $element[$fs_metadata]['#attributes']['class'][] = 'collapsed';
+        }
+    }
+  }
+}
+
+function dataset_conditional_display_permission(){
+  return array(
+    'override dataset edit' => array(
+      'title' => t('Override dataset edit restriction'),
+      'description' => t('If assigned, users with this permission will be able to edit/save datasets regardless of the workflow state.')
+    ),
+  );
+}

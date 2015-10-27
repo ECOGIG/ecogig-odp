@@ -1,0 +1,169 @@
+<?php
+
+if(!defined('DS_CON_DATA_FILES_SUPPLIED')){define('DS_CON_DATA_FILES_SUPPLIED', 15);}
+
+function dataset_record_type_init(){
+  drupal_add_css(drupal_get_path('module', 'dataset_record_type') . '/css/dataset_record_type.css', array('group' => CSS_THEME, 'every_page' => TRUE, 'weight' => 999));
+}
+
+function dataset_record_type_menu(){
+  $items = array();
+  $items['node/add/dataset/type'] = array(
+    'page callback' => 'dataset_record_type_choose_type_form',
+    'access arguments' => array('create dataset content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['node/%/type/update'] = array(
+    'title' => t('Record Type AJAX Update'),
+    'page callback' => 'dataset_record_type_update_ajax',
+    'page arguments' => array(1),
+    'access arguments' => array('edit own dataset content'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+function dataset_record_type_form_dataset_node_form_alter(&$form, &$form_state, $form_id){
+  //if($form_id === 'dataset_node_form'){
+    $nid = !empty($form['nid']['#value']) ? $form['nid']['#value'] : '';
+    if(empty($nid)){
+      $params = drupal_get_query_parameters();
+      $record_type = !empty($params['record_type']) ? $params['record_type'] : '';
+      $mode = !empty($params['mode']) ? $params['mode'] : '';
+
+      $uri = !empty($_SERVER['REQUEST_URI']) ? strtolower($_SERVER['REQUEST_URI']) : '';
+      $is_ajax = !empty($uri) ? strpos($uri, 'ajax') !== false : FALSE;
+
+      if(empty($record_type) && empty($mode) && empty($is_ajax)){
+        drupal_goto('/node/add/dataset/type');
+      }
+    }
+    else{
+      $vocab = taxonomy_vocabulary_machine_name_load('dataset_record_types');
+      $terms = taxonomy_get_tree($vocab->vid);
+      $default_record_type = !empty($terms) ? $terms[0]->tid : NULL;
+      $record_type = !empty($form['field_record_type'][LANGUAGE_NONE]['#default_value'][0]) ? $form['field_record_type'][LANGUAGE_NONE]['#default_value'][0] : $default_record_type;
+    }
+
+      if(empty($mode)){
+        $record_term = taxonomy_term_load($record_type);
+        $form['field_record_type'][LANGUAGE_NONE]['#default_value'] = array($record_type);
+
+        if(!empty($record_term)){
+          if(empty($nid)){
+            $page_title = 'Create ' . $record_term->name . ' Dataset';
+            drupal_set_title(t($page_title));
+          }
+          else{
+            $form['record_type_readonly'] = array(
+              '#markup' => '<div class="pnl-record-type">
+                <h3 class="pnl-header">Dataset Record Type</h3>
+                <div class="pnl-record-type-content">
+                  <span class="record-type-readonly">
+                    <h4 class="record-type-name">' . $record_term->name . '</h4>
+                    <div class="record-type-body">' . $record_term->description . '</div>
+                  </span>
+                </div>
+              </div>',
+            );
+          }
+
+          $validate = !empty($record_term->field_causes_validation[LANGUAGE_NONE][0]['value']) ? $record_term->field_causes_validation[LANGUAGE_NONE][0]['value'] : FALSE;
+          if(!$validate){
+            //unset($form['field_dataset_workflow']);
+            //unset($form['field_use_this_dataset_as_a_temp']);
+            //unset($form['submit_complete']);
+
+            //$form['#submit'][] = 'dataset_record_type_dataset_submit';
+
+            dataset_record_type_disable_validation($form);
+
+          }
+
+        }
+      }
+    //}
+
+  //}
+}
+
+function dataset_record_type_disable_validation(&$form){
+  $field_str = 'field_';
+  $field_len = strlen($field_str);
+
+  foreach($form as $field => $value){
+    if(substr($field, 0, $field_len) === $field_str){
+      if(!empty($form[$field]['und'])){
+       $form[$field]['und']['#required'] = FALSE;
+       $form[$field]['und'][0]['#required'] = FALSE;
+       $form[$field]['und'][0]['value']['#required'] = FALSE;
+      }
+    }
+  }
+}
+
+function dataset_record_type_dataset_submit(&$form, &$form_state){
+   //unset($form_state['values']['field_dataset_workflow']);
+   //$form_state['values']['field_dataset_workflow']['und'][0]['workflow']['workflow_sid'] = DS_CON_DATA_FILES_SUPPLIED;
+ }
+
+
+function dataset_record_type_choose_type_form(){
+  $form = array();
+
+  drupal_set_title(t('Choose Dataset Type'));
+
+  $form['wrapper'] = array(
+    '#prefix' => '<div id="pnl-type-wrapper">',
+    '#suffix' => '</div>',
+  );
+
+  $vocab = taxonomy_vocabulary_machine_name_load('dataset_record_types');
+  $terms = taxonomy_get_tree($vocab->vid);
+  foreach($terms as $term_obj){
+    $term = taxonomy_term_load($term_obj->tid);
+    $icon_class = !empty($term->field_icon_class[LANGUAGE_NONE][0]['value']) ? $term->field_icon_class[LANGUAGE_NONE][0]['value'] : '';
+    $icon = '';
+    if(!empty($icon_class)){
+      $icon = '<i class="' . $icon_class . '"></i>';
+    }
+    $term_elem = 'type_' . $term->tid;
+    $form['wrapper'][$term_elem] = array(
+      '#prefix' => '<span class="pnl-type-option type-' . $term->tid .'"><a href="/node/add/dataset?record_type=' . $term->tid . '">',
+      '#suffix' => '</a></span>',
+    );
+
+    $form['wrapper'][$term_elem]['icon'] = array(
+      '#markup' => $icon,
+    );
+
+    $form['wrapper'][$term_elem]['name'] = array(
+      '#markup' => '<span class="type-option-title">' . $term->name . '</span>',
+    );
+
+    if(!empty($term->description)){
+      $form['wrapper'][$term_elem]['body'] = array(
+        '#markup' => '<span class="type-option-body">' . $term->description . '</span>',
+      );
+    }
+  }
+
+  return $form;
+}
+
+function dataset_record_type_update_ajax($nid){
+  $record_type = !empty($_POST['type']) ? $_POST['type']: NULL;
+
+  if(!empty($nid) && !empty($record_type)){
+    $node = entity_load_single('node', $nid);
+    if(node_access('update', $node)){
+      $wrapper = entity_metadata_wrapper('node', $node);
+      $wrapper->field_record_type->set($record_type);
+      $wrapper->save();
+
+      $term = taxonomy_term_load($record_type);
+      drupal_json_output($term);
+    }
+  }
+}

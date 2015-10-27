@@ -1,0 +1,5 @@
+name = Dataset Record Type
+description = Interface for choosing a record type when creating Dataset nodes.
+package = Research Pipe
+core = 7.x
+version = 7.x-1.0

@@ -1,0 +1,4 @@
+name = Dataset Conditional Display
+description = Display Dataset fieldsets dependent on other fields.
+core = 7.x
+package = Ecogig

@@ -1,0 +1,160 @@
+<?php
+
+function revision_file_history_build_files_array(&$files, $file_field, $timestamp = NULL){
+  $uri = $file_field['uri'];
+  $filename = $file_field['filename'];
+
+  // Use the MD5 hash to only get a list of changed entries rather than a file entry for
+  // every single revision.
+  $hash = !empty($file_field['filehash']['md5']) ? $file_field['filehash']['md5'] : '';
+
+  if(!empty($hash)){
+    $file_field['timestamp'] = $timestamp;
+    $files[$hash] = $file_field;
+    /* array(
+      'filename' => $filename,
+      'uri' => $uri,
+      'timestamp' => $timestamp,
+    );*/
+  }
+}
+
+function revision_file_history_file_link($variables) {
+ $file = $variables['file'];
+  $icon_directory = $variables['icon_directory'];
+  $url = file_create_url($file->uri);
+  $icon = theme('file_icon', array('file' => $file, 'icon_directory' => $icon_directory));
+  $options = array(
+    'attributes' => array(
+       'type' => $file->filemime . '; length=' . $file->filesize,
+     ),
+  );
+  if (empty($file->description)) {
+    $link_text = $file->filename;
+  } else {
+    $link_text = $file->description;
+    $options['attributes']['title'] = check_plain($file->filename);
+  }
+  return '<span class="file"' . $icon . ' ' . l($link_text, $url, $options) . '</span>';
+}
+
+function revision_file_history_node_view($node, $view_mode, $langcode){
+
+  if($node->type == 'dataset'){
+    $revisions = node_revision_list($node);
+    $files = array();
+    $current_files = array();
+    if(!empty($node->field_file_upload['und'])){
+      foreach($node->field_file_upload['und'] as $index => $file_field){
+        revision_file_history_build_files_array($current_files, $file_field);
+      }
+    }
+
+    foreach($revisions as $vid=>$revision){
+      $timestamp = $revision->timestamp;
+      $old_node = node_load($node->nid, $vid);
+      if(!empty($old_node->field_file_upload['und'])){
+        foreach($old_node->field_file_upload['und'] as $file_field){
+          revision_file_history_build_files_array($files, $file_field, $timestamp);
+        }
+      }
+    }
+    foreach($current_files as $hash=>$file){
+      unset($files[$hash]);
+    }
+
+    if(count($files) > 0){
+      $weight = !empty($node->content['field_file_upload']['#weight']) ? intval($node->content['field_file_upload']['#weight']) + 1 : 0;
+      $node->content['file_history'] = array(
+        '#prefix' => '<div id="pnl-file-history">',
+        '#suffix' => '</div>',
+        '#weight' => $weight,
+      );
+
+      $node->content['file_history']['fieldset'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('File History'),
+        '#collapsible' => TRUE,
+        '#collapsed' => FALSE,
+      );
+
+      $node->content['file_history']['fieldset']['list'] = array(
+        '#prefix' => '<ul id="list-file-history">',
+        '#suffix' => '</ul>',
+      );
+
+      foreach($files as $hash=>$file){
+        $file_obj = file_load($file['fid']);
+        $node->content['file_history']['fieldset']['list']['file_' . $hash] = array(
+          '#markup' => '<li>' . ecogig_neat_file_link(array('file' => $file_obj, 'timestamp' => $file['timestamp'])) . '</li>',
+        );
+      }
+
+      $node->content['#group_children']['file_history'] = 'group_data_files';
+      $node->content['#groups']['group_data_files']->children[] = 'file_history';
+    }
+  }
+
+}
+
+
+
+function revision_file_history_node_view_alter(&$build){
+  /*
+  if($build['#bundle'] == 'dataset'){
+    $node = $build['#node'];
+    $revisions = node_revision_list($node);
+
+    $files = array();
+    $current_files = array();
+    foreach($node->field_file_upload['und'] as $file_field){
+      revision_file_history_build_files_array($current_files, $file_field);
+    }
+
+    foreach($revisions as $vid=>$revision){
+      $timestamp = $revision->timestamp;
+      $old_node = node_load($node->nid, $vid);
+      if(!empty($old_node->field_file_upload['und'])){
+        foreach($old_node->field_file_upload['und'] as $file_field){
+          revision_file_history_build_files_array($files, $file_field, $timestamp);
+        }
+      }
+    }
+    foreach($current_files as $hash=>$file){
+      unset($files[$hash]);
+    }
+
+    if(count($files) > 0){
+      $weight = !empty($build['field_file_upload']['#weight']) ? intval($build['field_file_upload']['#weight']) + 1 : 0;
+      $build['file_history'] = array(
+        '#prefix' => '<div id="pnl-file-history">',
+        '#suffix' => '</div>',
+        '#weight' => $weight,
+      );
+
+      $build['file_history']['fieldset'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('File History'),
+        '#collapsible' => TRUE,
+        '#collapsed' => FALSE,
+      );
+
+      $build['file_history']['fieldset']['list'] = array(
+        '#prefix' => '<ul id="list-file-history">',
+        '#suffix' => '</ul>',
+      );
+
+      foreach($files as $hash=>$file){
+        $build['file_history']['fieldset']['list']['file_' . $hash] = array(
+          '#markup' => '<li><a href="' . file_create_url($file['uri']) . '">' . $file['filename'] . '</a> <em>(' . format_date($file['timestamp']) . ')</em></li>',
+        );
+      }
+
+      $build['#group_children']['file_history'] = 'group_data_files';
+      $build['#groups']['group_data_files']->children[] = 'file_history';
+    }
+
+    dpm($build);
+
+  }*/
+}

@@ -1,0 +1,354 @@
+<?php
+
+function dataset_no_report_block_info(){
+  $blocks = array();
+  $blocks['no_report'] = array(
+    'info' => t('Quarterly Report - Nothing To Report'),
+  );
+
+  return $blocks;
+}
+
+function dataset_no_report_block_view($delta = ''){
+  $block = array();
+  if($delta == 'no_report'){
+    $block['content'] = drupal_get_form('dataset_no_report_form_nothing');
+  }
+
+  return $block;
+}
+
+
+
+function dataset_no_report_menu(){
+  $items = array();
+
+  $items['reports/quarterly-report/nothing-to-report'] = array(
+    'title' => t('Quarterly Reporting - Nothing to Report'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dataset_no_report_form_nothing'),
+    'access arguments' => array('create dataset content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+function dataset_no_report_form_nothing($form, $form_state){
+  global $user;
+  $uid = $user->uid;
+
+  $start_date = new DateTime();
+
+  $path_arr = split('/', current_path());
+  $date_range = $path_arr[count($path_arr) - 1];
+  $date_arr = preg_split("/--/", $date_range);
+  if(!empty($date_arr)){
+    $start_date_str = $date_arr[0];
+    if(is_numeric($start_date_str) && count($start_date_str == 8)){
+      $start_date = DateTime::createFromFormat('Ymd', $start_date_str);
+    }
+  }
+
+  if($start_date instanceof DateTime){
+    $current_year = $start_date->format('Y');
+    $current_month = $start_date->format('m');
+
+    $selected_quarter = 1;
+    if($current_month > 3){$selected_quarter = '2';}
+    if($current_month > 6){$selected_quarter = '3';}
+    if($current_month > 9){$selected_quarter = '4';}
+
+    $form['pnl_nothing_wrapper'] = array(
+      '#prefix' => '<div id="pnl-nothing">',
+      '#suffix' => '</div>',
+    );
+    $form['year'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $current_year,
+    );
+
+    $form['quarter'] = array(
+      '#type' => 'hidden',
+      '#default_value' => $selected_quarter,
+    );
+    if(dataset_no_report_can_mark_nothing($current_year, $selected_quarter)){
+      $message = t("You don't have any contributions listed for the selected quarter. Add contributions using the 'My Contributions' menu or click the 'Nothing to Report' button if you have nothing to report for the quarter.");
+      $form['pnl_nothing_wrapper']['pnl_nothing'] = array(
+        '#markup' => '<div id="pnl-nothing-description">' . $message . "</div>",
+      );
+
+      $form['pnl_nothing_wrapper']['btn_nothing'] = array(
+        '#type' => 'submit',
+        '#value' => t('Nothing to Report'),
+        '#attributes' => array('class' => array('btn-nothing')),
+      );
+    }
+    else{
+      $node = dataset_no_report_get_marked_node($uid, $selected_quarter, $current_year);
+      if(!empty($node)){
+        $message = t("You have marked 'Nothing to Report' for the selected year and quarter. Click the 'Undo' button to remove your 'Nothing to Report' record.");
+        $form['pnl_nothing_wrapper']['pnl_nothing'] = array(
+          '#markup' => '<div id="pnl-nothing-description">' . $message . "</div>",
+        );
+
+        $form['pnl_nothing_wrapper']['btn_nothing_undo'] = array(
+          '#type' => 'submit',
+          '#value' => t('Undo'),
+          '#attributes' => array('class' => array('btn-nothing-undo')),
+        );
+      }
+      else{
+        unset($form['pnl_nothing_wrapper']);
+      }
+    }
+  }
+
+  return $form;
+}
+
+
+
+function dataset_no_report_can_mark_nothing($year, $quarter){
+  global $user;
+  $uid = $user->uid;
+  $can_mark = TRUE;
+
+  $start_month = '01';
+  $end_month = '03';
+  $end_day = '31';
+
+  switch($quarter){
+    case 2:
+      $start_month = '04';
+      $end_month = '06';
+      $end_day = '30';
+    break;
+    case 3:
+      $start_month = '07';
+      $end_month = '09';
+      $end_day = '30';
+    break;
+    case 4:
+      $start_month = '10';
+      $end_month = '12';
+      $end_day = '31';
+    break;
+  }
+
+  $start_date = DateTime::createFromFormat('YmdHis', $year . $start_month . '01000000');
+  $end_date = DateTime::createFromFormat('YmdHis', $year . $end_month . $end_day . '000000');
+
+  $node = dataset_no_report_get_marked_node($uid, $quarter, $year);
+  if(!empty($node)){$can_mark = FALSE;}
+  if(dataset_no_report_has_workshops($uid, $start_date, $end_date)){$can_mark = FALSE;}
+  if(dataset_no_report_has_publications($uid, $start_date, $end_date)){$can_mark = FALSE;}
+  if(dataset_no_report_has_presentations($uid, $start_date, $end_date)){$can_mark = FALSE;}
+  if(dataset_no_report_has_participants($uid, $start_date, $end_date)){$can_mark = FALSE;}
+  if(dataset_no_report_has_students($uid, $start_date, $end_date)){$can_mark = FALSE;}
+  if(dataset_no_report_has_outreach($uid, $start_date, $end_date)){$can_mark = FALSE;}
+
+  return $can_mark;
+}
+
+function dataset_no_report_get_marked_node($uid, $quarter, $year){
+  $node = NULL;
+
+  $query = new EntityFieldQuery;
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'quarterly_report_no_activity_rec')
+    ->propertyCondition('uid', $uid)
+    ->fieldCondition('field_quarter', 'value', $quarter)
+    ->fieldCondition('field_year', 'value', $year . '%', 'like');
+
+  $results = $query->execute();
+  if(isset($results['node'])){
+    $node = current($results['node']);
+  }
+
+  return $node;
+}
+
+function dataset_no_report_has_workshops($uid, $start_date, $end_date){
+  $has_results = FALSE;
+
+  $query = new EntityFieldQuery;
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'workshop')
+    ->propertyCondition('uid', $uid)
+    ->fieldCondition('field_date_range', 'value', $start_date->format('Y-m-d H:i:s'), '>=')
+    ->fieldCondition('field_date_range', 'value2', $end_date->format('Y-m-d H:i:s'), '<=');
+
+  $results = $query->execute();
+  if(isset($results['node'])){
+    $has_results = TRUE;
+  }
+
+  return $has_results;
+}
+
+function dataset_no_report_has_publications($uid, $start_date, $end_date){
+  $has_results = FALSE;
+
+  $query = new EntityFieldQuery;
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'publications')
+    ->propertyCondition('uid', $uid)
+    ->fieldCondition('field_date_published', 'value', $start_date->format('Y-m-d H:i:s'), '>=')
+    ->fieldCondition('field_date_published', 'value', $end_date->format('Y-m-d H:i:s'), '<=');
+
+  $results = $query->execute();
+  if(isset($results['node'])){
+    $has_results = TRUE;
+  }
+
+  $query = new EntityFieldQuery;
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'publications')
+    ->propertyCondition('uid', $uid)
+    ->fieldCondition('field_submission_date', 'value', $start_date->format('Y-m-d H:i:s'), '>=')
+    ->fieldCondition('field_submission_date', 'value', $end_date->format('Y-m-d H:i:s'), '<=');
+
+  $results = $query->execute();
+  if(isset($results['node'])){
+    $has_results = TRUE;
+  }
+
+
+  return $has_results;
+}
+
+function dataset_no_report_has_presentations($uid, $start_date, $end_date){
+  $has_results = FALSE;
+
+  $query = new EntityFieldQuery;
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'presentation')
+    ->propertyCondition('uid', $uid)
+    ->fieldCondition('field_date_range', 'value', $start_date->format('Y-m-d H:i:s'), '>=')
+    ->fieldCondition('field_date_range', 'value2', $end_date->format('Y-m-d H:i:s'), '<=');
+
+  $results = $query->execute();
+  if(isset($results['node'])){
+    $has_results = TRUE;
+  }
+
+  return $has_results;
+}
+
+function dataset_no_report_has_participants($uid, $start_date, $end_date){
+  $has_results = FALSE;
+
+  $query = new EntityFieldQuery;
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'participant')
+    ->propertyCondition('uid', $uid);
+
+  $results = $query->execute();
+  if(isset($results['node'])){
+    $nodes = node_load_multiple(array_keys($results['node']));
+    foreach ($nodes as $node) {
+      if(!empty($node->field_participant_role['und'])){
+        foreach($node->field_participant_role['und'] as $entry){
+          $date = !empty($entry['date_from_timestamp']) ? DateTime::createFromFormat("U", $entry['date_from_timestamp']) : '';
+          if($date instanceof DateTime){
+            if($date >= $start_date && $date <= $end_date){
+              $has_results = TRUE;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return $has_results;
+}
+
+function dataset_no_report_has_students($uid, $start_date, $end_date){
+  $has_results = FALSE;
+
+  $query = new EntityFieldQuery;
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'students')
+    ->propertyCondition('uid', $uid);
+
+  $results = $query->execute();
+  if(isset($results['node'])){
+    $nodes = node_load_multiple(array_keys($results['node']));
+    foreach ($nodes as $node) {
+      if(!empty($node->field_student_type['und'])){
+        foreach($node->field_student_type['und'] as $entry){
+          $date = !empty($entry['date_from_timestamp']) ? DateTime::createFromFormat("U", $entry['date_from_timestamp']) : '';
+          if($date instanceof DateTime){
+            if($date >= $start_date && $date <= $end_date){
+              $has_results = TRUE;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return $has_results;
+}
+
+function dataset_no_report_has_outreach($uid, $start_date, $end_date){
+  $has_results = FALSE;
+
+  $query = new EntityFieldQuery;
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'public_outreach')
+    ->propertyCondition('uid', $uid)
+    ->fieldCondition('field_date_range', 'value', $start_date->format('Y-m-d H:i:s'), '>=')
+    ->fieldCondition('field_date_range', 'value2', $end_date->format('Y-m-d H:i:s'), '<=');
+
+  $results = $query->execute();
+  if(isset($results['node'])){
+    $has_results = TRUE;
+  }
+
+  return $has_results;
+}
+
+function dataset_no_report_form_nothing_submit(&$form, &$form_state){
+  if(!empty($form_state['values']['year']) && !empty($form_state['values']['quarter'])){
+    $year = $form_state['values']['year'];
+    $date = new DateTime($year . '-01-01 00:00:00');
+    $quarter = $form_state['values']['quarter'];
+
+    global $user;
+
+
+    if($form_state['clicked_button']['#id'] == 'edit-btn-nothing-undo'){
+      $node = dataset_no_report_get_marked_node($user->uid, $quarter, $year);
+      if(!empty($node)){
+        node_delete($node->nid);
+      }
+    }
+
+    else{
+      $values = array(
+        'type' => 'quarterly_report_no_activity_rec',
+        'uid' => $user->uid,
+        'status' => 1,
+      );
+
+      $entity = entity_create('node', $values);
+
+      $wrapper = entity_metadata_wrapper('node', $entity);
+
+      $wrapper->title->set($user->name . ' - ' . $year . ' Q' . $quarter);
+      $wrapper->field_quarter->set($quarter);
+
+      $entity->field_year['und'][0] = array(
+        'value' => date_format($date, 'Y-m-d H:i:s'),
+        'timezone' => 'UTC',
+        'timezone_db' => 'UTC',
+      );
+
+      $wrapper->save();
+    }
+
+
+  }
+}

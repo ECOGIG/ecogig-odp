@@ -1,0 +1,7 @@
+name = GRIIDC XML Export
+description = Export datasets in XML format used by GRIIDC.
+package = Ecogig
+core = 7.x
+version = 7.x-1.0
+dependencies[] = views_php
+dependencies[] = views_data_export

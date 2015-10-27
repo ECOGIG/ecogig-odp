@@ -1,0 +1,110 @@
+<?php
+
+function delete_override_form_alter(&$form, $form_state, $form_id){
+  // TODO: configurable at the node type level to enable/disable archive functionality
+  if ($form_id == 'publications_node_form') { //
+    $form['actions']['delete']['#submit'] = array('publications_node_form_delete_submit');
+  }
+}
+
+function publications_node_form_delete_submit($form, &$form_state) {
+  $destination = '';
+  if (isset($_GET['destination'])) {
+    $destination = drupal_get_destination();
+    unset($_GET['destination']);
+  }
+  $node = $form['#node'];
+
+  drupal_goto('node/'. $node->nid .'/archive', array('query' => $destination));
+}
+
+function delete_override_menu() {
+  $items = array();
+  $items['node/%node/archive'] = array(
+    'title' => 'Delete',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('delete_override_archive_confirm', 1),
+    'access arguments' => array('create dataset content'),
+    'type' => MENU_CALLBACK,
+    'weight' => 1,
+  );
+  return $items;
+}
+
+function delete_override_archive_confirm($form, &$form_state, $node){
+  $form = array();
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $node->nid,
+  );
+  return confirm_form($form,
+    t('Are you sure you want to delete %title ?', array('%title' => $node->title)),
+    isset($_GET['destination']) ? $_GET['destination'] : 'node/'. $node->nid,
+    t(''),
+    t('Delete'),
+    t('Cancel')
+  );
+
+  return $form;
+}
+
+function delete_override_archive_confirm_submit($form, &$form_state) {
+  $nid = !empty($form_state['values']['nid']) ? $form_state['values']['nid'] : '';
+  $dest = isset($_GET['destination']) ? $_GET['destination'] : 'node/'. $nid;
+
+  if(!empty($nid)){
+    $node = node_load($nid);
+    $workflow = delete_override_get_workflow('publications_workflow');
+    $state = delete_override_get_workflow_state($workflow, 'archived');
+
+    if(!empty($state)){
+      $node->field_publications_workflow[LANGUAGE_NONE][0]['value'] = $state;
+
+      global $user;
+      $original_user = $user;
+      $old_state = drupal_save_session();
+      drupal_save_session(FALSE);
+      $user = user_load(1);
+
+      node_save($node);
+
+      $user = $original_user;
+      drupal_save_session($old_state);
+
+      drupal_set_message(t('%title has been successfully deleted.', array('%title' => $node->title)));
+    }
+  }
+  drupal_goto($dest);
+}
+
+function delete_override_get_workflow($machine_name){
+  $wid = '';
+
+  $result = db_select('workflows')
+    ->fields('workflows', array('wid'))
+    ->condition('name', $machine_name, '=')
+    ->execute();
+
+  foreach ($result as $workflow) {
+    $wid = $workflow->wid;
+  }
+
+  return $wid;
+}
+
+function delete_override_get_workflow_state($wid, $machine_name){
+  $sid = '';
+
+  $result = db_select('workflow_states')
+    ->fields('workflow_states', array('sid'))
+    ->condition('wid', $wid, '=')
+    ->condition('name', $machine_name, '=')
+    ->execute();
+
+  foreach ($result as $state) {
+    $sid = $state->sid;
+  }
+
+  return $sid;
+}
+?>

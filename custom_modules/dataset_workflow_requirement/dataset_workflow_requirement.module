@@ -1,0 +1,30 @@
+<?php
+
+function dataset_workflow_requirement_node_validate(&$node, $form, $form_state){
+  if($node->nid && $node->type == 'dataset'){
+    $orig = node_load($node->nid);
+    if($orig->nid){
+      $orig_workflow = !empty($orig->field_dataset_workflow['und'][0]['value']) ? $orig->field_dataset_workflow['und'][0]['value'] : '';
+      $new_workflow = !empty($node->field_dataset_workflow['und'][0]['workflow']['workflow_sid']) ? $node->field_dataset_workflow['und'][0]['workflow']['workflow_sid'] : '';
+      if($orig_workflow == $new_workflow || empty($new_workflow)){
+	/*
+        if(!user_access('override workflow requirement')){
+          form_set_error('', t('You must update the Dataset Workflow status when updating a dataset.'));
+        }
+        else{
+	*/
+          drupal_set_message(t('The dataset was saved, but the Dataset Workflow status was not changed.'), 'warning');
+        //}
+      }
+    }
+  }
+}
+
+function dataset_workflow_requirement_permission(){
+  return array(
+    'override workflow requirement' => array(
+      'title' => t('Override workflow change requirement'),
+      'description' => t('If assigned, the "Workflow must be changed" notification is handled as a warning rather than an error that prevents saving.')
+    ),
+  );
+}

@@ -1,0 +1,5 @@
+name = Revision File History
+description = Provides a block for displaying the uploaded file history for a node.
+core = 7.x
+package = Ecogig
+dependencies[] = filehash

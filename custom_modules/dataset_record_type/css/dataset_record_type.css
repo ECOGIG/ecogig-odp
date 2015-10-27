@@ -1,0 +1,95 @@
+.pnl-record-type i {
+  font-size: 18px;
+}
+
+.pnl-record-type {
+  border: 5px solid #F0F8FF;
+  border-radius: 8px;
+  margin: 10px auto;
+  text-align: left;
+  width: 85%;
+}
+
+.pnl-record-type .pnl-header{
+  background: #F0F8FF;
+  padding: 0 5px 5px 5px;
+  display: block;
+}
+
+.pnl-record-type .record-type-name{
+  display: inline-block;
+}
+
+.pnl-record-type-content{
+  padding: 0px 10px;
+  margin: 10px 0px;
+}
+
+#pnl-type-wrapper{
+  text-align:center;
+  margin: 0 auto 30px auto;
+}
+
+.pnl-type-option {
+    border: 1px solid #dadada;
+    width: 25%;
+    display: inline-block;
+    margin: 0 1%;
+    max-height: 165px;
+    vertical-align: top;
+    padding: 40px 20px;
+    min-height: 165px;
+}
+
+.pnl-type-option:hover {
+    background-color: #F0F8FF;
+    cursor: pointer;
+}
+
+.pnl-type-option a{
+  color: inherit;
+}
+
+.pnl-type-option a:hover{
+  text-decoration: none;
+}
+
+.pnl-type-option i {
+    font-size: 65px;
+    display: block;
+    text-align: center;
+}
+
+.type-option-title {
+    font-size: 20px;
+    display: block;
+    text-align: center;
+    line-height: 20px;
+}
+
+.type-option-body {
+    padding: 10px;
+    display: block;
+    text-align: center;
+    font-size: 12px;
+}
+
+.light-blue{
+        color: #1BA7FF;
+}
+
+.dark-grey{
+        color: #777777;
+}
+.burnt-orange{
+        color: #B73E00;
+}
+
+#dataset-node-form #edit-field-record-type{
+  display:none;
+}
+
+#dataset-node-form .pnl-record-type{
+  width:60%;
+  margin:0;
+}
