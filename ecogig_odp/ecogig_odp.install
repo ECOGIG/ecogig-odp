@@ -1,0 +1,12 @@
+<?php
+
+function ecogig_odp_install(){
+  variable_set('ecogig_odp_init', true);
+  variable_set('chosen_minimum_multiple', 0);
+  variable_set('chosen_minimum_single', 0);
+}
+
+function ecogig_odp_uninstall(){
+  variable_del('ecogig_odp_init');
+  variable_del('uniqueness_type_profile');
+}

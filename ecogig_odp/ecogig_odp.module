@@ -5,3 +5,111 @@
  */
 
 include_once 'ecogig_odp.features.inc';
+
+function ecogig_odp_init(){
+  // One time setup of various pieces
+  $post_install = variable_get('ecogig_odp_init');
+  if($post_install){
+    ecogig_odp_init_dataset_workflow();
+    ecogig_odp_init_pub_workflow();
+    variable_set('ecogig_odp_init', false);
+    variable_set('uniqueness_type_profile', array(0 => 1));
+  }
+}
+
+function ecogig_odp_init_dataset_workflow(){
+  $field_info = field_info_field('field_dataset_workflow');
+
+  if(!empty($field_info)){
+    module_load_include('inc', 'ecogig_odp', 'includes/helpers');
+    $ds_workflow = ecogig_odp_get_workflow('dataset_workflows');
+    if(!empty($ds_workflow)){
+      $field_info['settings']['wid'] = $ds_workflow;
+      field_update_field($field_info);
+    }
+  }
+}
+
+function ecogig_odp_init_pub_workflow(){
+  $field_info = field_info_field('field_publications_workflow');
+
+  if(!empty($field_info)){
+    module_load_include('inc', 'ecogig_odp', 'includes/helpers');
+    $pub_workflow = ecogig_odp_get_workflow('publications_workflow');
+    if(!empty($pub_workflow)){
+      $field_info['settings']['wid'] = $pub_workflow;
+      field_update_field($field_info);
+    }
+  }
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function ecogig_odp_views_api($module = NULL, $api = NULL) {
+  return array(
+    'api' => '3.0',
+    'template path' => drupal_get_path('module', 'ecogig_odp') . '/templates',
+    'path' => drupal_get_path('module', 'ecogig_odp') . '/views',
+  );
+}
+
+function ecogig_odp_views_default_views(){
+  $files = file_scan_directory(drupal_get_path('module', 'ecogig_odp'). '/views', '/.view/');
+  foreach ($files as $filepath => $file) {
+    require $filepath;
+    if (isset($view)) {
+      $views[$view->name] = $view;
+    }
+  }
+  return $views;
+}
+
+function ecogig_odp_block_info(){
+  $blocks = array();
+
+  $blocks['ticket_buttons'] = array(
+    'info' => t('Buttons to submit bug reports and feature requests.'),
+  );
+
+  $blocks['create_dataset_buttons'] = array(
+    'info' => t('Buttons to create new datasets.'),
+  );
+
+  return $blocks;
+}
+
+function ecogig_odp_block_view($delta = ''){
+  $block = array();
+
+  if($delta == 'ticket_buttons'){
+    $content = ecogig_odp_blocks_get_ticket_buttons();
+    $block['content'] = drupal_render($content);
+  }
+
+  if($delta == 'create_dataset_buttons'){
+    $content = ecogig_odp_blocks_get_create_dataset_buttons();
+    $block['content'] = drupal_render($content);
+  }
+
+  return $block;
+}
+
+function ecogig_odp_blocks_get_ticket_buttons(){
+  $content = array(
+    '#markup' => '<a class="btn btn-contact btn-report-bug" href="/contact/report-bug">Report a Bug</a>
+                  &nbsp;&nbsp;
+                  <a class="btn btn-contact btn-suggest-feature" href="/contact/suggest-feature">Suggest a Feature</a>',
+  );
+
+  return $content;
+}
+
+function ecogig_odp_blocks_get_create_dataset_buttons(){
+  $content = array(
+    '#markup' => '<a class="btn btn-create-dataset btn-create-dataset-new" href="/node/add/dataset?mode=default">Request a UDI</a></p>
+                  <a class="btn btn-create-dataset btn-create-dataset-complete" href="/node/add/dataset?mode=complete">Add a Complete Dataset</a>',
+  );
+
+  return $content;
+}
