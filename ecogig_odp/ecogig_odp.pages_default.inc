@@ -1413,7 +1413,7 @@ function ecogig_odp_default_page_manager_pages() {
     $pane->pid = 'new-9e384785-5480-41a9-a3b6-1c8ee151aaea';
     $pane->panel = 'right';
     $pane->type = 'block';
-    $pane->subtype = 'block-130';
+    $pane->subtype = 'ecogig_odp-ticket_buttons';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
@@ -1436,7 +1436,7 @@ function ecogig_odp_default_page_manager_pages() {
     $pane->pid = 'new-03dd205c-c213-4db1-946c-569f68fefcb2';
     $pane->panel = 'right';
     $pane->type = 'block';
-    $pane->subtype = 'block-131';
+    $pane->subtype = 'ecogig_odp-create_dataset_buttons';
     $pane->shown = TRUE;
     $pane->access = array();
     $pane->configuration = array(
