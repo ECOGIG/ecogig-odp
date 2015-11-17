@@ -17,24 +17,24 @@ function ecogig_odp_default_Workflow() {
     "options" : [],
     "states" : {
       "6" : {"sid":"6","wid":"2","weight":"-50","sysid":"1","state":"(creation)","status":"1","name":"(creation)"},
-      "7" : {"sid":"7","wid":"2","weight":"-19","sysid":"0","state":"New Request - Need GRIIDC UDI","status":"1","name":"new_request_needs_griidc_udi"},
-      "9" : {"sid":"9","wid":"2","weight":"-18","sysid":"0","state":"GRIIDC UDI Assigned - Need METADATA","status":"1","name":"griidc_udi_assigned_need_metadata"},
+      "7" : {"sid":"7","wid":"2","weight":"-19","sysid":"0","state":"New Request - Need GRIIDC UDI","status":"1","name":"new_request_needs_repo_udi"},
+      "9" : {"sid":"9","wid":"2","weight":"-18","sysid":"0","state":"GRIIDC UDI Assigned - Need METADATA","status":"1","name":"repo_udi_assigned_need_metadata"},
       "11" : {"sid":"11","wid":"2","weight":"-17","sysid":"0","state":"METADATA Supplied","status":"1","name":"metadata_supplied"},
       "13" : {"sid":"13","wid":"2","weight":"-16","sysid":"0","state":"METADATA Return","status":"1","name":"metadata_return"},
-      "20" : {"sid":"20","wid":"2","weight":"-15","sysid":"0","state":"METADATA Approved","status":"1","name":"metadata_submitted_to_griidc"},
+      "20" : {"sid":"20","wid":"2","weight":"-15","sysid":"0","state":"METADATA Approved","status":"1","name":"metadata_submitted_to_repo"},
       "14" : {"sid":"14","wid":"2","weight":"-14","sysid":"0","state":"Need DATA Files","status":"1","name":"need_data_files"},
       "15" : {"sid":"15","wid":"2","weight":"-13","sysid":"0","state":"DATA Files Supplied","status":"1","name":"data_files_supplied"},
       "24" : {"sid":"24","wid":"2","weight":"-12","sysid":"0","state":"Need DATA File Review and Approval ","status":"1","name":"need_data_file_review_and_approval_"},
       "25" : {"sid":"25","wid":"2","weight":"-11","sysid":"0","state":"DATA Files Approved by PI","status":"1","name":"data_files_approved_by_pi"},
       "16" : {"sid":"16","wid":"2","weight":"-10","sysid":"0","state":"DATA Files Return","status":"1","name":"data_files_return"},
       "22" : {"sid":"22","wid":"2","weight":"-9","sysid":"0","state":"DATA Files Approved","status":"1","name":"data_files_approved"},
-      "21" : {"sid":"21","wid":"2","weight":"-8","sysid":"0","state":"Submitted to GRIIDC","status":"1","name":"data_submitted_to_griidc"},
+      "21" : {"sid":"21","wid":"2","weight":"-8","sysid":"0","state":"Submitted to GRIIDC","status":"1","name":"data_submitted_to_repo"},
       "17" : {"sid":"17","wid":"2","weight":"-7","sysid":"0","state":"DATA Listed as PRIVATE","status":"1","name":"data_listed_as_private"},
       "23" : {"sid":"23","wid":"2","weight":"-6","sysid":"0","state":"List DATA as PUBLIC","status":"1","name":"list_data_public"},
       "18" : {"sid":"18","wid":"2","weight":"-5","sysid":"0","state":"DATA Listed as PUBLIC","status":"1","name":"list_data_as_public"},
       "19" : {"sid":"19","wid":"2","weight":"-4","sysid":"0","state":"MARKED FOR DELETION","status":"1","name":"marked_for_deletion"},
       "10" : {"sid":"10","wid":"2","weight":"-3","sysid":"0","state":"Need METADATA","status":"0","name":"need_metadata_form_info_from_pi"},
-      "12" : {"sid":"12","wid":"2","weight":"-2","sysid":"0","state":"Submit METADATA to GRIIDC","status":"0","name":"submit_metadata_to_griidc"},
+      "12" : {"sid":"12","wid":"2","weight":"-2","sysid":"0","state":"Submit METADATA to GRIIDC","status":"0","name":"submit_metadata_to_repo"},
       "8" : {"sid":"8","wid":"2","weight":"-1","sysid":"0","state":"Need UDI Form Info from PI","status":"0","name":"need_udi_form_info_from_pi"}
     },
     "transitions" : {
@@ -413,13 +413,6 @@ function ecogig_odp_ctools_plugin_api($module = NULL, $api = NULL) {
 }
 
 /**
- * Implements hook_views_api().
- */
-function ecogig_odp_views_api($module = NULL, $api = NULL) {
-  return array("api" => "3.0");
-}
-
-/**
  * Implements hook_node_info().
  */
 function ecogig_odp_node_info() {
@@ -467,7 +460,7 @@ function ecogig_odp_node_info() {
     'publications' => array(
       'name' => t('Contribution - Publication'),
       'base' => 'node_content',
-      'description' => t('Published, Peer-reviewed bibliography: (i.e. journal articles, books, book chapters). Please enter only published or accepted peer-reviewed items, this includes items "in press" or online early editions.  
+      'description' => t('Published, Peer-reviewed bibliography: (i.e. journal articles, books, book chapters). Please enter only published or accepted peer-reviewed items, this includes items "in press" or online early editions.
 All other publication types (e.g., Newspaper, magazine and trade journal articles, technical reports and web publications) should be reported as Public Outreach.'),
       'has_title' => '1',
       'title_label' => t('Title'),
