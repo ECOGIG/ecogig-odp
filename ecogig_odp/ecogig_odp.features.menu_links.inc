@@ -391,7 +391,7 @@ function ecogig_odp_menu_default_menu_links() {
     'expanded' => 0,
     'weight' => -50,
     'customized' => 1,
-    'parent_identifier' => 'menu-contributions-and-data_:q1-report',
+    'parent_identifier' => 'menu-contributions-and-data_reports:reports/quarterly-report',
   );
   // Exported menu link: menu-contributions-and-data_dataset-progress-report:reports/dataset-progress-report
   $menu_links['menu-contributions-and-data_dataset-progress-report:reports/dataset-progress-report'] = array(
@@ -816,7 +816,7 @@ function ecogig_odp_menu_default_menu_links() {
     'expanded' => 0,
     'weight' => 0,
     'customized' => 1,
-    'parent_identifier' => 'menu-contributions-and-data_:quarterly-report',
+    'parent_identifier' => 'menu-contributions-and-data_reports:reports/quarterly-report',
   );
   // Exported menu link: menu-contributions-and-data_reports:reports/quarterly-report
   $menu_links['menu-contributions-and-data_reports:reports/quarterly-report'] = array(
