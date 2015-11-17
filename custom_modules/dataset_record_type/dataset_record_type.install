@@ -96,7 +96,7 @@ function dataset_record_type_install(){
         'weight' => 4,
       ),
     );
-    field_create_field($instance);
+    field_create_instance($instance);
   }
 
   $field_name = 'field_term_css_classes';
