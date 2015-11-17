@@ -633,7 +633,7 @@ function ecogig_odp_field_default_field_bases() {
 20 | METADATA Approved
 14 | Need DATA Files
 15 | DATA Files Supplied
-24 | Need DATA File Review and Approval 
+24 | Need DATA File Review and Approval
 25 | DATA Files Approved by PI
 16 | DATA Files Return
 22 | DATA Files Approved
@@ -2908,6 +2908,47 @@ function ecogig_odp_field_default_field_bases() {
     'translatable' => 0,
     'type' => 'datetime',
   );
+
+
+  $field_bases['field_my_author_profile'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_my_author_profile',
+    'field_permissions' => array(
+      'type' => 0,
+    ),
+    'indexes' => array(
+      'target_id' => array(
+        0 => 'target_id',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'entityreference',
+    'settings' => array(
+      'handler' => 'base',
+      'handler_settings' => array(
+        'behaviors' => array(
+          'views-select-list' => array(
+            'status' => 0,
+          ),
+        ),
+        'sort' => array(
+          'type' => 'none',
+        ),
+        'target_bundles' => array(
+          'profile' => 'profile',
+        ),
+      ),
+      'profile2_private' => FALSE,
+      'target_type' => 'node',
+    ),
+    'translatable' => 0,
+    'type' => 'entityreference',
+  );
+
+
 
   return $field_bases;
 }

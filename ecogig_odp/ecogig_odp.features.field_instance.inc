@@ -7256,6 +7256,126 @@ Example: "xls"',
     ),
   );
 
+  $field_instances['user-user-field_my_author_profile'] = array(
+      'bundle' => 'user',
+      'default_value' => array(),
+      'deleted' => 0,
+      'description' => '',
+      'display' => array(
+        'default' => array(
+          'label' => 'above',
+          'module' => 'entityreference',
+          'settings' => array(
+            'empty_fields_emptyfieldtext_empty_text' => '',
+            'empty_fields_handler' => '',
+            'link' => FALSE,
+          ),
+          'type' => 'entityreference_label',
+          'weight' => 0,
+        ),
+      ),
+      'entity_type' => 'user',
+      'field_name' => 'field_my_author_profile',
+      'label' => 'My Author Profile',
+      'required' => 0,
+      'settings' => array(
+        'required_by_role' => array(),
+        'user_register_form' => 0,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'inline_entity_form',
+        'settings' => array(
+          'fields' => array(),
+          'match_operator' => 'CONTAINS',
+          'path' => '',
+          'size' => 60,
+          'type_settings' => array(
+            'allow_existing' => FALSE,
+            'delete_references' => 0,
+            'match_operator' => 'CONTAINS',
+          ),
+        ),
+        'type' => 'inline_entity_form_single',
+        'weight' => 1,
+      ),
+    );
+
+    $field_instances['user-user-field_first_name'] = array(
+      'bundle' => 'user',
+      'default_value' => NULL,
+      'deleted' => 0,
+      'description' => '',
+      'display' => array(
+        'default' => array(
+          'label' => 'above',
+          'module' => 'text',
+          'settings' => array(
+            'empty_fields_emptyfieldtext_empty_text' => '',
+            'empty_fields_handler' => '',
+          ),
+          'type' => 'text_default',
+          'weight' => 1,
+        ),
+      ),
+      'entity_type' => 'user',
+      'field_name' => 'field_first_name',
+      'label' => 'First Name',
+      'required' => 1,
+      'settings' => array(
+        'required_by_role' => array(),
+        'text_processing' => 0,
+        'user_register_form' => 1,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'text',
+        'settings' => array(
+          'size' => 60,
+        ),
+        'type' => 'text_textfield',
+        'weight' => 6,
+      ),
+    );
+
+    // Exported field_instance: 'user-user-field_last_name'
+    $field_instances['user-user-field_last_name'] = array(
+      'bundle' => 'user',
+      'default_value' => NULL,
+      'deleted' => 0,
+      'description' => '',
+      'display' => array(
+        'default' => array(
+          'label' => 'above',
+          'module' => 'text',
+          'settings' => array(
+            'empty_fields_emptyfieldtext_empty_text' => '',
+            'empty_fields_handler' => '',
+          ),
+          'type' => 'text_default',
+          'weight' => 2,
+        ),
+      ),
+      'entity_type' => 'user',
+      'field_name' => 'field_last_name',
+      'label' => 'Last Name',
+      'required' => 1,
+      'settings' => array(
+        'required_by_role' => array(),
+        'text_processing' => 0,
+        'user_register_form' => 1,
+      ),
+      'widget' => array(
+        'active' => 1,
+        'module' => 'text',
+        'settings' => array(
+          'size' => 60,
+        ),
+        'type' => 'text_textfield',
+        'weight' => 7,
+      ),
+    );
+
   // Translatables
   // Included for use with string extractors like potx.
   t('(No abbreviations please)');
