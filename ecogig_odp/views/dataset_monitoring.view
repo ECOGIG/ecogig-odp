@@ -1,0 +1,341 @@
+<?php
+$view = new view();
+$view->name = 'dataset_monitoring';
+$view->description = '';
+$view->tag = 'default';
+$view->base_table = 'node';
+$view->human_name = 'Dataset Monitoring';
+$view->core = 7;
+$view->api_version = '3.0';
+$view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+/* Display: Master */
+$handler = $view->new_display('default', 'Master', 'default');
+$handler->display->display_options['title'] = 'Dataset Monitoring';
+$handler->display->display_options['use_more_always'] = FALSE;
+$handler->display->display_options['access']['type'] = 'perm';
+$handler->display->display_options['cache']['type'] = 'none';
+$handler->display->display_options['query']['type'] = 'views_query';
+$handler->display->display_options['exposed_form']['type'] = 'basic';
+$handler->display->display_options['pager']['type'] = 'none';
+$handler->display->display_options['pager']['options']['offset'] = '0';
+$handler->display->display_options['style_plugin'] = 'table';
+$handler->display->display_options['style_options']['grouping'] = array(
+  0 => array(
+    'field' => 'field_task',
+    'rendered' => 1,
+    'rendered_strip' => 0,
+  ),
+);
+$handler->display->display_options['style_options']['columns'] = array(
+  'uid' => 'uid',
+  'uid_1' => 'uid_1',
+  'field_task' => 'field_task',
+  'field_repo_udi' => 'field_repo_udi',
+  'title' => 'title',
+  'field_dataset_contact_person' => 'field_dataset_contact_person',
+  'sid' => 'sid',
+);
+$handler->display->display_options['style_options']['default'] = 'field_repo_udi';
+$handler->display->display_options['style_options']['info'] = array(
+  'uid' => array(
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'uid_1' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'field_task' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'field_repo_udi' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'title' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'field_dataset_contact_person' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'sid' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+);
+/* Relationship: Content: Taxonomy terms on node */
+$handler->display->display_options['relationships']['term_node_tid']['id'] = 'term_node_tid';
+$handler->display->display_options['relationships']['term_node_tid']['table'] = 'node';
+$handler->display->display_options['relationships']['term_node_tid']['field'] = 'term_node_tid';
+$handler->display->display_options['relationships']['term_node_tid']['label'] = 'term - ECOGIG tasks';
+$handler->display->display_options['relationships']['term_node_tid']['vocabularies'] = array(
+  'task_title' => 'task_title',
+  'blog_categories' => 0,
+  'blog_tags' => 0,
+  'wp_blog_tags' => 0,
+  'blog_title' => 0,
+  'contact_person_roles' => 0,
+  'contribution_keywords' => 0,
+  'course_levels' => 0,
+  'dataset_place_keywords' => 0,
+  'dataset_theme_keywords' => 0,
+  'dataset_topic_category_keywords' => 0,
+  'data_theme' => 0,
+  'libraries' => 0,
+  'news_topics' => 0,
+  'paper_tags' => 0,
+  'personnel' => 0,
+  'primary_nav' => 0,
+  'research_cruise' => 0,
+  'status' => 0,
+  'tags' => 0,
+);
+/* Relationship: Content: Author */
+$handler->display->display_options['relationships']['uid']['id'] = 'uid';
+$handler->display->display_options['relationships']['uid']['table'] = 'node';
+$handler->display->display_options['relationships']['uid']['field'] = 'uid';
+/* Relationship: Entity Reference: Referenced Entity */
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['id'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['table'] = 'field_data_field_dataset_contact_person';
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['field'] = 'field_dataset_contact_person_target_id';
+/* Field: Content: Author uid */
+$handler->display->display_options['fields']['uid']['id'] = 'uid';
+$handler->display->display_options['fields']['uid']['table'] = 'node';
+$handler->display->display_options['fields']['uid']['field'] = 'uid';
+$handler->display->display_options['fields']['uid']['exclude'] = TRUE;
+/* Field: User: Uid */
+$handler->display->display_options['fields']['uid_1']['id'] = 'uid_1';
+$handler->display->display_options['fields']['uid_1']['table'] = 'users';
+$handler->display->display_options['fields']['uid_1']['field'] = 'uid';
+$handler->display->display_options['fields']['uid_1']['relationship'] = 'reverse_field_my_author_profile_user';
+$handler->display->display_options['fields']['uid_1']['label'] = 'Contact Person UID';
+$handler->display->display_options['fields']['uid_1']['exclude'] = TRUE;
+/* Field: Content: Task */
+$handler->display->display_options['fields']['field_task']['id'] = 'field_task';
+$handler->display->display_options['fields']['field_task']['table'] = 'field_data_field_task';
+$handler->display->display_options['fields']['field_task']['field'] = 'field_task';
+$handler->display->display_options['fields']['field_task']['label'] = '';
+$handler->display->display_options['fields']['field_task']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_task']['element_label_colon'] = FALSE;
+/* Field: Content: repo UDI */
+$handler->display->display_options['fields']['field_repo_udi']['id'] = 'field_repo_udi';
+$handler->display->display_options['fields']['field_repo_udi']['table'] = 'field_data_field_repo_udi';
+$handler->display->display_options['fields']['field_repo_udi']['field'] = 'field_repo_udi';
+$handler->display->display_options['fields']['field_repo_udi']['element_label_colon'] = FALSE;
+/* Field: Content: Title */
+$handler->display->display_options['fields']['title']['id'] = 'title';
+$handler->display->display_options['fields']['title']['table'] = 'node';
+$handler->display->display_options['fields']['title']['field'] = 'title';
+$handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
+$handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+/* Field: Content: Dataset Contact Person */
+$handler->display->display_options['fields']['field_dataset_contact_person']['id'] = 'field_dataset_contact_person';
+$handler->display->display_options['fields']['field_dataset_contact_person']['table'] = 'field_data_field_dataset_contact_person';
+$handler->display->display_options['fields']['field_dataset_contact_person']['field'] = 'field_dataset_contact_person';
+$handler->display->display_options['fields']['field_dataset_contact_person']['label'] = 'Dataset Contact';
+$handler->display->display_options['fields']['field_dataset_contact_person']['alter']['alter_text'] = TRUE;
+$handler->display->display_options['fields']['field_dataset_contact_person']['alter']['text'] = '[field_dataset_contact_person]';
+$handler->display->display_options['fields']['field_dataset_contact_person']['alter']['make_link'] = TRUE;
+$handler->display->display_options['fields']['field_dataset_contact_person']['alter']['path'] = '/contributions_data/my-datasets/[uid_1]';
+$handler->display->display_options['fields']['field_dataset_contact_person']['settings'] = array(
+  'link' => 0,
+);
+/* Field: Workflow current: New state name */
+$handler->display->display_options['fields']['sid']['id'] = 'sid';
+$handler->display->display_options['fields']['sid']['table'] = 'workflow_node_current';
+$handler->display->display_options['fields']['sid']['field'] = 'sid';
+$handler->display->display_options['fields']['sid']['label'] = 'Workflow State';
+/* Sort criterion: Taxonomy term: Weight */
+$handler->display->display_options['sorts']['weight']['id'] = 'weight';
+$handler->display->display_options['sorts']['weight']['table'] = 'taxonomy_term_data';
+$handler->display->display_options['sorts']['weight']['field'] = 'weight';
+$handler->display->display_options['sorts']['weight']['relationship'] = 'term_node_tid';
+/* Sort criterion: Content: Post date */
+$handler->display->display_options['sorts']['created']['id'] = 'created';
+$handler->display->display_options['sorts']['created']['table'] = 'node';
+$handler->display->display_options['sorts']['created']['field'] = 'created';
+$handler->display->display_options['sorts']['created']['order'] = 'DESC';
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'node';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 1;
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'dataset' => 'dataset',
+);
+$handler->display->display_options['filters']['type']['group'] = 1;
+/* Filter criterion: Content: Use this Dataset as a Template (field_use_this_dataset_as_a_temp) */
+$handler->display->display_options['filters']['field_use_this_dataset_as_a_temp_value']['id'] = 'field_use_this_dataset_as_a_temp_value';
+$handler->display->display_options['filters']['field_use_this_dataset_as_a_temp_value']['table'] = 'field_data_field_use_this_dataset_as_a_temp';
+$handler->display->display_options['filters']['field_use_this_dataset_as_a_temp_value']['field'] = 'field_use_this_dataset_as_a_temp_value';
+$handler->display->display_options['filters']['field_use_this_dataset_as_a_temp_value']['operator'] = 'not';
+$handler->display->display_options['filters']['field_use_this_dataset_as_a_temp_value']['value'] = array(
+  1 => '1',
+);
+$handler->display->display_options['filters']['field_use_this_dataset_as_a_temp_value']['group'] = 1;
+/* Filter criterion: Content: Task (field_task) */
+$handler->display->display_options['filters']['field_task_tid']['id'] = 'field_task_tid';
+$handler->display->display_options['filters']['field_task_tid']['table'] = 'field_data_field_task';
+$handler->display->display_options['filters']['field_task_tid']['field'] = 'field_task_tid';
+$handler->display->display_options['filters']['field_task_tid']['group'] = 1;
+$handler->display->display_options['filters']['field_task_tid']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_task_tid']['expose']['operator_id'] = 'field_task_tid_op';
+$handler->display->display_options['filters']['field_task_tid']['expose']['label'] = 'Task';
+$handler->display->display_options['filters']['field_task_tid']['expose']['operator'] = 'field_task_tid_op';
+$handler->display->display_options['filters']['field_task_tid']['expose']['identifier'] = 'field_task_tid';
+$handler->display->display_options['filters']['field_task_tid']['expose']['multiple'] = TRUE;
+$handler->display->display_options['filters']['field_task_tid']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_task_tid']['type'] = 'select';
+$handler->display->display_options['filters']['field_task_tid']['vocabulary'] = 'task_title';
+$handler->display->display_options['filters']['field_task_tid']['hierarchy'] = 1;
+/* Filter criterion: Workflow current: New state name */
+$handler->display->display_options['filters']['sid']['id'] = 'sid';
+$handler->display->display_options['filters']['sid']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['sid']['field'] = 'sid';
+$handler->display->display_options['filters']['sid']['group'] = 1;
+$handler->display->display_options['filters']['sid']['exposed'] = TRUE;
+$handler->display->display_options['filters']['sid']['expose']['operator_id'] = 'sid_op';
+$handler->display->display_options['filters']['sid']['expose']['label'] = 'Workflow State';
+$handler->display->display_options['filters']['sid']['expose']['operator'] = 'sid_op';
+$handler->display->display_options['filters']['sid']['expose']['identifier'] = 'sid';
+$handler->display->display_options['filters']['sid']['expose']['multiple'] = TRUE;
+$handler->display->display_options['filters']['sid']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['sid']['expose']['workflow_reduce_wid'] = '2';
+/* Filter criterion: Content: Dataset Contact Person (field_dataset_contact_person) */
+$handler->display->display_options['filters']['field_dataset_contact_person_target_id']['id'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['filters']['field_dataset_contact_person_target_id']['table'] = 'field_data_field_dataset_contact_person';
+$handler->display->display_options['filters']['field_dataset_contact_person_target_id']['field'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['filters']['field_dataset_contact_person_target_id']['group'] = 1;
+$handler->display->display_options['filters']['field_dataset_contact_person_target_id']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_dataset_contact_person_target_id']['expose']['operator_id'] = 'field_dataset_contact_person_target_id_op';
+$handler->display->display_options['filters']['field_dataset_contact_person_target_id']['expose']['label'] = 'Dataset Contact';
+$handler->display->display_options['filters']['field_dataset_contact_person_target_id']['expose']['operator'] = 'field_dataset_contact_person_target_id_op';
+$handler->display->display_options['filters']['field_dataset_contact_person_target_id']['expose']['identifier'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['filters']['field_dataset_contact_person_target_id']['expose']['multiple'] = TRUE;
+$handler->display->display_options['filters']['field_dataset_contact_person_target_id']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Record Type (field_record_type) */
+$handler->display->display_options['filters']['field_record_type_tid']['id'] = 'field_record_type_tid';
+$handler->display->display_options['filters']['field_record_type_tid']['table'] = 'field_data_field_record_type';
+$handler->display->display_options['filters']['field_record_type_tid']['field'] = 'field_record_type_tid';
+$handler->display->display_options['filters']['field_record_type_tid']['operator'] = 'not';
+$handler->display->display_options['filters']['field_record_type_tid']['value'] = array(
+  1075 => '1075',
+);
+$handler->display->display_options['filters']['field_record_type_tid']['type'] = 'select';
+$handler->display->display_options['filters']['field_record_type_tid']['vocabulary'] = 'dataset_record_types';
+
+/* Display: Page */
+$handler = $view->new_display('page', 'Page', 'page');
+$handler->display->display_options['defaults']['relationships'] = FALSE;
+/* Relationship: Content: Taxonomy terms on node */
+$handler->display->display_options['relationships']['term_node_tid']['id'] = 'term_node_tid';
+$handler->display->display_options['relationships']['term_node_tid']['table'] = 'node';
+$handler->display->display_options['relationships']['term_node_tid']['field'] = 'term_node_tid';
+$handler->display->display_options['relationships']['term_node_tid']['label'] = 'term - ECOGIG tasks';
+$handler->display->display_options['relationships']['term_node_tid']['vocabularies'] = array(
+  'task_title' => 'task_title',
+  'blog_categories' => 0,
+  'blog_tags' => 0,
+  'wp_blog_tags' => 0,
+  'blog_title' => 0,
+  'contact_person_roles' => 0,
+  'contribution_keywords' => 0,
+  'course_levels' => 0,
+  'dataset_place_keywords' => 0,
+  'dataset_theme_keywords' => 0,
+  'dataset_topic_category_keywords' => 0,
+  'data_theme' => 0,
+  'libraries' => 0,
+  'news_topics' => 0,
+  'paper_tags' => 0,
+  'personnel' => 0,
+  'primary_nav' => 0,
+  'research_cruise' => 0,
+  'status' => 0,
+  'tags' => 0,
+);
+/* Relationship: Content: Author */
+$handler->display->display_options['relationships']['uid']['id'] = 'uid';
+$handler->display->display_options['relationships']['uid']['table'] = 'node';
+$handler->display->display_options['relationships']['uid']['field'] = 'uid';
+/* Relationship: Dataset Contact Person Profile */
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['id'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['table'] = 'field_data_field_dataset_contact_person';
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['field'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['ui_name'] = 'Dataset Contact Person Profile';
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['label'] = 'Dataset Contact Person Profile';
+/* Relationship: User account for Dataset Contact Person */
+$handler->display->display_options['relationships']['reverse_field_my_author_profile_user']['id'] = 'reverse_field_my_author_profile_user';
+$handler->display->display_options['relationships']['reverse_field_my_author_profile_user']['table'] = 'node';
+$handler->display->display_options['relationships']['reverse_field_my_author_profile_user']['field'] = 'reverse_field_my_author_profile_user';
+$handler->display->display_options['relationships']['reverse_field_my_author_profile_user']['relationship'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['relationships']['reverse_field_my_author_profile_user']['ui_name'] = 'User account for Dataset Contact Person';
+$handler->display->display_options['relationships']['reverse_field_my_author_profile_user']['label'] = 'User account for Dataset Contact Person';
+$handler->display->display_options['path'] = 'dataset-monitoring';
+$handler->display->display_options['menu']['title'] = 'Dataset Monitoring';
+$handler->display->display_options['menu']['weight'] = '0';
+$handler->display->display_options['menu']['name'] = 'menu-contributions-and-data';
+$handler->display->display_options['menu']['context'] = 0;
+$handler->display->display_options['menu']['context_only_inline'] = 0;

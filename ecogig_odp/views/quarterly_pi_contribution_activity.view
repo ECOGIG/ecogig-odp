@@ -1,0 +1,2221 @@
+<?php
+$roles = array_flip(user_roles());
+
+$view = new view();
+$view->name = 'quarterly_pi_contribution_activity';
+$view->description = '';
+$view->tag = 'default';
+$view->base_table = 'users';
+$view->human_name = 'Quarterly PI Contribution Activity';
+$view->core = 7;
+$view->api_version = '3.0';
+$view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+/* Display: Master */
+$handler = $view->new_display('default', 'Master', 'default');
+$handler->display->display_options['title'] = 'Quarterly PI Contribution Activity';
+$handler->display->display_options['use_ajax'] = TRUE;
+$handler->display->display_options['use_more_always'] = FALSE;
+$handler->display->display_options['access']['type'] = 'role';
+$handler->display->display_options['access']['role'] = array(
+  $roles['administrator'] => $roles['administrator'],
+  $roles['Administration'] => $roles['Administration'],
+  $roles['Data Manager'] => $roles['Data Manager'],
+  $roles['Information Technology'] => $roles['Information Technology'],
+  $roles['Principal Investigator (PI)'] => $roles['Principal Investigator (PI)'],
+  $roles['Program Director'] => $roles['Program Director'],
+  $roles['Public Outreach'] => $roles['Public Outreach'],
+  $roles['Research Professional'] => $roles['Research Professional'],
+);
+$handler->display->display_options['cache']['type'] = 'none';
+$handler->display->display_options['query']['type'] = 'views_query';
+$handler->display->display_options['query']['options']['distinct'] = TRUE;
+$handler->display->display_options['exposed_form']['type'] = 'basic';
+$handler->display->display_options['exposed_form']['options']['autosubmit'] = TRUE;
+$handler->display->display_options['pager']['type'] = 'none';
+$handler->display->display_options['style_plugin'] = 'table';
+$handler->display->display_options['style_options']['columns'] = array(
+  'uid' => 'uid',
+  'field_first_name' => 'field_first_name',
+  'field_last_name' => 'field_last_name',
+);
+$handler->display->display_options['style_options']['default'] = 'field_last_name';
+$handler->display->display_options['style_options']['info'] = array(
+  'uid' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'field_first_name' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'field_last_name' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+);
+/* Relationship: User: Content authored */
+$handler->display->display_options['relationships']['uid']['id'] = 'uid';
+$handler->display->display_options['relationships']['uid']['table'] = 'users';
+$handler->display->display_options['relationships']['uid']['field'] = 'uid';
+/* Field: User: Uid */
+$handler->display->display_options['fields']['uid']['id'] = 'uid';
+$handler->display->display_options['fields']['uid']['table'] = 'users';
+$handler->display->display_options['fields']['uid']['field'] = 'uid';
+$handler->display->display_options['fields']['uid']['exclude'] = TRUE;
+$handler->display->display_options['fields']['uid']['link_to_user'] = FALSE;
+/* Field: Field: First Name */
+$handler->display->display_options['fields']['field_first_name']['id'] = 'field_first_name';
+$handler->display->display_options['fields']['field_first_name']['table'] = 'field_data_field_first_name';
+$handler->display->display_options['fields']['field_first_name']['field'] = 'field_first_name';
+$handler->display->display_options['fields']['field_first_name']['exclude'] = TRUE;
+/* Field: Field: Last Name */
+$handler->display->display_options['fields']['field_last_name']['id'] = 'field_last_name';
+$handler->display->display_options['fields']['field_last_name']['table'] = 'field_data_field_last_name';
+$handler->display->display_options['fields']['field_last_name']['field'] = 'field_last_name';
+$handler->display->display_options['fields']['field_last_name']['label'] = 'Name';
+$handler->display->display_options['fields']['field_last_name']['alter']['alter_text'] = TRUE;
+$handler->display->display_options['fields']['field_last_name']['alter']['text'] = '[field_last_name], [field_first_name] ';
+$handler->display->display_options['fields']['field_last_name']['alter']['make_link'] = TRUE;
+$handler->display->display_options['fields']['field_last_name']['alter']['path'] = '/contributions_data/contribution/[uid]';
+/* Field: User: Last access */
+$handler->display->display_options['fields']['access']['id'] = 'access';
+$handler->display->display_options['fields']['access']['table'] = 'users';
+$handler->display->display_options['fields']['access']['field'] = 'access';
+$handler->display->display_options['fields']['access']['empty'] = 'never';
+$handler->display->display_options['fields']['access']['empty_zero'] = TRUE;
+$handler->display->display_options['fields']['access']['date_format'] = 'time ago';
+$handler->display->display_options['fields']['access']['second_date_format'] = 'long';
+$handler->display->display_options['filter_groups']['operator'] = 'OR';
+$handler->display->display_options['filter_groups']['groups'] = array(
+  1 => 'AND',
+  4 => 'AND',
+  3 => 'AND',
+  2 => 'AND',
+  5 => 'AND',
+  6 => 'AND',
+  10 => 'AND',
+  9 => 'AND',
+  8 => 'AND',
+  7 => 'AND',
+  11 => 'AND',
+);
+/* Filter criterion: User: Active */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'users';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = '1';
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'participant' => 'participant',
+);
+$handler->display->display_options['filters']['type']['group'] = 1;
+/* Filter criterion: Participant From */
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['id'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['table'] = 'field_data_field_participant_role';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['field'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['ui_name'] = 'Participant From';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['group'] = 1;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['operator_id'] = 'field_participant_role_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['label'] = 'Participant From';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['operator'] = 'field_participant_role_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['identifier'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_1']['id'] = 'type_1';
+$handler->display->display_options['filters']['type_1']['table'] = 'node';
+$handler->display->display_options['filters']['type_1']['field'] = 'type';
+$handler->display->display_options['filters']['type_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_1']['value'] = array(
+  'students' => 'students',
+);
+$handler->display->display_options['filters']['type_1']['group'] = 3;
+/* Filter criterion: Content: Student Type (field_student_type:date_from_timestamp) */
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['id'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['table'] = 'field_data_field_student_type';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['field'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['group'] = 3;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['operator_id'] = 'field_student_type_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['label'] = 'Student From';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['operator'] = 'field_student_type_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['identifier'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_2']['id'] = 'type_2';
+$handler->display->display_options['filters']['type_2']['table'] = 'node';
+$handler->display->display_options['filters']['type_2']['field'] = 'type';
+$handler->display->display_options['filters']['type_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_2']['value'] = array(
+  'participant' => 'participant',
+);
+$handler->display->display_options['filters']['type_2']['group'] = 2;
+/* Filter criterion: Content: Participant Role(s) (field_participant_role:date_to_timestamp) */
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['id'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['table'] = 'field_data_field_participant_role';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['field'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['group'] = 2;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['operator_id'] = 'field_participant_role_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['label'] = 'Participant To';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['operator'] = 'field_participant_role_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['identifier'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_3']['id'] = 'type_3';
+$handler->display->display_options['filters']['type_3']['table'] = 'node';
+$handler->display->display_options['filters']['type_3']['field'] = 'type';
+$handler->display->display_options['filters']['type_3']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_3']['value'] = array(
+  'students' => 'students',
+);
+$handler->display->display_options['filters']['type_3']['group'] = 4;
+/* Filter criterion: Content: Student Type (field_student_type:date_to_timestamp) */
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['id'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['table'] = 'field_data_field_student_type';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['field'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['group'] = 4;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['operator_id'] = 'field_student_type_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['label'] = 'Student To';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['operator'] = 'field_student_type_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['identifier'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_4']['id'] = 'type_4';
+$handler->display->display_options['filters']['type_4']['table'] = 'node';
+$handler->display->display_options['filters']['type_4']['field'] = 'type';
+$handler->display->display_options['filters']['type_4']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_4']['value'] = array(
+  'presentation' => 'presentation',
+);
+$handler->display->display_options['filters']['type_4']['group'] = 5;
+/* Filter criterion: Content: Date -  start date (field_date_range) */
+$handler->display->display_options['filters']['field_date_range_value']['id'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value']['field'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value']['group'] = 5;
+$handler->display->display_options['filters']['field_date_range_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value']['expose']['operator_id'] = 'field_date_range_value_op';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['label'] = 'Presentation From';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['operator'] = 'field_date_range_value_op';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['identifier'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_7']['id'] = 'type_7';
+$handler->display->display_options['filters']['type_7']['table'] = 'node';
+$handler->display->display_options['filters']['type_7']['field'] = 'type';
+$handler->display->display_options['filters']['type_7']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_7']['value'] = array(
+  'public_outreach' => 'public_outreach',
+);
+$handler->display->display_options['filters']['type_7']['group'] = 8;
+/* Filter criterion: Content: Date - end date (field_date_range:value2) */
+$handler->display->display_options['filters']['field_date_range_value2_1']['id'] = 'field_date_range_value2_1';
+$handler->display->display_options['filters']['field_date_range_value2_1']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value2_1']['field'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value2_1']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value2_1']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_1']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_1']['group'] = 8;
+$handler->display->display_options['filters']['field_date_range_value2_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['operator_id'] = 'field_date_range_value2_1_op';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['label'] = 'Public Outreach To';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['operator'] = 'field_date_range_value2_1_op';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['identifier'] = 'field_date_range_value2_1';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value2_1']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value2_1']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_6']['id'] = 'type_6';
+$handler->display->display_options['filters']['type_6']['table'] = 'node';
+$handler->display->display_options['filters']['type_6']['field'] = 'type';
+$handler->display->display_options['filters']['type_6']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_6']['value'] = array(
+  'public_outreach' => 'public_outreach',
+);
+$handler->display->display_options['filters']['type_6']['group'] = 7;
+/* Filter criterion: Content: Date -  start date (field_date_range) */
+$handler->display->display_options['filters']['field_date_range_value_1']['id'] = 'field_date_range_value_1';
+$handler->display->display_options['filters']['field_date_range_value_1']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value_1']['field'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value_1']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value_1']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_1']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_1']['group'] = 7;
+$handler->display->display_options['filters']['field_date_range_value_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['operator_id'] = 'field_date_range_value_1_op';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['label'] = 'Public Outreach From';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['operator'] = 'field_date_range_value_1_op';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['identifier'] = 'field_date_range_value_1';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value_1']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value_1']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_5']['id'] = 'type_5';
+$handler->display->display_options['filters']['type_5']['table'] = 'node';
+$handler->display->display_options['filters']['type_5']['field'] = 'type';
+$handler->display->display_options['filters']['type_5']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_5']['value'] = array(
+  'presentation' => 'presentation',
+);
+$handler->display->display_options['filters']['type_5']['group'] = 6;
+/* Filter criterion: Content: Date - end date (field_date_range:value2) */
+$handler->display->display_options['filters']['field_date_range_value2']['id'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value2']['field'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value2']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value2']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2']['group'] = 6;
+$handler->display->display_options['filters']['field_date_range_value2']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['operator_id'] = 'field_date_range_value2_op';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['label'] = 'Presentation To';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['operator'] = 'field_date_range_value2_op';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['identifier'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value2']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value2']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_8']['id'] = 'type_8';
+$handler->display->display_options['filters']['type_8']['table'] = 'node';
+$handler->display->display_options['filters']['type_8']['field'] = 'type';
+$handler->display->display_options['filters']['type_8']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_8']['value'] = array(
+  'publications' => 'publications',
+);
+$handler->display->display_options['filters']['type_8']['group'] = 9;
+/* Filter criterion: Content: Publication Date (field_date_published) */
+$handler->display->display_options['filters']['field_date_published_value']['id'] = 'field_date_published_value';
+$handler->display->display_options['filters']['field_date_published_value']['table'] = 'field_data_field_date_published';
+$handler->display->display_options['filters']['field_date_published_value']['field'] = 'field_date_published_value';
+$handler->display->display_options['filters']['field_date_published_value']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_published_value']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_published_value']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_published_value']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_published_value']['group'] = 9;
+$handler->display->display_options['filters']['field_date_published_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_published_value']['expose']['operator_id'] = 'field_date_published_value_op';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['label'] = 'Publication Date';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['operator'] = 'field_date_published_value_op';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['identifier'] = 'field_date_published_value';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_published_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_published_value']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_published_value']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_9']['id'] = 'type_9';
+$handler->display->display_options['filters']['type_9']['table'] = 'node';
+$handler->display->display_options['filters']['type_9']['field'] = 'type';
+$handler->display->display_options['filters']['type_9']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_9']['value'] = array(
+  'workshop' => 'workshop',
+);
+$handler->display->display_options['filters']['type_9']['group'] = 10;
+/* Filter criterion: Content: Date -  start date (field_date_range) */
+$handler->display->display_options['filters']['field_date_range_value_2']['id'] = 'field_date_range_value_2';
+$handler->display->display_options['filters']['field_date_range_value_2']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value_2']['field'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value_2']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value_2']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_2']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_2']['group'] = 10;
+$handler->display->display_options['filters']['field_date_range_value_2']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['operator_id'] = 'field_date_range_value_2_op';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['label'] = 'Workshop From';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['operator'] = 'field_date_range_value_2_op';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['identifier'] = 'field_date_range_value_2';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value_2']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value_2']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_10']['id'] = 'type_10';
+$handler->display->display_options['filters']['type_10']['table'] = 'node';
+$handler->display->display_options['filters']['type_10']['field'] = 'type';
+$handler->display->display_options['filters']['type_10']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_10']['value'] = array(
+  'workshop' => 'workshop',
+);
+$handler->display->display_options['filters']['type_10']['group'] = 11;
+/* Filter criterion: Content: Date - end date (field_date_range:value2) */
+$handler->display->display_options['filters']['field_date_range_value2_2']['id'] = 'field_date_range_value2_2';
+$handler->display->display_options['filters']['field_date_range_value2_2']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value2_2']['field'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value2_2']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value2_2']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_2']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_2']['group'] = 11;
+$handler->display->display_options['filters']['field_date_range_value2_2']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['operator_id'] = 'field_date_range_value2_2_op';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['label'] = 'Workshop To';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['operator'] = 'field_date_range_value2_2_op';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['identifier'] = 'field_date_range_value2_2';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value2_2']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value2_2']['year_range'] = '2005:2100';
+
+/* Display: Owned Contributions */
+$handler = $view->new_display('block', 'Owned Contributions', 'block');
+$handler->display->display_options['defaults']['empty'] = FALSE;
+/* No results behavior: Global: Text area */
+$handler->display->display_options['empty']['area']['id'] = 'area';
+$handler->display->display_options['empty']['area']['table'] = 'views';
+$handler->display->display_options['empty']['area']['field'] = 'area';
+$handler->display->display_options['empty']['area']['empty'] = TRUE;
+$handler->display->display_options['empty']['area']['content'] = 'No PIs have made any contributions for the selected quarter.';
+$handler->display->display_options['empty']['area']['format'] = 'full_html';
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['filter_groups']['operator'] = 'OR';
+$handler->display->display_options['filter_groups']['groups'] = array(
+  1 => 'AND',
+  4 => 'AND',
+  5 => 'AND',
+  3 => 'AND',
+  2 => 'AND',
+  6 => 'AND',
+  7 => 'AND',
+  11 => 'AND',
+  12 => 'AND',
+  10 => 'AND',
+  9 => 'AND',
+  8 => 'AND',
+  13 => 'AND',
+);
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filter criterion: User: Active */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'users';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = '1';
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'participant' => 'participant',
+);
+$handler->display->display_options['filters']['type']['group'] = 1;
+/* Filter criterion: Participant From */
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['id'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['table'] = 'field_data_field_participant_role';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['field'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['ui_name'] = 'Participant From';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['group'] = 1;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['operator_id'] = 'field_participant_role_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['label'] = 'Participant From';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['operator'] = 'field_participant_role_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['identifier'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_3']['id'] = 'type_3';
+$handler->display->display_options['filters']['type_3']['table'] = 'node';
+$handler->display->display_options['filters']['type_3']['field'] = 'type';
+$handler->display->display_options['filters']['type_3']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_3']['value'] = array(
+  'students' => 'students',
+);
+$handler->display->display_options['filters']['type_3']['group'] = 4;
+/* Filter criterion: Content: Student Type (field_student_type:date_to_timestamp) */
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['id'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['table'] = 'field_data_field_student_type';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['field'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['group'] = 4;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['operator_id'] = 'field_student_type_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['label'] = 'Student To';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['operator'] = 'field_student_type_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['identifier'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_1']['id'] = 'type_1';
+$handler->display->display_options['filters']['type_1']['table'] = 'node';
+$handler->display->display_options['filters']['type_1']['field'] = 'type';
+$handler->display->display_options['filters']['type_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_1']['value'] = array(
+  'students' => 'students',
+);
+$handler->display->display_options['filters']['type_1']['group'] = 3;
+/* Filter criterion: Content: Student Type (field_student_type:date_from_timestamp) */
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['id'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['table'] = 'field_data_field_student_type';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['field'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['group'] = 3;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['operator_id'] = 'field_student_type_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['label'] = 'Student From';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['operator'] = 'field_student_type_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['identifier'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_2']['id'] = 'type_2';
+$handler->display->display_options['filters']['type_2']['table'] = 'node';
+$handler->display->display_options['filters']['type_2']['field'] = 'type';
+$handler->display->display_options['filters']['type_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_2']['value'] = array(
+  'participant' => 'participant',
+);
+$handler->display->display_options['filters']['type_2']['group'] = 2;
+/* Filter criterion: Content: Participant Role(s) (field_participant_role:date_to_timestamp) */
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['id'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['table'] = 'field_data_field_participant_role';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['field'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['group'] = 2;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['operator_id'] = 'field_participant_role_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['label'] = 'Participant To';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['operator'] = 'field_participant_role_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['identifier'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_4']['id'] = 'type_4';
+$handler->display->display_options['filters']['type_4']['table'] = 'node';
+$handler->display->display_options['filters']['type_4']['field'] = 'type';
+$handler->display->display_options['filters']['type_4']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_4']['value'] = array(
+  'presentation' => 'presentation',
+);
+$handler->display->display_options['filters']['type_4']['group'] = 5;
+/* Filter criterion: Content: Date -  start date (field_date_range) */
+$handler->display->display_options['filters']['field_date_range_value']['id'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value']['field'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value']['group'] = 5;
+$handler->display->display_options['filters']['field_date_range_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value']['expose']['operator_id'] = 'field_date_range_value_op';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['label'] = 'Presentation From';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['operator'] = 'field_date_range_value_op';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['identifier'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_5']['id'] = 'type_5';
+$handler->display->display_options['filters']['type_5']['table'] = 'node';
+$handler->display->display_options['filters']['type_5']['field'] = 'type';
+$handler->display->display_options['filters']['type_5']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_5']['value'] = array(
+  'presentation' => 'presentation',
+);
+$handler->display->display_options['filters']['type_5']['group'] = 6;
+/* Filter criterion: Content: Date - end date (field_date_range:value2) */
+$handler->display->display_options['filters']['field_date_range_value2']['id'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value2']['field'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value2']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value2']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2']['group'] = 6;
+$handler->display->display_options['filters']['field_date_range_value2']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['operator_id'] = 'field_date_range_value2_op';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['label'] = 'Presentation To';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['operator'] = 'field_date_range_value2_op';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['identifier'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value2']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value2']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_9']['id'] = 'type_9';
+$handler->display->display_options['filters']['type_9']['table'] = 'node';
+$handler->display->display_options['filters']['type_9']['field'] = 'type';
+$handler->display->display_options['filters']['type_9']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_9']['value'] = array(
+  'workshop' => 'workshop',
+);
+$handler->display->display_options['filters']['type_9']['group'] = 10;
+/* Filter criterion: Content: Date -  start date (field_date_range) */
+$handler->display->display_options['filters']['field_date_range_value_2']['id'] = 'field_date_range_value_2';
+$handler->display->display_options['filters']['field_date_range_value_2']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value_2']['field'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value_2']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value_2']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_2']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_2']['group'] = 10;
+$handler->display->display_options['filters']['field_date_range_value_2']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['operator_id'] = 'field_date_range_value_2_op';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['label'] = 'Workshop From';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['operator'] = 'field_date_range_value_2_op';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['identifier'] = 'field_date_range_value_2';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value_2']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value_2']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_8']['id'] = 'type_8';
+$handler->display->display_options['filters']['type_8']['table'] = 'node';
+$handler->display->display_options['filters']['type_8']['field'] = 'type';
+$handler->display->display_options['filters']['type_8']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_8']['value'] = array(
+  'publications' => 'publications',
+);
+$handler->display->display_options['filters']['type_8']['group'] = 9;
+/* Filter criterion: Content: Publication Date (field_date_published) */
+$handler->display->display_options['filters']['field_date_published_value']['id'] = 'field_date_published_value';
+$handler->display->display_options['filters']['field_date_published_value']['table'] = 'field_data_field_date_published';
+$handler->display->display_options['filters']['field_date_published_value']['field'] = 'field_date_published_value';
+$handler->display->display_options['filters']['field_date_published_value']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_published_value']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_published_value']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_published_value']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_published_value']['group'] = 9;
+$handler->display->display_options['filters']['field_date_published_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_published_value']['expose']['operator_id'] = 'field_date_published_value_op';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['label'] = 'Publication Date';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['operator'] = 'field_date_published_value_op';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['identifier'] = 'field_date_published_value';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_published_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_published_value']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_published_value']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_7']['id'] = 'type_7';
+$handler->display->display_options['filters']['type_7']['table'] = 'node';
+$handler->display->display_options['filters']['type_7']['field'] = 'type';
+$handler->display->display_options['filters']['type_7']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_7']['value'] = array(
+  'public_outreach' => 'public_outreach',
+);
+$handler->display->display_options['filters']['type_7']['group'] = 8;
+/* Filter criterion: Content: Date - end date (field_date_range:value2) */
+$handler->display->display_options['filters']['field_date_range_value2_1']['id'] = 'field_date_range_value2_1';
+$handler->display->display_options['filters']['field_date_range_value2_1']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value2_1']['field'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value2_1']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value2_1']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_1']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_1']['group'] = 8;
+$handler->display->display_options['filters']['field_date_range_value2_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['operator_id'] = 'field_date_range_value2_1_op';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['label'] = 'Public Outreach To';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['operator'] = 'field_date_range_value2_1_op';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['identifier'] = 'field_date_range_value2_1';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value2_1']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value2_1']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_6']['id'] = 'type_6';
+$handler->display->display_options['filters']['type_6']['table'] = 'node';
+$handler->display->display_options['filters']['type_6']['field'] = 'type';
+$handler->display->display_options['filters']['type_6']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_6']['value'] = array(
+  'public_outreach' => 'public_outreach',
+);
+$handler->display->display_options['filters']['type_6']['group'] = 7;
+/* Filter criterion: Content: Date -  start date (field_date_range) */
+$handler->display->display_options['filters']['field_date_range_value_1']['id'] = 'field_date_range_value_1';
+$handler->display->display_options['filters']['field_date_range_value_1']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value_1']['field'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value_1']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value_1']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_1']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_1']['group'] = 7;
+$handler->display->display_options['filters']['field_date_range_value_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['operator_id'] = 'field_date_range_value_1_op';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['label'] = 'Public Outreach From';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['operator'] = 'field_date_range_value_1_op';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['identifier'] = 'field_date_range_value_1';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value_1']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value_1']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_10']['id'] = 'type_10';
+$handler->display->display_options['filters']['type_10']['table'] = 'node';
+$handler->display->display_options['filters']['type_10']['field'] = 'type';
+$handler->display->display_options['filters']['type_10']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_10']['value'] = array(
+  'workshop' => 'workshop',
+);
+$handler->display->display_options['filters']['type_10']['group'] = 11;
+/* Filter criterion: Content: Date - end date (field_date_range:value2) */
+$handler->display->display_options['filters']['field_date_range_value2_2']['id'] = 'field_date_range_value2_2';
+$handler->display->display_options['filters']['field_date_range_value2_2']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value2_2']['field'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value2_2']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value2_2']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_2']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_2']['group'] = 11;
+$handler->display->display_options['filters']['field_date_range_value2_2']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['operator_id'] = 'field_date_range_value2_2_op';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['label'] = 'Workshop To';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['operator'] = 'field_date_range_value2_2_op';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['identifier'] = 'field_date_range_value2_2';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value2_2']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value2_2']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status_2']['id'] = 'status_2';
+$handler->display->display_options['filters']['status_2']['table'] = 'node';
+$handler->display->display_options['filters']['status_2']['field'] = 'status';
+$handler->display->display_options['filters']['status_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['status_2']['value'] = '1';
+$handler->display->display_options['filters']['status_2']['group'] = 12;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_11']['id'] = 'type_11';
+$handler->display->display_options['filters']['type_11']['table'] = 'node';
+$handler->display->display_options['filters']['type_11']['field'] = 'type';
+$handler->display->display_options['filters']['type_11']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_11']['value'] = array(
+  'participant' => 'participant',
+);
+$handler->display->display_options['filters']['type_11']['group'] = 12;
+/* Filter criterion: Participant From Outside */
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['id'] = 'field_participant_role_date_from_timestamp_1';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['table'] = 'field_data_field_participant_role';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['field'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['ui_name'] = 'Participant From Outside';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['operator'] = '<';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['value']['value'] = '2100-01';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['group'] = 12;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['expose']['operator_id'] = 'field_participant_role_date_from_timestamp_1_op';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['expose']['label'] = 'Participant From Outside';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['expose']['operator'] = 'field_participant_role_date_from_timestamp_1_op';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['expose']['identifier'] = 'field_participant_role_date_from_timestamp_min';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Participant To Outside */
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['id'] = 'field_participant_role_date_to_timestamp_1';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['table'] = 'field_data_field_participant_role';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['field'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['ui_name'] = 'Participant To Outside';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['operator'] = '>';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['value']['value'] = '2100-01';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['group'] = 12;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['expose']['operator_id'] = 'field_participant_role_date_to_timestamp_1_op';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['expose']['label'] = 'Participant To Outside';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['expose']['operator'] = 'field_participant_role_date_to_timestamp_1_op';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['expose']['identifier'] = 'field_participant_role_date_to_timestamp_max';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status_1']['id'] = 'status_1';
+$handler->display->display_options['filters']['status_1']['table'] = 'node';
+$handler->display->display_options['filters']['status_1']['field'] = 'status';
+$handler->display->display_options['filters']['status_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['status_1']['value'] = '1';
+$handler->display->display_options['filters']['status_1']['group'] = 13;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_12']['id'] = 'type_12';
+$handler->display->display_options['filters']['type_12']['table'] = 'node';
+$handler->display->display_options['filters']['type_12']['field'] = 'type';
+$handler->display->display_options['filters']['type_12']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_12']['value'] = array(
+  'students' => 'students',
+);
+$handler->display->display_options['filters']['type_12']['group'] = 13;
+/* Filter criterion: Student From Outside */
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['id'] = 'field_student_type_date_from_timestamp_1';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['table'] = 'field_data_field_student_type';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['field'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['ui_name'] = 'Student From Outside';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['operator'] = '<';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['value']['value'] = '2100-01';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['group'] = 13;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['expose']['operator_id'] = 'field_student_type_date_from_timestamp_1_op';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['expose']['label'] = 'Student From Outside';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['expose']['operator'] = 'field_student_type_date_from_timestamp_1_op';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['expose']['identifier'] = 'field_student_type_date_from_timestamp_min';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Student To Outside */
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['id'] = 'field_student_type_date_to_timestamp_1';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['table'] = 'field_data_field_student_type';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['field'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['ui_name'] = 'Student To Outside';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['operator'] = '>';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['value']['value'] = '2100-01';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['group'] = 13;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['expose']['operator_id'] = 'field_student_type_date_to_timestamp_1_op';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['expose']['label'] = 'Student To Outside';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['expose']['operator'] = 'field_student_type_date_to_timestamp_1_op';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['expose']['identifier'] = 'field_student_type_date_to_timestamp_max';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['block_description'] = 'PIs with Owned Contributions';
+
+/* Display: Nothing to Report */
+$handler = $view->new_display('block', 'Nothing to Report', 'block_1');
+$handler->display->display_options['defaults']['empty'] = FALSE;
+/* No results behavior: Global: Text area */
+$handler->display->display_options['empty']['area']['id'] = 'area';
+$handler->display->display_options['empty']['area']['table'] = 'views';
+$handler->display->display_options['empty']['area']['field'] = 'area';
+$handler->display->display_options['empty']['area']['empty'] = TRUE;
+$handler->display->display_options['empty']['area']['content'] = 'No PIs have listed "Nothing to Report" for the selected quarter.';
+$handler->display->display_options['empty']['area']['format'] = 'full_html';
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['filter_groups']['operator'] = 'OR';
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filter criterion: Content: Quarter (field_quarter) */
+$handler->display->display_options['filters']['field_quarter_value']['id'] = 'field_quarter_value';
+$handler->display->display_options['filters']['field_quarter_value']['table'] = 'field_data_field_quarter';
+$handler->display->display_options['filters']['field_quarter_value']['field'] = 'field_quarter_value';
+$handler->display->display_options['filters']['field_quarter_value']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_quarter_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_quarter_value']['expose']['operator_id'] = 'field_quarter_value_op';
+$handler->display->display_options['filters']['field_quarter_value']['expose']['label'] = 'Quarter (field_quarter)';
+$handler->display->display_options['filters']['field_quarter_value']['expose']['operator'] = 'field_quarter_value_op';
+$handler->display->display_options['filters']['field_quarter_value']['expose']['identifier'] = 'field_quarter_value';
+$handler->display->display_options['filters']['field_quarter_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'quarterly_report_no_activity_rec' => 'quarterly_report_no_activity_rec',
+);
+/* Filter criterion: Content: Year (field_year) */
+$handler->display->display_options['filters']['field_year_value']['id'] = 'field_year_value';
+$handler->display->display_options['filters']['field_year_value']['table'] = 'field_data_field_year';
+$handler->display->display_options['filters']['field_year_value']['field'] = 'field_year_value';
+$handler->display->display_options['filters']['field_year_value']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_year_value']['value']['value'] = '2100';
+$handler->display->display_options['filters']['field_year_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_year_value']['expose']['operator_id'] = 'field_year_value_op';
+$handler->display->display_options['filters']['field_year_value']['expose']['label'] = 'Year (field_year)';
+$handler->display->display_options['filters']['field_year_value']['expose']['operator'] = 'field_year_value_op';
+$handler->display->display_options['filters']['field_year_value']['expose']['identifier'] = 'field_year_value';
+$handler->display->display_options['filters']['field_year_value']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_year_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_year_value']['granularity'] = 'year';
+$handler->display->display_options['filters']['field_year_value']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_year_value']['year_range'] = '2005:2100';
+$handler->display->display_options['block_description'] = 'PIs with Nothing to Report';
+
+/* Display: No Contributions */
+$handler = $view->new_display('block', 'No Contributions', 'block_no_contributions');
+$handler->display->display_options['enabled'] = FALSE;
+$handler->display->display_options['defaults']['group_by'] = FALSE;
+$handler->display->display_options['group_by'] = TRUE;
+$handler->display->display_options['defaults']['empty'] = FALSE;
+/* No results behavior: Global: Text area */
+$handler->display->display_options['empty']['area']['id'] = 'area';
+$handler->display->display_options['empty']['area']['table'] = 'views';
+$handler->display->display_options['empty']['area']['field'] = 'area';
+$handler->display->display_options['empty']['area']['empty'] = TRUE;
+$handler->display->display_options['empty']['area']['content'] = 'No PIs have made any contributions for the selected quarter.';
+$handler->display->display_options['empty']['area']['format'] = 'full_html';
+$handler->display->display_options['defaults']['relationships'] = FALSE;
+/* Relationship: User: Content authored */
+$handler->display->display_options['relationships']['uid']['id'] = 'uid';
+$handler->display->display_options['relationships']['uid']['table'] = 'users';
+$handler->display->display_options['relationships']['uid']['field'] = 'uid';
+$handler->display->display_options['defaults']['fields'] = FALSE;
+/* Field: User: Uid */
+$handler->display->display_options['fields']['uid']['id'] = 'uid';
+$handler->display->display_options['fields']['uid']['table'] = 'users';
+$handler->display->display_options['fields']['uid']['field'] = 'uid';
+$handler->display->display_options['fields']['uid']['exclude'] = TRUE;
+$handler->display->display_options['fields']['uid']['link_to_user'] = FALSE;
+/* Field: Field: First Name */
+$handler->display->display_options['fields']['field_first_name']['id'] = 'field_first_name';
+$handler->display->display_options['fields']['field_first_name']['table'] = 'field_data_field_first_name';
+$handler->display->display_options['fields']['field_first_name']['field'] = 'field_first_name';
+$handler->display->display_options['fields']['field_first_name']['exclude'] = TRUE;
+/* Field: Field: Last Name */
+$handler->display->display_options['fields']['field_last_name']['id'] = 'field_last_name';
+$handler->display->display_options['fields']['field_last_name']['table'] = 'field_data_field_last_name';
+$handler->display->display_options['fields']['field_last_name']['field'] = 'field_last_name';
+$handler->display->display_options['fields']['field_last_name']['label'] = 'Name';
+$handler->display->display_options['fields']['field_last_name']['alter']['alter_text'] = TRUE;
+$handler->display->display_options['fields']['field_last_name']['alter']['text'] = '[field_last_name], [field_first_name] ';
+$handler->display->display_options['fields']['field_last_name']['alter']['make_link'] = TRUE;
+$handler->display->display_options['fields']['field_last_name']['alter']['path'] = '/contributions_data/contribution/[uid]';
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['filter_groups']['groups'] = array(
+  1 => 'AND',
+  2 => 'OR',
+);
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filter criterion: User: Active */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'users';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = '1';
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'participant' => 'participant',
+  'presentation' => 'presentation',
+  'public_outreach' => 'public_outreach',
+  'publications' => 'publications',
+  'students' => 'students',
+  'workshop' => 'workshop',
+);
+$handler->display->display_options['filters']['type']['group'] = 1;
+/* Filter criterion: Content: Student Type (field_student_type:date_to_timestamp) */
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['id'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['table'] = 'field_data_field_student_type';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['field'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['group'] = 2;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['operator_id'] = 'field_student_type_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['label'] = 'Student To';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['operator'] = 'field_student_type_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['identifier'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Student Type (field_student_type:date_from_timestamp) */
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['id'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['table'] = 'field_data_field_student_type';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['field'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['group'] = 2;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['operator_id'] = 'field_student_type_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['label'] = 'Student From';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['operator'] = 'field_student_type_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['identifier'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Participant From */
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['id'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['table'] = 'field_data_field_participant_role';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['field'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['ui_name'] = 'Participant From';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['group'] = 2;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['operator_id'] = 'field_participant_role_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['label'] = 'Participant From';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['operator'] = 'field_participant_role_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['identifier'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Date -  start date (field_date_range) */
+$handler->display->display_options['filters']['field_date_range_value']['id'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value']['field'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value']['group'] = 2;
+$handler->display->display_options['filters']['field_date_range_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value']['expose']['operator_id'] = 'field_date_range_value_op';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['label'] = 'Presentation From';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['operator'] = 'field_date_range_value_op';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['identifier'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Participant Role(s) (field_participant_role:date_to_timestamp) */
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['id'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['table'] = 'field_data_field_participant_role';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['field'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['group'] = 2;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['operator_id'] = 'field_participant_role_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['label'] = 'Participant To';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['operator'] = 'field_participant_role_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['identifier'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Date - end date (field_date_range:value2) */
+$handler->display->display_options['filters']['field_date_range_value2']['id'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value2']['field'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value2']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value2']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2']['group'] = 2;
+$handler->display->display_options['filters']['field_date_range_value2']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['operator_id'] = 'field_date_range_value2_op';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['label'] = 'Presentation To';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['operator'] = 'field_date_range_value2_op';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['identifier'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value2']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value2']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Date -  start date (field_date_range) */
+$handler->display->display_options['filters']['field_date_range_value_2']['id'] = 'field_date_range_value_2';
+$handler->display->display_options['filters']['field_date_range_value_2']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value_2']['field'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value_2']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value_2']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_2']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_2']['group'] = 2;
+$handler->display->display_options['filters']['field_date_range_value_2']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['operator_id'] = 'field_date_range_value_2_op';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['label'] = 'Workshop From';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['operator'] = 'field_date_range_value_2_op';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['identifier'] = 'field_date_range_value_2';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value_2']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value_2']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Date - end date (field_date_range:value2) */
+$handler->display->display_options['filters']['field_date_range_value2_1']['id'] = 'field_date_range_value2_1';
+$handler->display->display_options['filters']['field_date_range_value2_1']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value2_1']['field'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value2_1']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value2_1']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_1']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_1']['group'] = 2;
+$handler->display->display_options['filters']['field_date_range_value2_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['operator_id'] = 'field_date_range_value2_1_op';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['label'] = 'Public Outreach To';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['operator'] = 'field_date_range_value2_1_op';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['identifier'] = 'field_date_range_value2_1';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value2_1']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value2_1']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Date -  start date (field_date_range) */
+$handler->display->display_options['filters']['field_date_range_value_1']['id'] = 'field_date_range_value_1';
+$handler->display->display_options['filters']['field_date_range_value_1']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value_1']['field'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value_1']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value_1']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_1']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_1']['group'] = 2;
+$handler->display->display_options['filters']['field_date_range_value_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['operator_id'] = 'field_date_range_value_1_op';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['label'] = 'Public Outreach From';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['operator'] = 'field_date_range_value_1_op';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['identifier'] = 'field_date_range_value_1';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value_1']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value_1']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Date - end date (field_date_range:value2) */
+$handler->display->display_options['filters']['field_date_range_value2_2']['id'] = 'field_date_range_value2_2';
+$handler->display->display_options['filters']['field_date_range_value2_2']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value2_2']['field'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value2_2']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value2_2']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_2']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_2']['group'] = 2;
+$handler->display->display_options['filters']['field_date_range_value2_2']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['operator_id'] = 'field_date_range_value2_2_op';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['label'] = 'Workshop To';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['operator'] = 'field_date_range_value2_2_op';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['identifier'] = 'field_date_range_value2_2';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value2_2']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value2_2']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Publication Date (field_date_published) */
+$handler->display->display_options['filters']['field_date_published_value']['id'] = 'field_date_published_value';
+$handler->display->display_options['filters']['field_date_published_value']['table'] = 'field_data_field_date_published';
+$handler->display->display_options['filters']['field_date_published_value']['field'] = 'field_date_published_value';
+$handler->display->display_options['filters']['field_date_published_value']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_published_value']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_published_value']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_published_value']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_published_value']['group'] = 2;
+$handler->display->display_options['filters']['field_date_published_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_published_value']['expose']['operator_id'] = 'field_date_published_value_op';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['label'] = 'Publication Date';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['operator'] = 'field_date_published_value_op';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['identifier'] = 'field_date_published_value';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_published_value']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_published_value']['year_range'] = '2005:2100';
+$handler->display->display_options['block_description'] = 'PIs with No Contributions';
+
+/* Display: All Users */
+$handler = $view->new_display('block', 'All Users', 'block_all_users');
+$handler->display->display_options['defaults']['relationships'] = FALSE;
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['filter_groups']['operator'] = 'OR';
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filter criterion: User: Active */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'users';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = '1';
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: User: Name */
+$handler->display->display_options['filters']['uid']['id'] = 'uid';
+$handler->display->display_options['filters']['uid']['table'] = 'users';
+$handler->display->display_options['filters']['uid']['field'] = 'uid';
+$handler->display->display_options['filters']['uid']['operator'] = 'not in';
+$handler->display->display_options['filters']['uid']['value'] = array(
+  0 => '344',
+  1 => '156',
+);
+$handler->display->display_options['block_description'] = 'All Users';
+
+/* Display: No Contributions */
+$handler = $view->new_display('block', 'No Contributions', 'block_no_contrib');
+$handler->display->display_options['defaults']['empty'] = FALSE;
+/* No results behavior: Global: Text area */
+$handler->display->display_options['empty']['area']['id'] = 'area';
+$handler->display->display_options['empty']['area']['table'] = 'views';
+$handler->display->display_options['empty']['area']['field'] = 'area';
+$handler->display->display_options['empty']['area']['empty'] = TRUE;
+$handler->display->display_options['empty']['area']['content'] = 'No PIs have made any contributions for the selected quarter.';
+$handler->display->display_options['empty']['area']['format'] = 'full_html';
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['filter_groups']['operator'] = 'OR';
+$handler->display->display_options['filter_groups']['groups'] = array(
+  1 => 'AND',
+  5 => 'AND',
+  6 => 'AND',
+  4 => 'AND',
+  3 => 'AND',
+  2 => 'AND',
+  7 => 'AND',
+  8 => 'AND',
+  12 => 'AND',
+  13 => 'AND',
+  11 => 'AND',
+  10 => 'AND',
+  9 => 'AND',
+  14 => 'AND',
+);
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filter criterion: User: Active */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'users';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = '1';
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'participant' => 'participant',
+);
+$handler->display->display_options['filters']['type']['group'] = 1;
+/* Filter criterion: Participant From */
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['id'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['table'] = 'field_data_field_participant_role';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['field'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['ui_name'] = 'Participant From';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['group'] = 1;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['operator_id'] = 'field_participant_role_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['label'] = 'Participant From';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['operator'] = 'field_participant_role_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['identifier'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_3']['id'] = 'type_3';
+$handler->display->display_options['filters']['type_3']['table'] = 'node';
+$handler->display->display_options['filters']['type_3']['field'] = 'type';
+$handler->display->display_options['filters']['type_3']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_3']['value'] = array(
+  'students' => 'students',
+);
+$handler->display->display_options['filters']['type_3']['group'] = 4;
+/* Filter criterion: Content: Student Type (field_student_type:date_to_timestamp) */
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['id'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['table'] = 'field_data_field_student_type';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['field'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['group'] = 4;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['operator_id'] = 'field_student_type_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['label'] = 'Student To';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['operator'] = 'field_student_type_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['identifier'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_4']['id'] = 'type_4';
+$handler->display->display_options['filters']['type_4']['table'] = 'node';
+$handler->display->display_options['filters']['type_4']['field'] = 'type';
+$handler->display->display_options['filters']['type_4']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_4']['value'] = array(
+  'presentation' => 'presentation',
+);
+$handler->display->display_options['filters']['type_4']['group'] = 5;
+/* Filter criterion: Content: Date -  start date (field_date_range) */
+$handler->display->display_options['filters']['field_date_range_value']['id'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value']['field'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value']['group'] = 5;
+$handler->display->display_options['filters']['field_date_range_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value']['expose']['operator_id'] = 'field_date_range_value_op';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['label'] = 'Presentation From';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['operator'] = 'field_date_range_value_op';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['identifier'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_1']['id'] = 'type_1';
+$handler->display->display_options['filters']['type_1']['table'] = 'node';
+$handler->display->display_options['filters']['type_1']['field'] = 'type';
+$handler->display->display_options['filters']['type_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_1']['value'] = array(
+  'students' => 'students',
+);
+$handler->display->display_options['filters']['type_1']['group'] = 3;
+/* Filter criterion: Content: Student Type (field_student_type:date_from_timestamp) */
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['id'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['table'] = 'field_data_field_student_type';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['field'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['group'] = 3;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['operator_id'] = 'field_student_type_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['label'] = 'Student From';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['operator'] = 'field_student_type_date_from_timestamp_op';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['identifier'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_2']['id'] = 'type_2';
+$handler->display->display_options['filters']['type_2']['table'] = 'node';
+$handler->display->display_options['filters']['type_2']['field'] = 'type';
+$handler->display->display_options['filters']['type_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_2']['value'] = array(
+  'participant' => 'participant',
+);
+$handler->display->display_options['filters']['type_2']['group'] = 2;
+/* Filter criterion: Content: Participant Role(s) (field_participant_role:date_to_timestamp) */
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['id'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['table'] = 'field_data_field_participant_role';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['field'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['group'] = 2;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['operator_id'] = 'field_participant_role_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['label'] = 'Participant To';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['operator'] = 'field_participant_role_date_to_timestamp_op';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['identifier'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_5']['id'] = 'type_5';
+$handler->display->display_options['filters']['type_5']['table'] = 'node';
+$handler->display->display_options['filters']['type_5']['field'] = 'type';
+$handler->display->display_options['filters']['type_5']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_5']['value'] = array(
+  'presentation' => 'presentation',
+);
+$handler->display->display_options['filters']['type_5']['group'] = 6;
+/* Filter criterion: Content: Date - end date (field_date_range:value2) */
+$handler->display->display_options['filters']['field_date_range_value2']['id'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value2']['field'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value2']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value2']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2']['group'] = 6;
+$handler->display->display_options['filters']['field_date_range_value2']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['operator_id'] = 'field_date_range_value2_op';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['label'] = 'Presentation To';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['operator'] = 'field_date_range_value2_op';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['identifier'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value2']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value2']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_6']['id'] = 'type_6';
+$handler->display->display_options['filters']['type_6']['table'] = 'node';
+$handler->display->display_options['filters']['type_6']['field'] = 'type';
+$handler->display->display_options['filters']['type_6']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_6']['value'] = array(
+  'public_outreach' => 'public_outreach',
+);
+$handler->display->display_options['filters']['type_6']['group'] = 7;
+/* Filter criterion: Content: Date -  start date (field_date_range) */
+$handler->display->display_options['filters']['field_date_range_value_1']['id'] = 'field_date_range_value_1';
+$handler->display->display_options['filters']['field_date_range_value_1']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value_1']['field'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value_1']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value_1']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_1']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_1']['group'] = 7;
+$handler->display->display_options['filters']['field_date_range_value_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['operator_id'] = 'field_date_range_value_1_op';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['label'] = 'Public Outreach From';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['operator'] = 'field_date_range_value_1_op';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['identifier'] = 'field_date_range_value_1';
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value_1']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value_1']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_10']['id'] = 'type_10';
+$handler->display->display_options['filters']['type_10']['table'] = 'node';
+$handler->display->display_options['filters']['type_10']['field'] = 'type';
+$handler->display->display_options['filters']['type_10']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_10']['value'] = array(
+  'workshop' => 'workshop',
+);
+$handler->display->display_options['filters']['type_10']['group'] = 11;
+/* Filter criterion: Content: Date - end date (field_date_range:value2) */
+$handler->display->display_options['filters']['field_date_range_value2_2']['id'] = 'field_date_range_value2_2';
+$handler->display->display_options['filters']['field_date_range_value2_2']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value2_2']['field'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value2_2']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value2_2']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_2']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_2']['group'] = 11;
+$handler->display->display_options['filters']['field_date_range_value2_2']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['operator_id'] = 'field_date_range_value2_2_op';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['label'] = 'Workshop To';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['operator'] = 'field_date_range_value2_2_op';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['identifier'] = 'field_date_range_value2_2';
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_2']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value2_2']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value2_2']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_11']['id'] = 'type_11';
+$handler->display->display_options['filters']['type_11']['table'] = 'node';
+$handler->display->display_options['filters']['type_11']['field'] = 'type';
+$handler->display->display_options['filters']['type_11']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_11']['value'] = array(
+  'quarterly_report_no_activity_rec' => 'quarterly_report_no_activity_rec',
+);
+$handler->display->display_options['filters']['type_11']['group'] = 12;
+/* Filter criterion: Content: Year (field_year) */
+$handler->display->display_options['filters']['field_year_value']['id'] = 'field_year_value';
+$handler->display->display_options['filters']['field_year_value']['table'] = 'field_data_field_year';
+$handler->display->display_options['filters']['field_year_value']['field'] = 'field_year_value';
+$handler->display->display_options['filters']['field_year_value']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_year_value']['group'] = 12;
+$handler->display->display_options['filters']['field_year_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_year_value']['expose']['operator_id'] = 'field_year_value_op';
+$handler->display->display_options['filters']['field_year_value']['expose']['label'] = 'Year (field_year)';
+$handler->display->display_options['filters']['field_year_value']['expose']['operator'] = 'field_year_value_op';
+$handler->display->display_options['filters']['field_year_value']['expose']['identifier'] = 'field_year_value';
+$handler->display->display_options['filters']['field_year_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_year_value']['granularity'] = 'year';
+$handler->display->display_options['filters']['field_year_value']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_year_value']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Quarter (field_quarter) */
+$handler->display->display_options['filters']['field_quarter_value']['id'] = 'field_quarter_value';
+$handler->display->display_options['filters']['field_quarter_value']['table'] = 'field_data_field_quarter';
+$handler->display->display_options['filters']['field_quarter_value']['field'] = 'field_quarter_value';
+$handler->display->display_options['filters']['field_quarter_value']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_quarter_value']['group'] = 12;
+$handler->display->display_options['filters']['field_quarter_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_quarter_value']['expose']['operator_id'] = 'field_quarter_value_op';
+$handler->display->display_options['filters']['field_quarter_value']['expose']['label'] = 'Quarter (field_quarter)';
+$handler->display->display_options['filters']['field_quarter_value']['expose']['operator'] = 'field_quarter_value_op';
+$handler->display->display_options['filters']['field_quarter_value']['expose']['identifier'] = 'field_quarter_value';
+$handler->display->display_options['filters']['field_quarter_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_9']['id'] = 'type_9';
+$handler->display->display_options['filters']['type_9']['table'] = 'node';
+$handler->display->display_options['filters']['type_9']['field'] = 'type';
+$handler->display->display_options['filters']['type_9']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_9']['value'] = array(
+  'workshop' => 'workshop',
+);
+$handler->display->display_options['filters']['type_9']['group'] = 10;
+/* Filter criterion: Content: Date -  start date (field_date_range) */
+$handler->display->display_options['filters']['field_date_range_value_2']['id'] = 'field_date_range_value_2';
+$handler->display->display_options['filters']['field_date_range_value_2']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value_2']['field'] = 'field_date_range_value';
+$handler->display->display_options['filters']['field_date_range_value_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value_2']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value_2']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_2']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value_2']['group'] = 10;
+$handler->display->display_options['filters']['field_date_range_value_2']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['operator_id'] = 'field_date_range_value_2_op';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['label'] = 'Workshop From';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['operator'] = 'field_date_range_value_2_op';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['identifier'] = 'field_date_range_value_2';
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value_2']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value_2']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value_2']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_8']['id'] = 'type_8';
+$handler->display->display_options['filters']['type_8']['table'] = 'node';
+$handler->display->display_options['filters']['type_8']['field'] = 'type';
+$handler->display->display_options['filters']['type_8']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_8']['value'] = array(
+  'publications' => 'publications',
+);
+$handler->display->display_options['filters']['type_8']['group'] = 9;
+/* Filter criterion: Content: Publication Date (field_date_published) */
+$handler->display->display_options['filters']['field_date_published_value']['id'] = 'field_date_published_value';
+$handler->display->display_options['filters']['field_date_published_value']['table'] = 'field_data_field_date_published';
+$handler->display->display_options['filters']['field_date_published_value']['field'] = 'field_date_published_value';
+$handler->display->display_options['filters']['field_date_published_value']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_published_value']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_published_value']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_published_value']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_published_value']['group'] = 9;
+$handler->display->display_options['filters']['field_date_published_value']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_published_value']['expose']['operator_id'] = 'field_date_published_value_op';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['label'] = 'Publication Date';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['operator'] = 'field_date_published_value_op';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['identifier'] = 'field_date_published_value';
+$handler->display->display_options['filters']['field_date_published_value']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_published_value']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_published_value']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_published_value']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_7']['id'] = 'type_7';
+$handler->display->display_options['filters']['type_7']['table'] = 'node';
+$handler->display->display_options['filters']['type_7']['field'] = 'type';
+$handler->display->display_options['filters']['type_7']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_7']['value'] = array(
+  'public_outreach' => 'public_outreach',
+);
+$handler->display->display_options['filters']['type_7']['group'] = 8;
+/* Filter criterion: Content: Date - end date (field_date_range:value2) */
+$handler->display->display_options['filters']['field_date_range_value2_1']['id'] = 'field_date_range_value2_1';
+$handler->display->display_options['filters']['field_date_range_value2_1']['table'] = 'field_data_field_date_range';
+$handler->display->display_options['filters']['field_date_range_value2_1']['field'] = 'field_date_range_value2';
+$handler->display->display_options['filters']['field_date_range_value2_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_date_range_value2_1']['operator'] = 'between';
+$handler->display->display_options['filters']['field_date_range_value2_1']['value']['min'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_1']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['field_date_range_value2_1']['group'] = 8;
+$handler->display->display_options['filters']['field_date_range_value2_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['operator_id'] = 'field_date_range_value2_1_op';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['label'] = 'Public Outreach To';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['operator'] = 'field_date_range_value2_1_op';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['identifier'] = 'field_date_range_value2_1';
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['required'] = TRUE;
+$handler->display->display_options['filters']['field_date_range_value2_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['filters']['field_date_range_value2_1']['form_type'] = 'date_text';
+$handler->display->display_options['filters']['field_date_range_value2_1']['year_range'] = '2005:2100';
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status_1']['id'] = 'status_1';
+$handler->display->display_options['filters']['status_1']['table'] = 'node';
+$handler->display->display_options['filters']['status_1']['field'] = 'status';
+$handler->display->display_options['filters']['status_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['status_1']['value'] = '1';
+$handler->display->display_options['filters']['status_1']['group'] = 13;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_12']['id'] = 'type_12';
+$handler->display->display_options['filters']['type_12']['table'] = 'node';
+$handler->display->display_options['filters']['type_12']['field'] = 'type';
+$handler->display->display_options['filters']['type_12']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_12']['value'] = array(
+  'participant' => 'participant',
+);
+$handler->display->display_options['filters']['type_12']['group'] = 13;
+/* Filter criterion: Participant From Outside */
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['id'] = 'field_participant_role_date_from_timestamp_1';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['table'] = 'field_data_field_participant_role';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['field'] = 'field_participant_role_date_from_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['ui_name'] = 'Participant From Outside';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['operator'] = '<';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['value']['value'] = '2100-01';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['group'] = 13;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['expose']['operator_id'] = 'field_participant_role_date_from_timestamp_1_op';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['expose']['label'] = 'Participant From Outside';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['expose']['operator'] = 'field_participant_role_date_from_timestamp_1_op';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['expose']['identifier'] = 'field_participant_role_date_from_timestamp_min';
+$handler->display->display_options['filters']['field_participant_role_date_from_timestamp_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Participant To Outside */
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['id'] = 'field_participant_role_date_to_timestamp_1';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['table'] = 'field_data_field_participant_role';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['field'] = 'field_participant_role_date_to_timestamp';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['ui_name'] = 'Participant To Outside';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['operator'] = '>';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['value']['value'] = '2100-01';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['group'] = 13;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['expose']['operator_id'] = 'field_participant_role_date_to_timestamp_1_op';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['expose']['label'] = 'Participant To Outside';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['expose']['operator'] = 'field_participant_role_date_to_timestamp_1_op';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['expose']['identifier'] = 'field_participant_role_date_to_timestamp_max';
+$handler->display->display_options['filters']['field_participant_role_date_to_timestamp_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status_2']['id'] = 'status_2';
+$handler->display->display_options['filters']['status_2']['table'] = 'node';
+$handler->display->display_options['filters']['status_2']['field'] = 'status';
+$handler->display->display_options['filters']['status_2']['relationship'] = 'uid';
+$handler->display->display_options['filters']['status_2']['value'] = '1';
+$handler->display->display_options['filters']['status_2']['group'] = 14;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type_13']['id'] = 'type_13';
+$handler->display->display_options['filters']['type_13']['table'] = 'node';
+$handler->display->display_options['filters']['type_13']['field'] = 'type';
+$handler->display->display_options['filters']['type_13']['relationship'] = 'uid';
+$handler->display->display_options['filters']['type_13']['value'] = array(
+  'students' => 'students',
+);
+$handler->display->display_options['filters']['type_13']['group'] = 14;
+/* Filter criterion: Student From Outside */
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['id'] = 'field_student_type_date_from_timestamp_1';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['table'] = 'field_data_field_student_type';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['field'] = 'field_student_type_date_from_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['ui_name'] = 'Student From Outside';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['operator'] = '<';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['value']['value'] = '2100-01';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['group'] = 14;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['expose']['operator_id'] = 'field_student_type_date_from_timestamp_1_op';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['expose']['label'] = 'Student From Outside';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['expose']['operator'] = 'field_student_type_date_from_timestamp_1_op';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['expose']['identifier'] = 'field_student_type_date_from_timestamp_min';
+$handler->display->display_options['filters']['field_student_type_date_from_timestamp_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+/* Filter criterion: Student To Outside */
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['id'] = 'field_student_type_date_to_timestamp_1';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['table'] = 'field_data_field_student_type';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['field'] = 'field_student_type_date_to_timestamp';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['relationship'] = 'uid';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['ui_name'] = 'Student To Outside';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['operator'] = '>';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['value']['value'] = '2100-01';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['group'] = 14;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['exposed'] = TRUE;
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['expose']['operator_id'] = 'field_student_type_date_to_timestamp_1_op';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['expose']['label'] = 'Student To Outside';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['expose']['operator'] = 'field_student_type_date_to_timestamp_1_op';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['expose']['identifier'] = 'field_student_type_date_to_timestamp_max';
+$handler->display->display_options['filters']['field_student_type_date_to_timestamp_1']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+$handler->display->display_options['block_description'] = 'PIs with No Contributions';

@@ -1,0 +1,131 @@
+<?php
+
+$roles = array_flip(user_roles());
+
+$view = new view();
+$view->name = 'my_templates';
+$view->description = '';
+$view->tag = 'default';
+$view->base_table = 'node';
+$view->human_name = 'My Templates';
+$view->core = 7;
+$view->api_version = '3.0';
+$view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+/* Display: Master */
+$handler = $view->new_display('default', 'Master', 'default');
+$handler->display->display_options['title'] = 'My Dataset Templates';
+$handler->display->display_options['use_more_always'] = FALSE;
+$handler->display->display_options['access']['type'] = 'role';
+$handler->display->display_options['access']['role'] = array(
+  $roles['administrator'] => $roles['administrator'],
+  $roles['Administration'] => $roles['Administration'],
+  $roles['Data Manager'] => $roles['Data Manager'],
+  $roles['Information Technology'] => $roles['Information Technology'],
+  $roles['Principal Investigator (PI)'] => $roles['Principal Investigator (PI)'],
+  $roles['Program Director'] => $roles['Program Director'],
+  $roles['Public Outreach'] => $roles['Public Outreach'],
+  $roles['Research Professional'] => $roles['Research Professional'],
+);
+$handler->display->display_options['cache']['type'] = 'none';
+$handler->display->display_options['query']['type'] = 'views_query';
+$handler->display->display_options['exposed_form']['type'] = 'basic';
+$handler->display->display_options['pager']['type'] = 'none';
+$handler->display->display_options['style_plugin'] = 'table';
+/* No results behavior: Global: Text area */
+$handler->display->display_options['empty']['area']['id'] = 'area';
+$handler->display->display_options['empty']['area']['table'] = 'views';
+$handler->display->display_options['empty']['area']['field'] = 'area';
+$handler->display->display_options['empty']['area']['empty'] = TRUE;
+$handler->display->display_options['empty']['area']['content'] = 'You don\'t currently have any dataset templates defined. To use a dataset as a template, check the "Use this Dataset as a template" box when creating or editing a dataset.';
+$handler->display->display_options['empty']['area']['format'] = 'full_html';
+/* Field: Content: Title */
+$handler->display->display_options['fields']['title']['id'] = 'title';
+$handler->display->display_options['fields']['title']['table'] = 'node';
+$handler->display->display_options['fields']['title']['field'] = 'title';
+$handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
+$handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+/* Field: Content: Clone link */
+$handler->display->display_options['fields']['clone_node']['id'] = 'clone_node';
+$handler->display->display_options['fields']['clone_node']['table'] = 'node';
+$handler->display->display_options['fields']['clone_node']['field'] = 'clone_node';
+$handler->display->display_options['fields']['clone_node']['label'] = '';
+$handler->display->display_options['fields']['clone_node']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['clone_node']['text'] = 'Create Dataset from template';
+/* Sort criterion: Content: Title */
+$handler->display->display_options['sorts']['title']['id'] = 'title';
+$handler->display->display_options['sorts']['title']['table'] = 'node';
+$handler->display->display_options['sorts']['title']['field'] = 'title';
+/* Contextual filter: Content: Author uid */
+$handler->display->display_options['arguments']['uid']['id'] = 'uid';
+$handler->display->display_options['arguments']['uid']['table'] = 'node';
+$handler->display->display_options['arguments']['uid']['field'] = 'uid';
+$handler->display->display_options['arguments']['uid']['default_action'] = 'default';
+$handler->display->display_options['arguments']['uid']['default_argument_type'] = 'current_user';
+$handler->display->display_options['arguments']['uid']['summary']['number_of_records'] = '0';
+$handler->display->display_options['arguments']['uid']['summary']['format'] = 'default_summary';
+$handler->display->display_options['arguments']['uid']['summary_options']['items_per_page'] = '25';
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'node';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 1;
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'dataset' => 'dataset',
+);
+/* Filter criterion: Content: Use this Dataset as a Template (field_use_this_dataset_as_a_temp) */
+$handler->display->display_options['filters']['field_use_this_dataset_as_a_temp_value']['id'] = 'field_use_this_dataset_as_a_temp_value';
+$handler->display->display_options['filters']['field_use_this_dataset_as_a_temp_value']['table'] = 'field_data_field_use_this_dataset_as_a_temp';
+$handler->display->display_options['filters']['field_use_this_dataset_as_a_temp_value']['field'] = 'field_use_this_dataset_as_a_temp_value';
+$handler->display->display_options['filters']['field_use_this_dataset_as_a_temp_value']['value'] = array(
+  1 => '1',
+);
+
+/* Display: Page */
+$handler = $view->new_display('page', 'Page', 'page');
+$handler->display->display_options['path'] = 'contributions_data/my-datasets/my-templates';
+
+/* Display: Block */
+$handler = $view->new_display('block', 'Block', 'block_templates');
+$handler->display->display_options['defaults']['style_plugin'] = FALSE;
+$handler->display->display_options['style_plugin'] = 'default';
+$handler->display->display_options['defaults']['style_options'] = FALSE;
+$handler->display->display_options['defaults']['row_plugin'] = FALSE;
+$handler->display->display_options['row_plugin'] = 'fields';
+$handler->display->display_options['defaults']['row_options'] = FALSE;
+$handler->display->display_options['defaults']['fields'] = FALSE;
+/* Field: Content: Title */
+$handler->display->display_options['fields']['title']['id'] = 'title';
+$handler->display->display_options['fields']['title']['table'] = 'node';
+$handler->display->display_options['fields']['title']['field'] = 'title';
+$handler->display->display_options['fields']['title']['label'] = '';
+$handler->display->display_options['fields']['title']['alter']['word_boundary'] = FALSE;
+$handler->display->display_options['fields']['title']['alter']['ellipsis'] = FALSE;
+$handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['title']['link_to_node'] = FALSE;
+/* Field: Content: Clone link */
+$handler->display->display_options['fields']['clone_node']['id'] = 'clone_node';
+$handler->display->display_options['fields']['clone_node']['table'] = 'node';
+$handler->display->display_options['fields']['clone_node']['field'] = 'clone_node';
+$handler->display->display_options['fields']['clone_node']['label'] = '';
+$handler->display->display_options['fields']['clone_node']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['clone_node']['element_wrapper_type'] = 'span';
+$handler->display->display_options['fields']['clone_node']['element_wrapper_class'] = 'btn btn-templates btn-template-clone';
+$handler->display->display_options['fields']['clone_node']['element_default_classes'] = FALSE;
+$handler->display->display_options['fields']['clone_node']['text'] = 'Create New Dataset';
+/* Field: Content: Edit link */
+$handler->display->display_options['fields']['edit_node']['id'] = 'edit_node';
+$handler->display->display_options['fields']['edit_node']['table'] = 'views_entity_node';
+$handler->display->display_options['fields']['edit_node']['field'] = 'edit_node';
+$handler->display->display_options['fields']['edit_node']['label'] = '';
+$handler->display->display_options['fields']['edit_node']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['edit_node']['element_wrapper_type'] = 'span';
+$handler->display->display_options['fields']['edit_node']['element_wrapper_class'] = 'btn btn-templates btn-template-edit';
+$handler->display->display_options['fields']['edit_node']['element_default_classes'] = FALSE;
+$handler->display->display_options['fields']['edit_node']['text'] = 'Edit this Template';

@@ -1,0 +1,515 @@
+<?php
+
+module_load_include('inc', 'ecogig_odp', 'includes/helpers');
+
+$ds_workflow = ecogig_odp_get_workflow('dataset_workflows');
+$states = ecogig_odp_get_workflow_states();
+
+$view = new view();
+$view->name = 'dataset_progress_report';
+$view->description = '';
+$view->tag = 'default';
+$view->base_table = 'node';
+$view->human_name = 'Dataset Progress Report';
+$view->core = 7;
+$view->api_version = '3.0';
+$view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+/* Display: Master */
+$handler = $view->new_display('default', 'Master', 'default');
+$handler->display->display_options['use_ajax'] = TRUE;
+$handler->display->display_options['use_more_always'] = FALSE;
+$handler->display->display_options['access']['type'] = 'perm';
+$handler->display->display_options['cache']['type'] = 'none';
+$handler->display->display_options['query']['type'] = 'views_query';
+$handler->display->display_options['exposed_form']['type'] = 'basic';
+$handler->display->display_options['pager']['type'] = 'none';
+$handler->display->display_options['pager']['options']['offset'] = '0';
+$handler->display->display_options['style_plugin'] = 'default';
+$handler->display->display_options['row_plugin'] = 'fields';
+/* Field: Content: Nid */
+$handler->display->display_options['fields']['nid']['id'] = 'nid';
+$handler->display->display_options['fields']['nid']['table'] = 'node';
+$handler->display->display_options['fields']['nid']['field'] = 'nid';
+$handler->display->display_options['fields']['nid']['group_type'] = 'count';
+$handler->display->display_options['fields']['nid']['label'] = '';
+$handler->display->display_options['fields']['nid']['element_label_colon'] = FALSE;
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'node';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 1;
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'dataset' => 'dataset',
+);
+/* Filter criterion: Workflow current: Timestamp */
+$handler->display->display_options['filters']['timestamp']['id'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['timestamp']['field'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['timestamp']['value']['min'] = '2000-01-01';
+$handler->display->display_options['filters']['timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['timestamp']['expose']['operator_id'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['label'] = 'Timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['operator'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['identifier'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+
+/* Display: Total */
+$handler = $view->new_display('block', 'Total', 'block_all_datasets');
+$handler->display->display_options['defaults']['title'] = FALSE;
+$handler->display->display_options['title'] = 'Total Datasets';
+$handler->display->display_options['defaults']['group_by'] = FALSE;
+$handler->display->display_options['group_by'] = TRUE;
+
+/* Display: Active */
+$handler = $view->new_display('block', 'Active', 'block_active');
+$handler->display->display_options['defaults']['title'] = FALSE;
+$handler->display->display_options['title'] = 'Active Datasets';
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'node';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 1;
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'dataset' => 'dataset',
+);
+/* Filter criterion: Workflow current: New state name */
+$handler->display->display_options['filters']['sid']['id'] = 'sid';
+$handler->display->display_options['filters']['sid']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['sid']['field'] = 'sid';
+$handler->display->display_options['filters']['sid']['operator'] = 'not in';
+$handler->display->display_options['filters']['sid']['value'] = array(
+  $states['marked_for_deletion']->sid => $states['marked_for_deletion']->sid,
+);
+/* Filter criterion: Workflow current: Timestamp */
+$handler->display->display_options['filters']['timestamp']['id'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['timestamp']['field'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['timestamp']['value']['min'] = '2000-01-01';
+$handler->display->display_options['filters']['timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['timestamp']['expose']['operator_id'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['label'] = 'Timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['operator'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['identifier'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+
+/* Display: Inactive */
+$handler = $view->new_display('block', 'Inactive', 'block_inactive');
+$handler->display->display_options['defaults']['title'] = FALSE;
+$handler->display->display_options['title'] = 'Inactive Datasets';
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'node';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 1;
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'dataset' => 'dataset',
+);
+/* Filter criterion: Workflow current: New state name */
+$handler->display->display_options['filters']['sid']['id'] = 'sid';
+$handler->display->display_options['filters']['sid']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['sid']['field'] = 'sid';
+$handler->display->display_options['filters']['sid']['value'] = array(
+  $states['marked_for_deletion']->sid => $states['marked_for_deletion']->sid,
+);
+/* Filter criterion: Workflow current: Timestamp */
+$handler->display->display_options['filters']['timestamp']['id'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['timestamp']['field'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['timestamp']['value']['min'] = '2000-01-01';
+$handler->display->display_options['filters']['timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['timestamp']['expose']['operator_id'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['label'] = 'Timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['operator'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['identifier'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+
+/* Display: Tracks - Identification */
+$handler = $view->new_display('block', 'Tracks - Identification', 'block_identification');
+$handler->display->display_options['defaults']['title'] = FALSE;
+$handler->display->display_options['title'] = 'Identification';
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'node';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 1;
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'dataset' => 'dataset',
+);
+/* Filter criterion: Workflow current: New state name */
+$handler->display->display_options['filters']['sid']['id'] = 'sid';
+$handler->display->display_options['filters']['sid']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['sid']['field'] = 'sid';
+$handler->display->display_options['filters']['sid']['value'] = array(
+  $states['new_request_needs_repo_udi']->sid => $states['new_request_needs_repo_udi']->sid,
+);
+/* Filter criterion: Workflow current: Timestamp */
+$handler->display->display_options['filters']['timestamp']['id'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['timestamp']['field'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['timestamp']['value']['min'] = '2000-01-01';
+$handler->display->display_options['filters']['timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['timestamp']['expose']['operator_id'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['label'] = 'Timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['operator'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['identifier'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+
+/* Display: Tracks - Metadata */
+$handler = $view->new_display('block', 'Tracks - Metadata', 'block_metadata');
+$handler->display->display_options['defaults']['title'] = FALSE;
+$handler->display->display_options['title'] = 'Metadata';
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'node';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 1;
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'dataset' => 'dataset',
+);
+/* Filter criterion: Workflow current: New state name */
+$handler->display->display_options['filters']['sid']['id'] = 'sid';
+$handler->display->display_options['filters']['sid']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['sid']['field'] = 'sid';
+$handler->display->display_options['filters']['sid']['value'] = array(
+  $states['repo_udi_assigned_need_metadata']->sid => $states['repo_udi_assigned_need_metadata']->sid,
+  $states['metadata_supplied']->sid => $states['metadata_supplied']->sid,
+  $states['metadata_return']->sid => $states['metadata_return']->sid,
+  $states['metadata_submitted_to_repo']->sid => $states['metadata_submitted_to_repo']->sid,
+);
+/* Filter criterion: Workflow current: Timestamp */
+$handler->display->display_options['filters']['timestamp']['id'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['timestamp']['field'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['timestamp']['value']['min'] = '2000-01-01';
+$handler->display->display_options['filters']['timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['timestamp']['expose']['operator_id'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['label'] = 'Timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['operator'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['identifier'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+
+/* Display: Tracks - Data Files */
+$handler = $view->new_display('block', 'Tracks - Data Files', 'block_data');
+$handler->display->display_options['defaults']['title'] = FALSE;
+$handler->display->display_options['title'] = 'Data Files';
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'node';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 1;
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'dataset' => 'dataset',
+);
+/* Filter criterion: Workflow current: New state name */
+$handler->display->display_options['filters']['sid']['id'] = 'sid';
+$handler->display->display_options['filters']['sid']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['sid']['field'] = 'sid';
+$handler->display->display_options['filters']['sid']['value'] = array(
+  $states['need_data_files']->sid => $states['need_data_files']->sid,
+  $states['data_files_supplied']->sid => $states['data_files_supplied']->sid,
+  $states['need_data_file_review_and_approval_']->sid => $states['need_data_file_review_and_approval_']->sid,
+  $states['data_files_approved_by_pi']->sid => $states['data_files_approved_by_pi']->sid,
+  $states['data_files_return']->sid => $states['data_files_return']->sid,
+  $states['data_files_approved']->sid => $states['data_files_approved']->sid,
+);
+/* Filter criterion: Workflow current: Timestamp */
+$handler->display->display_options['filters']['timestamp']['id'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['timestamp']['field'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['timestamp']['value']['min'] = '2000-01-01';
+$handler->display->display_options['filters']['timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['timestamp']['expose']['operator_id'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['label'] = 'Timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['operator'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['identifier'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+
+/* Display: Tracks - Permanent Repository */
+$handler = $view->new_display('block', 'Tracks - Permanent Repository', 'block_permanent_repository');
+$handler->display->display_options['defaults']['title'] = FALSE;
+$handler->display->display_options['title'] = 'Permanent Repository';
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'node';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 1;
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'dataset' => 'dataset',
+);
+/* Filter criterion: Workflow current: New state name */
+$handler->display->display_options['filters']['sid']['id'] = 'sid';
+$handler->display->display_options['filters']['sid']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['sid']['field'] = 'sid';
+$handler->display->display_options['filters']['sid']['value'] = array(
+  $states['data_submitted_to_repo']->sid => $states['data_submitted_to_repo']->sid,
+);
+/* Filter criterion: Workflow current: Timestamp */
+$handler->display->display_options['filters']['timestamp']['id'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['timestamp']['field'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['timestamp']['value']['min'] = '2000-01-01';
+$handler->display->display_options['filters']['timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['timestamp']['expose']['operator_id'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['label'] = 'Timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['operator'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['identifier'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+
+/* Display: Tracks - Availability */
+$handler = $view->new_display('block', 'Tracks - Availability', 'block_availability');
+$handler->display->display_options['defaults']['title'] = FALSE;
+$handler->display->display_options['title'] = 'Availability';
+$handler->display->display_options['defaults']['filter_groups'] = FALSE;
+$handler->display->display_options['defaults']['filters'] = FALSE;
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'node';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 1;
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'dataset' => 'dataset',
+);
+/* Filter criterion: Workflow current: New state name */
+$handler->display->display_options['filters']['sid']['id'] = 'sid';
+$handler->display->display_options['filters']['sid']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['sid']['field'] = 'sid';
+$handler->display->display_options['filters']['sid']['value'] = array(
+  $states['data_listed_as_private']->sid => $states['data_listed_as_private']->sid,
+  $states['list_data_as_public']->sid => $states['list_data_as_public']->sid,
+);
+/* Filter criterion: Workflow current: Timestamp */
+$handler->display->display_options['filters']['timestamp']['id'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['table'] = 'workflow_node_current';
+$handler->display->display_options['filters']['timestamp']['field'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['operator'] = 'between';
+$handler->display->display_options['filters']['timestamp']['value']['min'] = '2000-01-01';
+$handler->display->display_options['filters']['timestamp']['value']['max'] = '2100-01-01';
+$handler->display->display_options['filters']['timestamp']['exposed'] = TRUE;
+$handler->display->display_options['filters']['timestamp']['expose']['operator_id'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['label'] = 'Timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['operator'] = 'timestamp_op';
+$handler->display->display_options['filters']['timestamp']['expose']['identifier'] = 'timestamp';
+$handler->display->display_options['filters']['timestamp']['expose']['remember_roles'] = array(
+  2 => '2',
+  10 => 0,
+  3 => 0,
+  9 => 0,
+  8 => 0,
+  4 => 0,
+  5 => 0,
+  6 => 0,
+  7 => 0,
+  1 => 0,
+);
+
+/* Display: Totals - Workflow State */
+$handler = $view->new_display('block', 'Totals - Workflow State', 'block_status_chart');
+$handler->display->display_options['defaults']['title'] = FALSE;
+$handler->display->display_options['title'] = 'Totals by Workflow State';
+$handler->display->display_options['defaults']['group_by'] = FALSE;
+$handler->display->display_options['group_by'] = TRUE;
+$handler->display->display_options['defaults']['style_plugin'] = FALSE;
+$handler->display->display_options['style_plugin'] = 'chart';
+$handler->display->display_options['style_options']['library'] = '';
+$handler->display->display_options['style_options']['label_field'] = 'sid';
+$handler->display->display_options['style_options']['data_fields'] = array(
+  'sid' => 'sid',
+  'sid_1' => 'sid_1',
+);
+$handler->display->display_options['style_options']['field_colors'] = array(
+  'sid' => '#0d233a',
+  'sid_1' => '#4593f6',
+);
+$handler->display->display_options['style_options']['title'] = 'Totals by Workflow State';
+$handler->display->display_options['style_options']['title_position'] = '';
+$handler->display->display_options['style_options']['legend_position'] = 'left';
+$handler->display->display_options['style_options']['colors'] = array(
+  0 => '#2f7ed8',
+  1 => '#003e7f',
+  2 => '#c0fff9',
+  3 => '#b5b5b5',
+  4 => '#1aadce',
+  5 => '#b0ffb9',
+  6 => '#02fe00',
+  7 => '#77a1e5',
+  8 => '#606060',
+  9 => '#a6c96a',
+);
+$handler->display->display_options['style_options']['width'] = '900';
+$handler->display->display_options['style_options']['height'] = '600';
+$handler->display->display_options['style_options']['xaxis_labels_rotation'] = '0';
+$handler->display->display_options['style_options']['yaxis_labels_rotation'] = '0';
+$handler->display->display_options['defaults']['style_options'] = FALSE;
+$handler->display->display_options['defaults']['row_plugin'] = FALSE;
+$handler->display->display_options['defaults']['row_options'] = FALSE;
+$handler->display->display_options['defaults']['fields'] = FALSE;
+/* Field: Workflow current: New state name */
+$handler->display->display_options['fields']['sid']['id'] = 'sid';
+$handler->display->display_options['fields']['sid']['table'] = 'workflow_node_current';
+$handler->display->display_options['fields']['sid']['field'] = 'sid';
+$handler->display->display_options['fields']['sid']['label'] = 'Workflow State';
+/* Field: Workflow current: New state name */
+$handler->display->display_options['fields']['sid_1']['id'] = 'sid_1';
+$handler->display->display_options['fields']['sid_1']['table'] = 'workflow_node_current';
+$handler->display->display_options['fields']['sid_1']['field'] = 'sid';
+$handler->display->display_options['fields']['sid_1']['group_type'] = 'count';
+$handler->display->display_options['fields']['sid_1']['label'] = 'Total';
+$handler->display->display_options['defaults']['sorts'] = FALSE;
+/* Sort criterion: Workflow current: New state name */
+$handler->display->display_options['sorts']['sid']['id'] = 'sid';
+$handler->display->display_options['sorts']['sid']['table'] = 'workflow_node_current';
+$handler->display->display_options['sorts']['sid']['field'] = 'sid';
+$handler->display->display_options['sorts']['sid']['group_type'] = 'count';
+$handler->display->display_options['sorts']['sid']['order'] = 'DESC';

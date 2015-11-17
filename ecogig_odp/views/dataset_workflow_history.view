@@ -1,0 +1,125 @@
+<?php
+$view = new view();
+$view->name = 'dataset_workflow_history';
+$view->description = '';
+$view->tag = 'default';
+$view->base_table = 'node';
+$view->human_name = 'Dataset Workflow History';
+$view->core = 7;
+$view->api_version = '3.0';
+$view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+/* Display: Master */
+$handler = $view->new_display('default', 'Master', 'default');
+$handler->display->display_options['title'] = 'Dataset Workflow History';
+$handler->display->display_options['use_more_always'] = FALSE;
+$handler->display->display_options['access']['type'] = 'perm';
+$handler->display->display_options['cache']['type'] = 'none';
+$handler->display->display_options['query']['type'] = 'views_query';
+$handler->display->display_options['exposed_form']['type'] = 'basic';
+$handler->display->display_options['pager']['type'] = 'some';
+$handler->display->display_options['pager']['options']['items_per_page'] = '50';
+$handler->display->display_options['style_plugin'] = 'table';
+$handler->display->display_options['style_options']['columns'] = array(
+  'comment' => 'comment',
+  'old_sid' => 'old_sid',
+  'sid' => 'sid',
+);
+$handler->display->display_options['style_options']['default'] = '-1';
+$handler->display->display_options['style_options']['info'] = array(
+  'comment' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'old_sid' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'sid' => array(
+    'sortable' => 0,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+);
+/* Header: Global: Text area */
+$handler->display->display_options['header']['area']['id'] = 'area';
+$handler->display->display_options['header']['area']['table'] = 'views';
+$handler->display->display_options['header']['area']['field'] = 'area';
+$handler->display->display_options['header']['area']['content'] = '<h2>[field_repo_udi]
+[title]<h2>';
+$handler->display->display_options['header']['area']['format'] = 'full_html';
+$handler->display->display_options['header']['area']['tokenize'] = TRUE;
+/* Field: Workflow history: Comment */
+$handler->display->display_options['fields']['comment']['id'] = 'comment';
+$handler->display->display_options['fields']['comment']['table'] = 'workflow_node_history';
+$handler->display->display_options['fields']['comment']['field'] = 'comment';
+$handler->display->display_options['fields']['comment']['hide_empty'] = TRUE;
+/* Field: Workflow history: Old state name */
+$handler->display->display_options['fields']['old_sid']['id'] = 'old_sid';
+$handler->display->display_options['fields']['old_sid']['table'] = 'workflow_node_history';
+$handler->display->display_options['fields']['old_sid']['field'] = 'old_sid';
+$handler->display->display_options['fields']['old_sid']['exclude'] = TRUE;
+/* Field: Workflow history: New state name */
+$handler->display->display_options['fields']['sid']['id'] = 'sid';
+$handler->display->display_options['fields']['sid']['table'] = 'workflow_node_history';
+$handler->display->display_options['fields']['sid']['field'] = 'sid';
+$handler->display->display_options['fields']['sid']['label'] = 'Status Change';
+$handler->display->display_options['fields']['sid']['alter']['alter_text'] = TRUE;
+$handler->display->display_options['fields']['sid']['alter']['text'] = '[old_sid] -> [sid]';
+/* Field: Content: repo UDI */
+$handler->display->display_options['fields']['field_repo_udi']['id'] = 'field_repo_udi';
+$handler->display->display_options['fields']['field_repo_udi']['table'] = 'field_data_field_repo_udi';
+$handler->display->display_options['fields']['field_repo_udi']['field'] = 'field_repo_udi';
+$handler->display->display_options['fields']['field_repo_udi']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_repo_udi']['settings'] = array(
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Content: Title */
+$handler->display->display_options['fields']['title']['id'] = 'title';
+$handler->display->display_options['fields']['title']['table'] = 'node';
+$handler->display->display_options['fields']['title']['field'] = 'title';
+$handler->display->display_options['fields']['title']['exclude'] = TRUE;
+/* Sort criterion: Content: Post date */
+$handler->display->display_options['sorts']['created']['id'] = 'created';
+$handler->display->display_options['sorts']['created']['table'] = 'node';
+$handler->display->display_options['sorts']['created']['field'] = 'created';
+$handler->display->display_options['sorts']['created']['order'] = 'DESC';
+/* Contextual filter: Content: Nid */
+$handler->display->display_options['arguments']['nid']['id'] = 'nid';
+$handler->display->display_options['arguments']['nid']['table'] = 'node';
+$handler->display->display_options['arguments']['nid']['field'] = 'nid';
+$handler->display->display_options['arguments']['nid']['default_action'] = 'empty';
+$handler->display->display_options['arguments']['nid']['default_argument_type'] = 'fixed';
+$handler->display->display_options['arguments']['nid']['summary']['number_of_records'] = '0';
+$handler->display->display_options['arguments']['nid']['summary']['format'] = 'default_summary';
+$handler->display->display_options['arguments']['nid']['summary_options']['items_per_page'] = '25';
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'node';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 1;
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'dataset' => 'dataset',
+);
+
+/* Display: Block */
+$handler = $view->new_display('block', 'Block', 'block');
+
+/* Display: Page */
+$handler = $view->new_display('page', 'Page', 'page_1');
+$handler->display->display_options['path'] = 'node/%/workflow-history';

@@ -1,0 +1,1079 @@
+<?php
+
+$view = new view();
+$view->name = 'dataset_export';
+$view->description = '';
+$view->tag = 'default';
+$view->base_table = 'node';
+$view->human_name = 'Dataset Export';
+$view->core = 7;
+$view->api_version = '3.0';
+$view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+/* Display: Master */
+$handler = $view->new_display('default', 'Master', 'default');
+$handler->display->display_options['use_more_always'] = FALSE;
+$handler->display->display_options['access']['type'] = 'perm';
+$handler->display->display_options['cache']['type'] = 'none';
+$handler->display->display_options['query']['type'] = 'views_query';
+$handler->display->display_options['exposed_form']['type'] = 'basic';
+$handler->display->display_options['pager']['type'] = 'full';
+$handler->display->display_options['style_plugin'] = 'default';
+$handler->display->display_options['row_plugin'] = 'fields';
+/* Relationship: Contact Person Profile */
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['id'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['table'] = 'field_data_field_dataset_contact_person';
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['field'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['ui_name'] = 'Contact Person Profile';
+$handler->display->display_options['relationships']['field_dataset_contact_person_target_id']['label'] = 'Contact Person Profile';
+/* Relationship: Metadata Contact Person Profile */
+$handler->display->display_options['relationships']['field_metadata_contact_person_target_id']['id'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['relationships']['field_metadata_contact_person_target_id']['table'] = 'field_data_field_metadata_contact_person';
+$handler->display->display_options['relationships']['field_metadata_contact_person_target_id']['field'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['relationships']['field_metadata_contact_person_target_id']['ui_name'] = 'Metadata Contact Person Profile';
+$handler->display->display_options['relationships']['field_metadata_contact_person_target_id']['label'] = 'Metadata Contact Person Profile';
+/* Field: Content: repo UDI */
+$handler->display->display_options['fields']['field_repo_udi']['id'] = 'field_repo_udi';
+$handler->display->display_options['fields']['field_repo_udi']['table'] = 'field_data_field_repo_udi';
+$handler->display->display_options['fields']['field_repo_udi']['field'] = 'field_repo_udi';
+$handler->display->display_options['fields']['field_repo_udi']['label'] = 'gmd:fileIdentifier';
+$handler->display->display_options['fields']['field_repo_udi']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_repo_udi']['alter']['alter_text'] = TRUE;
+$handler->display->display_options['fields']['field_repo_udi']['alter']['text'] = '<gco:CharacterString>[field_repo_udi]</gco:CharacterString>';
+$handler->display->display_options['fields']['field_repo_udi']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['field_repo_udi']['settings'] = array(
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Global: PHP */
+$handler->display->display_options['fields']['php']['id'] = 'php';
+$handler->display->display_options['fields']['php']['table'] = 'views';
+$handler->display->display_options['fields']['php']['field'] = 'php';
+$handler->display->display_options['fields']['php']['label'] = 'gmd:fileIdentifier';
+$handler->display->display_options['fields']['php']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php']['php_output'] = '<?php
+$udi = !empty($data->_field_data[\'nid\'][\'entity\']->field_repo_udi[LANGUAGE_NONE][0][\'value\']) ? str_replace(\':\', \'-\', $data->_field_data[\'nid\'][\'entity\']->field_repo_udi[LANGUAGE_NONE][0][\'value\']) : \'\';
+echo \'<gco:CharacterString>\' . $udi .\'-metadata.xml</gco:CharacterString>\' . PHP_EOL;
+?>';
+$handler->display->display_options['fields']['php']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php']['php_click_sortable'] = '';
+/* Field: Global: PHP */
+$handler->display->display_options['fields']['php_1']['id'] = 'php_1';
+$handler->display->display_options['fields']['php_1']['table'] = 'views';
+$handler->display->display_options['fields']['php_1']['field'] = 'php';
+$handler->display->display_options['fields']['php_1']['label'] = 'gmd:language';
+$handler->display->display_options['fields']['php_1']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php_1']['php_output'] = '<?php
+echo \'<gco:CharacterString>\', \'eng; USA\',\'</gco:CharacterString>\' . PHP_EOL;
+?>';
+$handler->display->display_options['fields']['php_1']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php_1']['php_click_sortable'] = '';
+/* Field: Global: PHP */
+$handler->display->display_options['fields']['php_2']['id'] = 'php_2';
+$handler->display->display_options['fields']['php_2']['table'] = 'views';
+$handler->display->display_options['fields']['php_2']['field'] = 'php';
+$handler->display->display_options['fields']['php_2']['label'] = 'gmd:characterSet';
+$handler->display->display_options['fields']['php_2']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php_2']['php_output'] = '<?php
+echo \'<gmd:MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8" codeSpace="004">\', \'utf8\',\'</gmd:MD_CharacterSetCode>\' . PHP_EOL;
+?>';
+$handler->display->display_options['fields']['php_2']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php_2']['php_click_sortable'] = '';
+/* Field: Global: PHP */
+$handler->display->display_options['fields']['php_3']['id'] = 'php_3';
+$handler->display->display_options['fields']['php_3']['table'] = 'views';
+$handler->display->display_options['fields']['php_3']['field'] = 'php';
+$handler->display->display_options['fields']['php_3']['label'] = 'gmd:hierarchyLevel';
+$handler->display->display_options['fields']['php_3']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php_3']['php_output'] = '<?php
+echo \'<gmd:MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset" codeSpace="005">\', \'dataset\',\'</gmd:MD_ScopeCode>\' . PHP_EOL;
+?>';
+$handler->display->display_options['fields']['php_3']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php_3']['php_click_sortable'] = '';
+/* Field: Content: Address */
+$handler->display->display_options['fields']['field_profile_address']['id'] = 'field_profile_address';
+$handler->display->display_options['fields']['field_profile_address']['table'] = 'field_data_field_profile_address';
+$handler->display->display_options['fields']['field_profile_address']['field'] = 'field_profile_address';
+$handler->display->display_options['fields']['field_profile_address']['relationship'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['fields']['field_profile_address']['label'] = 'Contact Person Address';
+$handler->display->display_options['fields']['field_profile_address']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_profile_address']['click_sort_column'] = 'country';
+$handler->display->display_options['fields']['field_profile_address']['settings'] = array(
+  'use_widget_handlers' => 1,
+  'format_handlers' => array(
+    'address' => 'address',
+  ),
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Content: Address - Administrative area (i.e. State / Province) */
+$handler->display->display_options['fields']['field_profile_address_administrative_area']['id'] = 'field_profile_address_administrative_area';
+$handler->display->display_options['fields']['field_profile_address_administrative_area']['table'] = 'field_data_field_profile_address';
+$handler->display->display_options['fields']['field_profile_address_administrative_area']['field'] = 'field_profile_address_administrative_area';
+$handler->display->display_options['fields']['field_profile_address_administrative_area']['relationship'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['fields']['field_profile_address_administrative_area']['label'] = 'Contact Person State';
+$handler->display->display_options['fields']['field_profile_address_administrative_area']['exclude'] = TRUE;
+/* Field: Content: Address - Country */
+$handler->display->display_options['fields']['field_profile_address_country']['id'] = 'field_profile_address_country';
+$handler->display->display_options['fields']['field_profile_address_country']['table'] = 'field_data_field_profile_address';
+$handler->display->display_options['fields']['field_profile_address_country']['field'] = 'field_profile_address_country';
+$handler->display->display_options['fields']['field_profile_address_country']['relationship'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['fields']['field_profile_address_country']['label'] = 'Contact Person Address';
+$handler->display->display_options['fields']['field_profile_address_country']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_profile_address_country']['display_name'] = 1;
+/* Field: Content: Address - Locality (i.e. City) */
+$handler->display->display_options['fields']['field_profile_address_locality']['id'] = 'field_profile_address_locality';
+$handler->display->display_options['fields']['field_profile_address_locality']['table'] = 'field_data_field_profile_address';
+$handler->display->display_options['fields']['field_profile_address_locality']['field'] = 'field_profile_address_locality';
+$handler->display->display_options['fields']['field_profile_address_locality']['relationship'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['fields']['field_profile_address_locality']['label'] = 'Contact Person City';
+$handler->display->display_options['fields']['field_profile_address_locality']['exclude'] = TRUE;
+/* Field: Content: Address - Postal code */
+$handler->display->display_options['fields']['field_profile_address_postal_code']['id'] = 'field_profile_address_postal_code';
+$handler->display->display_options['fields']['field_profile_address_postal_code']['table'] = 'field_data_field_profile_address';
+$handler->display->display_options['fields']['field_profile_address_postal_code']['field'] = 'field_profile_address_postal_code';
+$handler->display->display_options['fields']['field_profile_address_postal_code']['relationship'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['fields']['field_profile_address_postal_code']['label'] = 'Contact Person Zip';
+$handler->display->display_options['fields']['field_profile_address_postal_code']['exclude'] = TRUE;
+/* Field: Content: Institutional Department */
+$handler->display->display_options['fields']['field_institutional_department']['id'] = 'field_institutional_department';
+$handler->display->display_options['fields']['field_institutional_department']['table'] = 'field_data_field_institutional_department';
+$handler->display->display_options['fields']['field_institutional_department']['field'] = 'field_institutional_department';
+$handler->display->display_options['fields']['field_institutional_department']['relationship'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['fields']['field_institutional_department']['label'] = 'Contact Person Dept';
+$handler->display->display_options['fields']['field_institutional_department']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_institutional_department']['settings'] = array(
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Field: Email */
+$handler->display->display_options['fields']['field_email']['id'] = 'field_email';
+$handler->display->display_options['fields']['field_email']['table'] = 'field_data_field_email';
+$handler->display->display_options['fields']['field_email']['field'] = 'field_email';
+$handler->display->display_options['fields']['field_email']['relationship'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['fields']['field_email']['label'] = 'Contact Person Email';
+$handler->display->display_options['fields']['field_email']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_email']['settings'] = array(
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Field: First Name */
+$handler->display->display_options['fields']['field_first_name']['id'] = 'field_first_name';
+$handler->display->display_options['fields']['field_first_name']['table'] = 'field_data_field_first_name';
+$handler->display->display_options['fields']['field_first_name']['field'] = 'field_first_name';
+$handler->display->display_options['fields']['field_first_name']['relationship'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['fields']['field_first_name']['label'] = 'Contact Person First Name';
+$handler->display->display_options['fields']['field_first_name']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_first_name']['settings'] = array(
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Field: Last Name */
+$handler->display->display_options['fields']['field_last_name']['id'] = 'field_last_name';
+$handler->display->display_options['fields']['field_last_name']['table'] = 'field_data_field_last_name';
+$handler->display->display_options['fields']['field_last_name']['field'] = 'field_last_name';
+$handler->display->display_options['fields']['field_last_name']['relationship'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['fields']['field_last_name']['label'] = 'Contact Person Last Name';
+$handler->display->display_options['fields']['field_last_name']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_last_name']['settings'] = array(
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Field: Phone */
+$handler->display->display_options['fields']['field_phone']['id'] = 'field_phone';
+$handler->display->display_options['fields']['field_phone']['table'] = 'field_data_field_phone';
+$handler->display->display_options['fields']['field_phone']['field'] = 'field_phone';
+$handler->display->display_options['fields']['field_phone']['relationship'] = 'field_dataset_contact_person_target_id';
+$handler->display->display_options['fields']['field_phone']['label'] = 'Contact Person Phone';
+$handler->display->display_options['fields']['field_phone']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_phone']['settings'] = array(
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Content: Nid */
+$handler->display->display_options['fields']['nid']['id'] = 'nid';
+$handler->display->display_options['fields']['nid']['table'] = 'node';
+$handler->display->display_options['fields']['nid']['field'] = 'nid';
+$handler->display->display_options['fields']['nid']['relationship'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['fields']['nid']['label'] = 'Metadata Contact';
+$handler->display->display_options['fields']['nid']['exclude'] = TRUE;
+/* Field: Dataset Contact */
+$handler->display->display_options['fields']['php_4']['id'] = 'php_4';
+$handler->display->display_options['fields']['php_4']['table'] = 'views';
+$handler->display->display_options['fields']['php_4']['field'] = 'php';
+$handler->display->display_options['fields']['php_4']['ui_name'] = 'Dataset Contact';
+$handler->display->display_options['fields']['php_4']['label'] = 'gmd:contact';
+$handler->display->display_options['fields']['php_4']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php_4']['php_output'] = '<?php
+
+$node = $data->_field_data[\'nid\'][\'entity\'];
+$contact = $data->_field_data[\'node_field_data_field_dataset_contact_person_nid\'][\'entity\'];
+$position_tid = !empty($contact->field_personnel_term[LANGUAGE_NONE][0]) ? $contact->field_personnel_term[LANGUAGE_NONE][0][\'tid\'] : \'\';
+$personnel_term = taxonomy_term_load($position_tid);
+$position = !empty($personnel_term) ? $personnel_term->name : \'N/A\';
+
+$country = !empty($contact->field_profile_address[LANGUAGE_NONE][0][\'country\']) ? ecogig_odp_convert_country_code($contact->field_profile_address[LANGUAGE_NONE][0][\'country\']) : \'N/A\';
+
+
+echo \'<gmd:CI_ResponsibleParty>\' . PHP_EOL;
+echo \'<gmd:individualName>\' . PHP_EOL;
+  echo \'<gco:CharacterString>\', $data->_field_data[\'node_field_data_field_dataset_contact_person_nid\'][\'entity\']->title, \'</gco:CharacterString>\' . PHP_EOL;
+echo \'</gmd:individualName>\' . PHP_EOL;
+
+echo \'<gmd:organisationName>\' . PHP_EOL;
+  echo \'<gco:CharacterString>\', $data->_field_data[\'node_field_data_field_dataset_contact_person_nid\'][\'entity\']->field_organization[LANGUAGE_NONE][0][\'value\'], \'</gco:CharacterString>\' . PHP_EOL;
+echo \'</gmd:organisationName>\' . PHP_EOL;
+
+echo \'<gmd:positionName>\' . PHP_EOL;
+  echo \'<gco:CharacterString>\', $position, \'</gco:CharacterString>\' . PHP_EOL;
+echo \'</gmd:positionName>\' . PHP_EOL;
+
+echo \'<gmd:contactInfo>\' . PHP_EOL;
+  echo \'<gmd:CI_Contact>\' . PHP_EOL;
+    echo \'<gmd:phone>\' . PHP_EOL;
+          echo \'<gmd:CI_Telephone>\' . PHP_EOL;
+              echo \'<gmd:voice>\' . PHP_EOL;
+                  echo \'<gco:CharacterString>\', $contact->field_phone[LANGUAGE_NONE][0][\'value\'],\'</gco:CharacterString>\' . PHP_EOL;
+              echo \'</gmd:voice>\' . PHP_EOL;
+              echo \'<gmd:facsimile>\' . PHP_EOL;
+                  echo \'<gco:CharacterString />\' . PHP_EOL;
+              echo \'</gmd:facsimile>\' . PHP_EOL;
+          echo \'</gmd:CI_Telephone>\' . PHP_EOL;
+    echo \'</gmd:phone>\' . PHP_EOL;
+        echo \'<gmd:address>\' . PHP_EOL;
+            echo \'<gmd:CI_Address>\' . PHP_EOL;
+                echo \'<gmd:deliveryPoint>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $contact->field_profile_address[LANGUAGE_NONE][0][\'thoroughfare\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:deliveryPoint>\' . PHP_EOL;
+                echo \'<gmd:city>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $contact->field_profile_address[LANGUAGE_NONE][0][\'locality\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:city>\' . PHP_EOL;
+                echo \'<gmd:administrativeArea>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $contact->field_profile_address[LANGUAGE_NONE][0][\'administrative_area\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:administrativeArea>\' . PHP_EOL;
+                echo \'<gmd:postalCode>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $contact->field_profile_address[LANGUAGE_NONE][0][\'postal_code\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:postalCode>\' . PHP_EOL;
+                echo \'<gmd:country>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $country, \'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:country>\' . PHP_EOL;
+                echo \'<gmd:electronicMailAddress>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $contact->field_email[LANGUAGE_NONE][0][\'email\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:electronicMailAddress>\' . PHP_EOL;
+            echo \'</gmd:CI_Address>\' . PHP_EOL;
+        echo \'</gmd:address>\' . PHP_EOL;
+  echo \'</gmd:CI_Contact>\' . PHP_EOL;
+echo \'</gmd:contactInfo>\' . PHP_EOL;
+    echo \'<gmd:role>\' . PHP_EOL;
+        echo \'<gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact" codeSpace="007">\' . PHP_EOL;
+          echo \'pointOfContact\' . PHP_EOL;
+        echo \'</gmd:CI_RoleCode>\' . PHP_EOL;
+    echo \'</gmd:role>\' . PHP_EOL;
+echo \'</gmd:CI_ResponsibleParty>\' . PHP_EOL;
+
+?>';
+$handler->display->display_options['fields']['php_4']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php_4']['php_click_sortable'] = '';
+/* Field: Content: Address */
+$handler->display->display_options['fields']['field_profile_address_1']['id'] = 'field_profile_address_1';
+$handler->display->display_options['fields']['field_profile_address_1']['table'] = 'field_data_field_profile_address';
+$handler->display->display_options['fields']['field_profile_address_1']['field'] = 'field_profile_address';
+$handler->display->display_options['fields']['field_profile_address_1']['relationship'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['fields']['field_profile_address_1']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_profile_address_1']['click_sort_column'] = 'country';
+$handler->display->display_options['fields']['field_profile_address_1']['settings'] = array(
+  'use_widget_handlers' => 1,
+  'format_handlers' => array(
+    'address' => 'address',
+  ),
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Content: Address - Administrative area (i.e. State / Province) */
+$handler->display->display_options['fields']['field_profile_address_administrative_area_1']['id'] = 'field_profile_address_administrative_area_1';
+$handler->display->display_options['fields']['field_profile_address_administrative_area_1']['table'] = 'field_data_field_profile_address';
+$handler->display->display_options['fields']['field_profile_address_administrative_area_1']['field'] = 'field_profile_address_administrative_area';
+$handler->display->display_options['fields']['field_profile_address_administrative_area_1']['relationship'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['fields']['field_profile_address_administrative_area_1']['exclude'] = TRUE;
+/* Field: Content: Address - Country */
+$handler->display->display_options['fields']['field_profile_address_country_1']['id'] = 'field_profile_address_country_1';
+$handler->display->display_options['fields']['field_profile_address_country_1']['table'] = 'field_data_field_profile_address';
+$handler->display->display_options['fields']['field_profile_address_country_1']['field'] = 'field_profile_address_country';
+$handler->display->display_options['fields']['field_profile_address_country_1']['relationship'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['fields']['field_profile_address_country_1']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_profile_address_country_1']['display_name'] = 1;
+/* Field: Content: Address - Locality (i.e. City) */
+$handler->display->display_options['fields']['field_profile_address_locality_1']['id'] = 'field_profile_address_locality_1';
+$handler->display->display_options['fields']['field_profile_address_locality_1']['table'] = 'field_data_field_profile_address';
+$handler->display->display_options['fields']['field_profile_address_locality_1']['field'] = 'field_profile_address_locality';
+$handler->display->display_options['fields']['field_profile_address_locality_1']['relationship'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['fields']['field_profile_address_locality_1']['exclude'] = TRUE;
+/* Field: Content: Address - Postal code */
+$handler->display->display_options['fields']['field_profile_address_postal_code_1']['id'] = 'field_profile_address_postal_code_1';
+$handler->display->display_options['fields']['field_profile_address_postal_code_1']['table'] = 'field_data_field_profile_address';
+$handler->display->display_options['fields']['field_profile_address_postal_code_1']['field'] = 'field_profile_address_postal_code';
+$handler->display->display_options['fields']['field_profile_address_postal_code_1']['relationship'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['fields']['field_profile_address_postal_code_1']['exclude'] = TRUE;
+/* Field: Content: Institutional Department */
+$handler->display->display_options['fields']['field_institutional_department_1']['id'] = 'field_institutional_department_1';
+$handler->display->display_options['fields']['field_institutional_department_1']['table'] = 'field_data_field_institutional_department';
+$handler->display->display_options['fields']['field_institutional_department_1']['field'] = 'field_institutional_department';
+$handler->display->display_options['fields']['field_institutional_department_1']['relationship'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['fields']['field_institutional_department_1']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_institutional_department_1']['settings'] = array(
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Field: Email */
+$handler->display->display_options['fields']['field_email_1']['id'] = 'field_email_1';
+$handler->display->display_options['fields']['field_email_1']['table'] = 'field_data_field_email';
+$handler->display->display_options['fields']['field_email_1']['field'] = 'field_email';
+$handler->display->display_options['fields']['field_email_1']['relationship'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['fields']['field_email_1']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_email_1']['settings'] = array(
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Field: First Name */
+$handler->display->display_options['fields']['field_first_name_1']['id'] = 'field_first_name_1';
+$handler->display->display_options['fields']['field_first_name_1']['table'] = 'field_data_field_first_name';
+$handler->display->display_options['fields']['field_first_name_1']['field'] = 'field_first_name';
+$handler->display->display_options['fields']['field_first_name_1']['relationship'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['fields']['field_first_name_1']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_first_name_1']['settings'] = array(
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Field: Last Name */
+$handler->display->display_options['fields']['field_last_name_1']['id'] = 'field_last_name_1';
+$handler->display->display_options['fields']['field_last_name_1']['table'] = 'field_data_field_last_name';
+$handler->display->display_options['fields']['field_last_name_1']['field'] = 'field_last_name';
+$handler->display->display_options['fields']['field_last_name_1']['relationship'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['fields']['field_last_name_1']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_last_name_1']['settings'] = array(
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Field: Phone */
+$handler->display->display_options['fields']['field_phone_1']['id'] = 'field_phone_1';
+$handler->display->display_options['fields']['field_phone_1']['table'] = 'field_data_field_phone';
+$handler->display->display_options['fields']['field_phone_1']['field'] = 'field_phone';
+$handler->display->display_options['fields']['field_phone_1']['relationship'] = 'field_metadata_contact_person_target_id';
+$handler->display->display_options['fields']['field_phone_1']['exclude'] = TRUE;
+$handler->display->display_options['fields']['field_phone_1']['settings'] = array(
+  'empty_fields_handler' => '',
+  'empty_fields_emptyfieldtext_empty_text' => '',
+);
+/* Field: Metadata Contact */
+$handler->display->display_options['fields']['php_5']['id'] = 'php_5';
+$handler->display->display_options['fields']['php_5']['table'] = 'views';
+$handler->display->display_options['fields']['php_5']['field'] = 'php';
+$handler->display->display_options['fields']['php_5']['ui_name'] = 'Metadata Contact';
+$handler->display->display_options['fields']['php_5']['label'] = 'gmd:contact';
+$handler->display->display_options['fields']['php_5']['hide_empty'] = TRUE;
+$handler->display->display_options['fields']['php_5']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php_5']['php_output'] = '<?php
+
+$node = $data->_field_data[\'nid\'][\'entity\'];
+$contact = $data->_field_data[\'node_field_data_field_dataset_contact_person_nid\'][\'entity\'];
+$md_contact = !empty($data->_field_data[\'node_field_data_field_metadata_contact_person_nid\'][\'entity\']) ? $data->_field_data[\'node_field_data_field_metadata_contact_person_nid\'][\'entity\'] : \'\';
+if(!empty($md_contact) && $md_contact->nid != $contact->nid){
+
+$position_tid = !empty($md_contact->field_personnel_term[LANGUAGE_NONE][0]) ? $md_contact->field_personnel_term[LANGUAGE_NONE][0][\'tid\'] : \'\';
+$personnel_term = taxonomy_term_load($position_tid);
+$position = !empty($personnel_term) ? $personnel_term->name : \'N/A\';
+$country = !empty($md_contact->field_profile_address[LANGUAGE_NONE][0][\'country\']) ? ecogig_odp_convert_country_code($md_contact->field_profile_address[LANGUAGE_NONE][0][\'country\']) : \'N/A\';
+
+echo \'<gmd:CI_ResponsibleParty>\' . PHP_EOL;
+echo \'<gmd:individualName>\' . PHP_EOL;
+  echo \'<gco:CharacterString>\', $md_contact->title, \'</gco:CharacterString>\' . PHP_EOL;
+echo \'</gmd:individualName>\' . PHP_EOL;
+
+echo \'<gmd:organisationName>\' . PHP_EOL;
+  echo \'<gco:CharacterString>\', $md_contact->field_organization[LANGUAGE_NONE][0][\'value\'], \'</gco:CharacterString>\' . PHP_EOL;
+echo \'</gmd:organisationName>\' . PHP_EOL;
+
+echo \'<gmd:positionName>\' . PHP_EOL;
+  echo \'<gco:CharacterString>\', $position, \'</gco:CharacterString>\' . PHP_EOL;
+echo \'</gmd:positionName>\' . PHP_EOL;
+
+echo \'<gmd:contactInfo>\' . PHP_EOL;
+  echo \'<gmd:CI_Contact>\' . PHP_EOL;
+    echo \'<gmd:phone>\' . PHP_EOL;
+          echo \'<gmd:CI_Telephone>\' . PHP_EOL;
+              echo \'<gmd:voice>\' . PHP_EOL;
+                  echo \'<gco:CharacterString>\', $md_contact->field_phone[LANGUAGE_NONE][0][\'value\'],\'</gco:CharacterString>\' . PHP_EOL;
+              echo \'</gmd:voice>\' . PHP_EOL;
+              echo \'<gmd:facsimile>\' . PHP_EOL;
+                  echo \'<gco:CharacterString />\' . PHP_EOL;
+              echo \'</gmd:facsimile>\' . PHP_EOL;
+          echo \'</gmd:CI_Telephone>\' . PHP_EOL;
+    echo \'</gmd:phone>\' . PHP_EOL;
+        echo \'<gmd:address>\' . PHP_EOL;
+            echo \'<gmd:CI_Address>\' . PHP_EOL;
+                echo \'<gmd:deliveryPoint>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $md_contact->field_profile_address[LANGUAGE_NONE][0][\'thoroughfare\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:deliveryPoint>\' . PHP_EOL;
+                echo \'<gmd:city>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $md_contact->field_profile_address[LANGUAGE_NONE][0][\'locality\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:city>\' . PHP_EOL;
+                echo \'<gmd:administrativeArea>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $md_contact->field_profile_address[LANGUAGE_NONE][0][\'administrative_area\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:administrativeArea>\' . PHP_EOL;
+                echo \'<gmd:postalCode>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $md_contact->field_profile_address[LANGUAGE_NONE][0][\'postal_code\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:postalCode>\' . PHP_EOL;
+                echo \'<gmd:country>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $country,\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:country>\' . PHP_EOL;
+                echo \'<gmd:electronicMailAddress>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $md_contact->field_email[LANGUAGE_NONE][0][\'email\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:electronicMailAddress>\' . PHP_EOL;
+            echo \'</gmd:CI_Address>\' . PHP_EOL;
+        echo \'</gmd:address>\' . PHP_EOL;
+  echo \'</gmd:CI_Contact>\' . PHP_EOL;
+echo \'</gmd:contactInfo>\' . PHP_EOL;
+    echo \'<gmd:role>\' . PHP_EOL;
+        echo \'<gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact" codeSpace="007">\' . PHP_EOL;
+          echo \'pointOfContact\' . PHP_EOL;
+        echo \'</gmd:CI_RoleCode>\' . PHP_EOL;
+    echo \'</gmd:role>\' . PHP_EOL;
+echo \'</gmd:CI_ResponsibleParty>\' . PHP_EOL;
+}
+?>';
+$handler->display->display_options['fields']['php_5']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php_5']['php_click_sortable'] = '';
+/* Field: Stakeholders */
+$handler->display->display_options['fields']['php_12']['id'] = 'php_12';
+$handler->display->display_options['fields']['php_12']['table'] = 'views';
+$handler->display->display_options['fields']['php_12']['field'] = 'php';
+$handler->display->display_options['fields']['php_12']['ui_name'] = 'Stakeholders';
+$handler->display->display_options['fields']['php_12']['label'] = 'gmd:contact';
+$handler->display->display_options['fields']['php_12']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['php_12']['hide_empty'] = TRUE;
+$handler->display->display_options['fields']['php_12']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php_12']['php_output'] = '<?php
+
+$node = $data->_field_data[\'nid\'][\'entity\'];
+$contact = $data->_field_data[\'node_field_data_field_dataset_contact_person_nid\'][\'entity\'];
+
+$stakeholders = array();
+if(!empty($node->field_dataset_stakeholders[LANGUAGE_NONE])){
+foreach($node->field_dataset_stakeholders[LANGUAGE_NONE] as $sh){
+  $stakeholder = node_load($sh[\'target_id\']);
+  array_push($stakeholders, $stakeholder);
+}
+}
+
+$total = count($stakeholders);
+$count = 1;
+
+foreach($stakeholders as $sh){
+$position_tid = !empty($sh->field_personnel_term[LANGUAGE_NONE][0]) ? $sh->field_personnel_term[LANGUAGE_NONE][0][\'tid\'] : \'\';
+$personnel_term = taxonomy_term_load($position_tid);
+$position = !empty($personnel_term) ? $personnel_term->name : \'N/A\';
+$country = !empty($sh->field_profile_address[LANGUAGE_NONE][0][\'country\']) ? ecogig_odp_convert_country_code($sh->field_profile_address[LANGUAGE_NONE][0][\'country\']) : \'N/A\';
+
+echo \'<gmd:CI_ResponsibleParty>\' . PHP_EOL;
+echo \'<gmd:individualName>\' . PHP_EOL;
+  echo \'<gco:CharacterString>\', $sh->title, \'</gco:CharacterString>\' . PHP_EOL;
+echo \'</gmd:individualName>\' . PHP_EOL;
+
+echo \'<gmd:organisationName>\' . PHP_EOL;
+  echo \'<gco:CharacterString>\', $sh->field_organization[LANGUAGE_NONE][0][\'value\'], \'</gco:CharacterString>\' . PHP_EOL;
+echo \'</gmd:organisationName>\' . PHP_EOL;
+
+echo \'<gmd:positionName>\' . PHP_EOL;
+  echo \'<gco:CharacterString>\', $position, \'</gco:CharacterString>\' . PHP_EOL;
+echo \'</gmd:positionName>\' . PHP_EOL;
+
+echo \'<gmd:contactInfo>\' . PHP_EOL;
+  echo \'<gmd:CI_Contact>\' . PHP_EOL;
+    echo \'<gmd:phone>\' . PHP_EOL;
+          echo \'<gmd:CI_Telephone>\' . PHP_EOL;
+              echo \'<gmd:voice>\' . PHP_EOL;
+                  echo \'<gco:CharacterString>\', $sh->field_phone[LANGUAGE_NONE][0][\'value\'],\'</gco:CharacterString>\' . PHP_EOL;
+              echo \'</gmd:voice>\' . PHP_EOL;
+              echo \'<gmd:facsimile>\' . PHP_EOL;
+                  echo \'<gco:CharacterString />\' . PHP_EOL;
+              echo \'</gmd:facsimile>\' . PHP_EOL;
+          echo \'</gmd:CI_Telephone>\' . PHP_EOL;
+    echo \'</gmd:phone>\' . PHP_EOL;
+        echo \'<gmd:address>\' . PHP_EOL;
+            echo \'<gmd:CI_Address>\' . PHP_EOL;
+                echo \'<gmd:deliveryPoint>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $sh->field_profile_address[LANGUAGE_NONE][0][\'thoroughfare\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:deliveryPoint>\' . PHP_EOL;
+                echo \'<gmd:city>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $sh->field_profile_address[LANGUAGE_NONE][0][\'locality\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:city>\' . PHP_EOL;
+                echo \'<gmd:administrativeArea>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $sh->field_profile_address[LANGUAGE_NONE][0][\'administrative_area\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:administrativeArea>\' . PHP_EOL;
+                echo \'<gmd:postalCode>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $sh->field_profile_address[LANGUAGE_NONE][0][\'postal_code\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:postalCode>\' . PHP_EOL;
+                echo \'<gmd:country>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $country, \'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:country>\' . PHP_EOL;
+                echo \'<gmd:electronicMailAddress>\' . PHP_EOL;
+                    echo \'<gco:CharacterString>\', $sh->field_email[LANGUAGE_NONE][0][\'email\'],\'</gco:CharacterString>\' . PHP_EOL;
+                echo \'</gmd:electronicMailAddress>\' . PHP_EOL;
+            echo \'</gmd:CI_Address>\' . PHP_EOL;
+        echo \'</gmd:address>\' . PHP_EOL;
+  echo \'</gmd:CI_Contact>\' . PHP_EOL;
+echo \'</gmd:contactInfo>\' . PHP_EOL;
+    echo \'<gmd:role>\' . PHP_EOL;
+        echo \'<gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact" codeSpace="007">\' . PHP_EOL;
+          echo \'pointOfContact\' . PHP_EOL;
+        echo \'</gmd:CI_RoleCode>\' . PHP_EOL;
+    echo \'</gmd:role>\' . PHP_EOL;
+echo \'</gmd:CI_ResponsibleParty>\' . PHP_EOL;
+
+if($total > 1 && $count < $total){
+  echo \'</gmd:contact>\';
+  echo \'<gmd:contact>\';
+}
+$count++;
+}
+
+?>';
+$handler->display->display_options['fields']['php_12']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php_12']['php_click_sortable'] = '';
+/* Field: Global: PHP */
+$handler->display->display_options['fields']['php_6']['id'] = 'php_6';
+$handler->display->display_options['fields']['php_6']['table'] = 'views';
+$handler->display->display_options['fields']['php_6']['field'] = 'php';
+$handler->display->display_options['fields']['php_6']['label'] = 'gmd:dateStamp';
+$handler->display->display_options['fields']['php_6']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php_6']['php_output'] = '<?php
+
+echo \'<gco:DateTime>\', format_date($data->_field_data[\'nid\'][\'entity\']->changed, \'custom\', \'Y-m-d\\TH:i:sP\'), \'</gco:DateTime>\' . PHP_EOL;
+
+?>';
+$handler->display->display_options['fields']['php_6']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php_6']['php_click_sortable'] = '';
+/* Field: Global: PHP */
+$handler->display->display_options['fields']['php_7']['id'] = 'php_7';
+$handler->display->display_options['fields']['php_7']['table'] = 'views';
+$handler->display->display_options['fields']['php_7']['field'] = 'php';
+$handler->display->display_options['fields']['php_7']['label'] = 'gmd:metadataStandardName';
+$handler->display->display_options['fields']['php_7']['element_label_colon'] = FALSE;
+$handler->display->display_options['fields']['php_7']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php_7']['php_output'] = '<?php
+      echo \'<gco:CharacterString>ISO 19115-2 Geographic Information - Metadata - Part 2: Extensions for Imagery and Gridded Data</gco:CharacterString>\'. PHP_EOL;
+?>';
+$handler->display->display_options['fields']['php_7']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php_7']['php_click_sortable'] = '';
+/* Field: Global: PHP */
+$handler->display->display_options['fields']['php_8']['id'] = 'php_8';
+$handler->display->display_options['fields']['php_8']['table'] = 'views';
+$handler->display->display_options['fields']['php_8']['field'] = 'php';
+$handler->display->display_options['fields']['php_8']['label'] = 'gmd:metadataStandardVersion';
+$handler->display->display_options['fields']['php_8']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php_8']['php_output'] = '<?php
+echo \'<gco:CharacterString>ISO 19115-2:2009(E)</gco:CharacterString>\'. PHP_EOL;
+
+?>';
+$handler->display->display_options['fields']['php_8']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php_8']['php_click_sortable'] = '';
+/* Field: Global: PHP */
+$handler->display->display_options['fields']['php_9']['id'] = 'php_9';
+$handler->display->display_options['fields']['php_9']['table'] = 'views';
+$handler->display->display_options['fields']['php_9']['field'] = 'php';
+$handler->display->display_options['fields']['php_9']['label'] = 'gmd:dataSetURI';
+$handler->display->display_options['fields']['php_9']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php_9']['php_output'] = '<?php
+$node = $data->_field_data[\'nid\'][\'entity\'];
+$udi = !empty($node->field_repo_udi[LANGUAGE_NONE][0][\'value\']) ? str_replace(":", "-", $node->field_repo_udi[LANGUAGE_NONE][0][\'value\']) : \'\';
+echo \'<gco:CharacterString>https://data.gulfresearchinitiative.org/data/\', $udi, \'</gco:CharacterString>\'. PHP_EOL;
+
+?>';
+$handler->display->display_options['fields']['php_9']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php_9']['php_click_sortable'] = '';
+/* Field: Global: PHP */
+$handler->display->display_options['fields']['php_10']['id'] = 'php_10';
+$handler->display->display_options['fields']['php_10']['table'] = 'views';
+$handler->display->display_options['fields']['php_10']['field'] = 'php';
+$handler->display->display_options['fields']['php_10']['label'] = 'gmd:identificationInfo';
+$handler->display->display_options['fields']['php_10']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php_10']['php_output'] = '<?php
+
+$node = $data->_field_data[\'nid\'][\'entity\'];
+$edit_date = new DateTime(\'@\' . $node->changed);
+$edit_date = ($edit_date instanceof DateTime) ? $edit_date->format(\'Y-m-d\') : "";
+$coordinate_type = $node->field_coordinate_list_descriptio[LANGUAGE_NONE][0][\'value\'];
+
+$contact = $data->_field_data[\'node_field_data_field_dataset_contact_person_nid\'][\'entity\'];
+$country = !empty($contact->field_profile_address[LANGUAGE_NONE][0][\'country\']) ? ecogig_odp_convert_country_code($contact->field_profile_address[LANGUAGE_NONE][0][\'country\']) : \'N/A\';
+$position_tid = !empty($contact->field_personnel_term[LANGUAGE_NONE][0]) ? $contact->field_personnel_term[LANGUAGE_NONE][0][\'tid\'] : \'\';
+$personnel_term = taxonomy_term_load($position_tid);
+$position = !empty($personnel_term) ? $personnel_term->name : \'N/A\';
+
+$md_contact = $data->_field_data[\'node_field_data_field_dataset_metadata_contact_person_nid\'][\'entity\'];
+$md_country = !empty($md_contact->field_profile_address[LANGUAGE_NONE][0][\'country\']) ? ecogig_odp_convert_country_code($md_contact->field_profile_address[LANGUAGE_NONE][0][\'country\']) : \'N/A\';
+$md_position_tid = !empty($md_contact->field_personnel_term[LANGUAGE_NONE][0]) ? $md_contact->field_personnel_term[LANGUAGE_NONE][0][\'tid\'] : \'\';
+$md_personnel_term = taxonomy_term_load($md_position_tid);
+$md_position = !empty($md_personnel_term) ? $md_personnel_term->name : \'N/A\';
+
+$supp_params = !empty($node->field_supplemental_information_d[LANGUAGE_NONE][0][\'value\']) ? $node->field_supplemental_information_d[LANGUAGE_NONE][0][\'value\'] . "|" : "|";
+$supp_methods = !empty($node->field_methods[LANGUAGE_NONE][0][\'value\']) ? $node->field_methods[LANGUAGE_NONE][0][\'value\'] . "|" : "|";
+$supp_instruments = !empty($node->field_instruments[LANGUAGE_NONE][0][\'value\']) ? $node->field_instruments[LANGUAGE_NONE][0][\'value\'] . "|" : "|";
+$supp_scales = !empty($node->field_sampling_scales_and_rates[LANGUAGE_NONE][0][\'value\']) ? $node->field_sampling_scales_and_rates[LANGUAGE_NONE][0][\'value\'] . "|" : "|";
+$supp_error = !empty($node->field_error_analysis[LANGUAGE_NONE][0][\'value\']) ? $node->field_error_analysis[LANGUAGE_NONE][0][\'value\'] . "|" : "|";
+$supp_prov = !empty($node->field_provenance[LANGUAGE_NONE][0][\'value\']) ? $node->field_provenance[LANGUAGE_NONE][0][\'value\'] : "";
+
+$supp_info = $supp_params . $supp_methods . $supp_instruments . $supp_scales . $supp_error . $supp_prov;
+
+switch($node->field_time_period_description[LANGUAGE_NONE][0][\'value\']){
+  case "0":
+      $time_desc = "modeled period";
+      break;
+  case "1":
+      $time_desc = "ground condition";
+      break;
+  default:
+      $time_desc = "";
+      break;
+}
+
+
+      echo \'<gmd:MD_DataIdentification>\' . PHP_EOL;
+          echo \'<gmd:citation>\' . PHP_EOL;
+              echo \'<gmd:CI_Citation>\' . PHP_EOL;
+                  echo \'<gmd:title>\' . PHP_EOL;
+                      echo \'<gco:CharacterString>\',htmlspecialchars($node->title, ENT_QUOTES),\'</gco:CharacterString>\' . PHP_EOL;
+                  echo \'</gmd:title>\' . PHP_EOL;
+                  echo \'<gmd:alternateTitle>\' . PHP_EOL;
+                      echo \'<gco:CharacterString></gco:CharacterString>\' . PHP_EOL;
+                  echo \'</gmd:alternateTitle>\' . PHP_EOL;
+                  echo \'<gmd:date>\' . PHP_EOL;
+                      echo \'<gmd:CI_Date>\' . PHP_EOL;
+                          echo \'<gmd:date>\' . PHP_EOL;
+                              echo \'<gco:Date>\', $edit_date,\'</gco:Date>\' . PHP_EOL;
+                          echo \'</gmd:date>\' . PHP_EOL;
+                          echo \'<gmd:dateType>\' . PHP_EOL;
+                          echo \'<gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" codeSpace="002">publication</gmd:CI_DateTypeCode>\' . PHP_EOL;
+                          echo \'</gmd:dateType>\' . PHP_EOL;
+                      echo \'</gmd:CI_Date>\' . PHP_EOL;
+                  echo \'</gmd:date>\' . PHP_EOL;
+              echo \'</gmd:CI_Citation>\' . PHP_EOL;
+          echo \'</gmd:citation>\' . PHP_EOL;
+          echo \'<gmd:abstract>\' . PHP_EOL;
+              echo \'<gco:CharacterString>\',htmlspecialchars($node->field_abstract[LANGUAGE_NONE][0][\'value\'], ENT_QUOTES),\'</gco:CharacterString>\' . PHP_EOL;
+          echo \'</gmd:abstract>\' . PHP_EOL;
+          echo \'<gmd:purpose>\' . PHP_EOL;
+              echo \'<gco:CharacterString>\',htmlspecialchars($node->field_dataset_purpose[LANGUAGE_NONE][0][\'value\'], ENT_QUOTES),\'</gco:CharacterString>\' . PHP_EOL;
+          echo \'</gmd:purpose>\' . PHP_EOL;
+          echo \'<gmd:status>\' . PHP_EOL;
+              echo \'<gmd:MD_ProgressCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="completed" codeSpace="001">\' . PHP_EOL;
+              echo \'completed</gmd:MD_ProgressCode>\' . PHP_EOL;
+          echo \'</gmd:status>\' . PHP_EOL;
+          echo \'<gmd:pointOfContact>\' . PHP_EOL;
+              echo \'<gmd:CI_ResponsibleParty>\' . PHP_EOL;
+                  echo \'<gmd:individualName>\' . PHP_EOL;
+                      echo \'<gco:CharacterString>\', $contact->title, \'</gco:CharacterString>\' . PHP_EOL;
+                  echo \'</gmd:individualName>\' . PHP_EOL;
+
+                  echo \'<gmd:organisationName>\' . PHP_EOL;
+                      echo \'<gco:CharacterString>\', $contact->field_organization[LANGUAGE_NONE][0][\'value\'], \'</gco:CharacterString>\' . PHP_EOL;
+                  echo \'</gmd:organisationName>\' . PHP_EOL;
+
+                  echo \'<gmd:positionName>\' . PHP_EOL;
+                      echo \'<gco:CharacterString>\', $position, \'</gco:CharacterString>\' . PHP_EOL;
+                  echo \'</gmd:positionName>\' . PHP_EOL;
+
+                  echo \'<gmd:contactInfo>\' . PHP_EOL;
+                      echo \'<gmd:CI_Contact>\' . PHP_EOL;
+                          echo \'<gmd:phone>\' . PHP_EOL;
+                              echo \'<gmd:CI_Telephone>\' . PHP_EOL;
+                                  echo \'<gmd:voice>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $contact->field_phone[LANGUAGE_NONE][0][\'value\'],\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:voice>\' . PHP_EOL;
+                                  echo \'<gmd:facsimile>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString />\' . PHP_EOL;
+                                  echo \'</gmd:facsimile>\' . PHP_EOL;
+                              echo \'</gmd:CI_Telephone>\' . PHP_EOL;
+                          echo \'</gmd:phone>\' . PHP_EOL;
+                          echo \'<gmd:address>\' . PHP_EOL;
+                              echo \'<gmd:CI_Address>\' . PHP_EOL;
+                                  echo \'<gmd:deliveryPoint>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $contact->field_profile_address[LANGUAGE_NONE][0][\'thoroughfare\'],\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:deliveryPoint>\' . PHP_EOL;
+                                  echo \'<gmd:city>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $contact->field_profile_address[LANGUAGE_NONE][0][\'locality\'],\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:city>\' . PHP_EOL;
+                                  echo \'<gmd:administrativeArea>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $contact->field_profile_address[LANGUAGE_NONE][0][\'administrative_area\'],\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:administrativeArea>\' . PHP_EOL;
+                                  echo \'<gmd:postalCode>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $contact->field_profile_address[LANGUAGE_NONE][0][\'postal_code\'],\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:postalCode>\' . PHP_EOL;
+                                  echo \'<gmd:country>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $country,\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:country>\' . PHP_EOL;
+                                  echo \'<gmd:electronicMailAddress>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $contact->field_email[LANGUAGE_NONE][0][\'email\'],\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:electronicMailAddress>\' . PHP_EOL;
+                              echo \'</gmd:CI_Address>\' . PHP_EOL;
+                          echo \'</gmd:address>\' . PHP_EOL;
+                      echo \'</gmd:CI_Contact>\' . PHP_EOL;
+                  echo \'</gmd:contactInfo>\' . PHP_EOL;
+                  echo \'<gmd:role>\' . PHP_EOL;
+                      echo \'<gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact" codeSpace="007">\' . PHP_EOL;
+                          echo \'pointOfContact\' . PHP_EOL;
+                      echo \'</gmd:CI_RoleCode>\' . PHP_EOL;
+                  echo \'</gmd:role>\' . PHP_EOL;
+              echo \'</gmd:CI_ResponsibleParty>\' . PHP_EOL;
+          echo \'</gmd:pointOfContact>\' . PHP_EOL;
+
+      if(!empty($md_contact) && $md_contact->nid != $contact->nid){
+          echo \'<gmd:pointOfContact>\' . PHP_EOL;
+              echo \'<gmd:CI_ResponsibleParty>\' . PHP_EOL;
+                  echo \'<gmd:individualName>\' . PHP_EOL;
+                      echo \'<gco:CharacterString>\', $md_contact->title, \'</gco:CharacterString>\' . PHP_EOL;
+                  echo \'</gmd:individualName>\' . PHP_EOL;
+
+                  echo \'<gmd:organisationName>\' . PHP_EOL;
+                      echo \'<gco:CharacterString>\', $md_contact->field_organization[LANGUAGE_NONE][0][\'value\'], \'</gco:CharacterString>\' . PHP_EOL;
+                  echo \'</gmd:organisationName>\' . PHP_EOL;
+
+                  echo \'<gmd:positionName>\' . PHP_EOL;
+                      echo \'<gco:CharacterString>\', $md_position, \'</gco:CharacterString>\' . PHP_EOL;
+                  echo \'</gmd:positionName>\' . PHP_EOL;
+
+                  echo \'<gmd:contactInfo>\' . PHP_EOL;
+                      echo \'<gmd:CI_Contact>\' . PHP_EOL;
+                          echo \'<gmd:phone>\' . PHP_EOL;
+                              echo \'<gmd:CI_Telephone>\' . PHP_EOL;
+                                  echo \'<gmd:voice>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $md_contact->field_phone[LANGUAGE_NONE][0][\'value\'],\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:voice>\' . PHP_EOL;
+                                  echo \'<gmd:facsimile>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString />\' . PHP_EOL;
+                                  echo \'</gmd:facsimile>\' . PHP_EOL;
+                              echo \'</gmd:CI_Telephone>\' . PHP_EOL;
+                          echo \'</gmd:phone>\' . PHP_EOL;
+                          echo \'<gmd:address>\' . PHP_EOL;
+                              echo \'<gmd:CI_Address>\' . PHP_EOL;
+                                  echo \'<gmd:deliveryPoint>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $md_contact->field_profile_address[LANGUAGE_NONE][0][\'thoroughfare\'],\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:deliveryPoint>\' . PHP_EOL;
+                                  echo \'<gmd:city>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $md_contact->field_profile_address[LANGUAGE_NONE][0][\'locality\'],\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:city>\' . PHP_EOL;
+                                  echo \'<gmd:administrativeArea>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $md_contact->field_profile_address[LANGUAGE_NONE][0][\'administrative_area\'],\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:administrativeArea>\' . PHP_EOL;
+                                  echo \'<gmd:postalCode>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $md_contact->field_profile_address[LANGUAGE_NONE][0][\'postal_code\'],\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:postalCode>\' . PHP_EOL;
+                                  echo \'<gmd:country>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $md_country,\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:country>\' . PHP_EOL;
+                                  echo \'<gmd:electronicMailAddress>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>\', $md_contact->field_email[LANGUAGE_NONE][0][\'email\'],\'</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:electronicMailAddress>\' . PHP_EOL;
+                              echo \'</gmd:CI_Address>\' . PHP_EOL;
+                          echo \'</gmd:address>\' . PHP_EOL;
+                      echo \'</gmd:CI_Contact>\' . PHP_EOL;
+                  echo \'</gmd:contactInfo>\' . PHP_EOL;
+                  echo \'<gmd:role>\' . PHP_EOL;
+                      echo \'<gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact" codeSpace="007">\' . PHP_EOL;
+                          echo \'pointOfContact\' . PHP_EOL;
+                      echo \'</gmd:CI_RoleCode>\' . PHP_EOL;
+                  echo \'</gmd:role>\' . PHP_EOL;
+              echo \'</gmd:CI_ResponsibleParty>\' . PHP_EOL;
+          echo \'</gmd:pointOfContact>\' . PHP_EOL;
+       }
+          echo \'<gmd:descriptiveKeywords>\' . PHP_EOL;
+              echo \'<gmd:MD_Keywords>\' . PHP_EOL;
+                  foreach($node->field_theme_keywords[LANGUAGE_NONE] as $keyword){
+                      $term = taxonomy_term_load($keyword[\'tid\']);
+                      echo \'<gmd:keyword>\' . PHP_EOL;
+                          echo \'<gco:CharacterString>\',$term->name,\'</gco:CharacterString>\' . PHP_EOL;
+                      echo \'</gmd:keyword>\' . PHP_EOL;
+                   }
+                  echo \'<gmd:type>\' . PHP_EOL;
+                  echo \'    <gmd:MD_KeywordTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme"  codeSpace="005">theme</gmd:MD_KeywordTypeCode>\' . PHP_EOL;
+                  echo \'</gmd:type>\' . PHP_EOL;
+              echo \'</gmd:MD_Keywords>\' . PHP_EOL;
+          echo \'</gmd:descriptiveKeywords>\' . PHP_EOL;
+          echo \'<gmd:descriptiveKeywords>\' . PHP_EOL;
+              echo \'<gmd:MD_Keywords>\' . PHP_EOL;
+              if(!empty($node->field_place_keywords[LANGUAGE_NONE]) && count($node->field_place_keywords[LANGUAGE_NONE] > 0)){
+                  foreach($node->field_place_keywords[LANGUAGE_NONE] as $keyword){
+                      $term = taxonomy_term_load($keyword[\'tid\']);
+                      echo \'<gmd:keyword>\' . PHP_EOL;
+                          echo \'<gco:CharacterString>\',$term->name,\'</gco:CharacterString>\' . PHP_EOL;
+                      echo \'</gmd:keyword>\' . PHP_EOL;
+                  }
+              }
+              else{
+                  echo \'<gmd:keyword nilReason="missing">\' . PHP_EOL;
+                  echo \'</gmd:keyword>\' . PHP_EOL;
+              }
+                  echo \'<gmd:type>\' . PHP_EOL;
+                      echo \'<gmd:MD_KeywordTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="place" codeSpace="002">place</gmd:MD_KeywordTypeCode>\' . PHP_EOL;
+                  echo \'</gmd:type>\' . PHP_EOL;
+
+
+              echo \'</gmd:MD_Keywords>\' . PHP_EOL;
+          echo \'</gmd:descriptiveKeywords>\' . PHP_EOL;
+          echo \'<gmd:language>\' . PHP_EOL;
+              echo \'<gco:CharacterString>eng; USA</gco:CharacterString>\' . PHP_EOL;
+          echo \'</gmd:language>\' . PHP_EOL;
+
+          foreach($node->field_topic_category_keywords[LANGUAGE_NONE] as $keyword){
+              $term = taxonomy_term_load($keyword[\'tid\']);
+              $term_name = !empty($term->field_xml_code_list_value[LANGUAGE_NONE][0][\'value\']) ? $term->field_xml_code_list_value[LANGUAGE_NONE][0][\'value\'] : strtolower($term->name);
+              echo \'<gmd:topicCategory>\' . PHP_EOL;
+                  echo \'<gmd:MD_TopicCategoryCode>\', $term_name, \'</gmd:MD_TopicCategoryCode>\' . PHP_EOL;
+              echo \'</gmd:topicCategory>\' . PHP_EOL;
+          }
+
+          echo \'<gmd:extent>\' . PHP_EOL;
+              echo \'<gmd:EX_Extent id="boundingExtent">\' . PHP_EOL;
+                  echo \'<gmd:geographicElement>\' . PHP_EOL;
+                      echo \'<gmd:EX_BoundingPolygon>\' . PHP_EOL;
+                          echo \'<gmd:polygon>\' . PHP_EOL;
+
+                          if($coordinate_type == \'point\'){
+                              echo \'<gml:MultiPoint gml:id="multipoint" srsName="urn:ogc:def:crs:EPSG::4326">\' . PHP_EOL;
+                              $count = 1;
+                              foreach($node->field_coordinate_list[LANGUAGE_NONE] as $loc){
+                                  echo \'<gml:pointMember>\' . PHP_EOL;
+                                      echo \'<gml:Point gml:id="multipoint\', $count, \'">\' . PHP_EOL;
+                                          echo \'<gml:pos srsDimension="2">\', $loc[\'lat\'] . \' \' . $loc[\'lon\'], \'</gml:pos>\' . PHP_EOL;
+                                      echo \'</gml:Point>\' . PHP_EOL;
+                                  echo \'</gml:pointMember>\' . PHP_EOL;
+                                  $count++;
+                               }
+
+                              echo \'</gml:MultiPoint>\' . PHP_EOL;
+                          }
+                          if($coordinate_type == \'polygon\'){
+                              echo \'<gml:Polygon gml:id="Polygon">\' . PHP_EOL;
+                                  echo \'<gml:exterior>\' . PHP_EOL;
+                                      echo \'<gml:LinearRing>\' . PHP_EOL;
+                                          echo \'<gml:coordinates>\' . PHP_EOL;
+                                          foreach($node->field_coordinate_list[LANGUAGE_NONE] as $loc) {
+                                              echo($loc[\'lat\'] . \' \' . $loc[\'lon\']) . PHP_EOL;
+                                          }
+                                          echo \'</gml:coordinates>\' . PHP_EOL;
+                                      echo \'</gml:LinearRing>\' . PHP_EOL;
+                                  echo \'</gml:exterior>\' . PHP_EOL;
+                              echo \'</gml:Polygon>\' . PHP_EOL;
+                          }
+                          echo \'</gmd:polygon>\' . PHP_EOL;
+                      echo \'</gmd:EX_BoundingPolygon>\' . PHP_EOL;
+                  echo \'</gmd:geographicElement>\' . PHP_EOL;
+                  echo \'<gmd:temporalElement>\' . PHP_EOL;
+                      echo \'<gmd:EX_TemporalExtent>\' . PHP_EOL;
+                          echo \'<gmd:extent>\' . PHP_EOL;
+                              echo \'<gml:TimePeriod gml:id="boundingTemporalExtent">\' . PHP_EOL;
+                                  echo \'<gml:description>\', $time_desc, \'</gml:description>\' . PHP_EOL;
+                                  echo \'<gml:beginPosition>\', format_date(strtotime($node->field_date_range[LANGUAGE_NONE][0][\'value\']), \'custom\', \'Y-m-d\'),\'</gml:beginPosition>\' . PHP_EOL;
+                                  echo \'<gml:endPosition>\', format_date(strtotime($node->field_date_range[LANGUAGE_NONE][0][\'value2\']), \'custom\', \'Y-m-d\'),\'</gml:endPosition>\' . PHP_EOL;
+                              echo \'</gml:TimePeriod>\' . PHP_EOL;
+                          echo \'</gmd:extent>\' . PHP_EOL;
+                      echo \'</gmd:EX_TemporalExtent>\' . PHP_EOL;
+                  echo \'</gmd:temporalElement>\' . PHP_EOL;
+              echo \'</gmd:EX_Extent>\' . PHP_EOL;
+          echo \'</gmd:extent>\' . PHP_EOL;
+          echo \'<gmd:supplementalInformation>\' . PHP_EOL;
+              echo \'<gco:CharacterString>\', htmlspecialchars($supp_info, ENT_QUOTES),\'</gco:CharacterString>\' . PHP_EOL;
+          echo \'</gmd:supplementalInformation>\' . PHP_EOL;
+      echo \'</gmd:MD_DataIdentification>\' . PHP_EOL;
+
+?>';
+$handler->display->display_options['fields']['php_10']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php_10']['php_click_sortable'] = '';
+/* Field: Global: PHP */
+$handler->display->display_options['fields']['php_11']['id'] = 'php_11';
+$handler->display->display_options['fields']['php_11']['table'] = 'views';
+$handler->display->display_options['fields']['php_11']['field'] = 'php';
+$handler->display->display_options['fields']['php_11']['label'] = 'gmd:distributionInfo';
+$handler->display->display_options['fields']['php_11']['use_php_setup'] = 0;
+$handler->display->display_options['fields']['php_11']['php_output'] = '<?php
+
+$node = $data->_field_data[\'nid\'][\'entity\'];
+$udi = !empty($node->field_repo_udi[LANGUAGE_NONE][0][\'value\']) ? str_replace(":", ".", $node->field_repo_udi[LANGUAGE_NONE][0][\'value\']) : \'\';
+$file_format = \'txt\';
+
+if(!empty($node->field_data_transfer_format[LANGUAGE_NONE])){
+  $file_format = \'\';
+  foreach($node->field_data_transfer_format[LANGUAGE_NONE] as $format){
+      $format_term = taxonomy_term_load($format[\'tid\']);
+      $extension = !empty($format_term->field_file_extension[LANGUAGE_NONE][0][\'value\']) ? strtolower($format_term->field_file_extension[LANGUAGE_NONE][0][\'value\']) : strtolower($format_term->field_file_extension->name);
+      if(!empty($extension)){
+          $file_format .= $extension . ",";
+      }
+  }
+
+  if(strlen($file_format) > 0){
+      $file_format = substr($file_format, 0, strlen($file_format) - 1);
+  }
+}
+
+switch($node->field_dataset_source[LANGUAGE_NONE][0][\'value\']){
+  case \'file\':
+      $file_size = !empty($node->field_file_upload[LANGUAGE_NONE][0][\'filesize\']) ? round(($node->field_file_upload[LANGUAGE_NONE][0][\'filesize\']/1024/1024), 3) : \'0\';
+      //$file_size = !empty($node->field_file_upload[LANGUAGE_NONE][0][\'filesize\']) ? $node->field_file_upload[LANGUAGE_NONE][0][\'filesize\'] : \'0\';
+      break;
+  default:
+      $file_size = \'0\';
+      break;
+}
+
+$file_size = !empty($node->ds_field_file_size[LANGUAGE_NONE][0][\'value\']) ? $node->ds_field_file_size[LANGUAGE_NONE][0][\'value\'] : $file_size;
+
+      echo \'<gmd:MD_Distribution>\' . PHP_EOL;
+          echo \'<gmd:distributor>\' . PHP_EOL;
+              echo \'<gmd:MD_Distributor>\' . PHP_EOL;
+                  echo \'<gmd:distributorContact>\' . PHP_EOL;
+                      echo \'<gmd:CI_ResponsibleParty>\' . PHP_EOL;
+                          echo \'<gmd:organisationName>\' . PHP_EOL;
+                              echo \'<gco:CharacterString>Gulf of Mexico Research Initiative Information and Data Cooperative (repo)</gco:CharacterString>\' . PHP_EOL;
+                          echo \'</gmd:organisationName>\' . PHP_EOL;
+                          echo \'<gmd:contactInfo>\' . PHP_EOL;
+                              echo \'<gmd:CI_Contact>\' . PHP_EOL;
+                                  echo \'<gmd:phone>\' . PHP_EOL;
+                                      echo \'<gmd:CI_Telephone>\' . PHP_EOL;
+                                          echo \'<gmd:voice>\' . PHP_EOL;
+                                              echo \'<gco:CharacterString>+1-361-825-3604</gco:CharacterString>\' . PHP_EOL;
+                                          echo \'</gmd:voice>\' . PHP_EOL;
+                                          echo \'<gmd:facsimile>\' . PHP_EOL;
+                                              echo \'<gco:CharacterString>+1-361-825-2050</gco:CharacterString>\' . PHP_EOL;
+                                          echo \'</gmd:facsimile>\' . PHP_EOL;
+                                      echo \'</gmd:CI_Telephone>\' . PHP_EOL;
+                                  echo \'</gmd:phone>\' . PHP_EOL;
+                                  echo \'<gmd:address>\' . PHP_EOL;
+                                      echo \'<gmd:CI_Address>\' . PHP_EOL;
+                                          echo \'<gmd:deliveryPoint>\' . PHP_EOL;
+                                              echo \'<gco:CharacterString><![CDATA[6300 Ocean Drive Unit 5869]]></gco:CharacterString>\' . PHP_EOL;
+                                          echo \'</gmd:deliveryPoint>\' . PHP_EOL;
+                                          echo \'<gmd:city>\' . PHP_EOL;
+                                              echo \'<gco:CharacterString>Corpus Christi</gco:CharacterString>\' . PHP_EOL;
+                                          echo \'</gmd:city>\' . PHP_EOL;
+                                          echo \'<gmd:administrativeArea>\' . PHP_EOL;
+                                              echo \'<gco:CharacterString>Texas</gco:CharacterString>\' . PHP_EOL;
+                                          echo \'</gmd:administrativeArea>\' . PHP_EOL;
+                                          echo \'<gmd:postalCode>\' . PHP_EOL;
+                                              echo \'<gco:CharacterString>78412-5869</gco:CharacterString>\' . PHP_EOL;
+                                          echo \'</gmd:postalCode>\' . PHP_EOL;
+                                          echo \'<gmd:country>\' . PHP_EOL;
+                                              echo \'<gco:CharacterString>USA</gco:CharacterString>\' . PHP_EOL;
+                                          echo \'</gmd:country>\' . PHP_EOL;
+                                          echo \'<gmd:electronicMailAddress>\' . PHP_EOL;
+                                              echo \'<gco:CharacterString>repo@gomri.org</gco:CharacterString>\' . PHP_EOL;
+                                          echo \'</gmd:electronicMailAddress>\' . PHP_EOL;
+                                      echo \'</gmd:CI_Address>\' . PHP_EOL;
+                                  echo \'</gmd:address>\' . PHP_EOL;
+                                  echo \'<gmd:onlineResource>\' . PHP_EOL;
+                                      echo \'<gmd:CI_OnlineResource>\' . PHP_EOL;
+                                          echo \'<gmd:linkage>\' . PHP_EOL;
+                                              echo \'<gmd:URL>http://data.gulfresearchinitiative.org</gmd:URL>\' . PHP_EOL;
+                                          echo \'</gmd:linkage>\' . PHP_EOL;
+                                          echo \'<gmd:protocol>\' . PHP_EOL;
+                                              echo \'<gco:CharacterString />\' . PHP_EOL;
+                                          echo \'</gmd:protocol>\' . PHP_EOL;
+                                      echo \'</gmd:CI_OnlineResource>\' . PHP_EOL;
+                                  echo \'</gmd:onlineResource>\' . PHP_EOL;
+                              echo \'</gmd:CI_Contact>\' . PHP_EOL;
+                          echo \'</gmd:contactInfo>\' . PHP_EOL;
+                          echo \'<gmd:role>\' . PHP_EOL;
+                              echo \'<gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="distributor"  codeSpace="005">distributor</gmd:CI_RoleCode>\' . PHP_EOL;
+                          echo \'</gmd:role>\' . PHP_EOL;
+                      echo \'</gmd:CI_ResponsibleParty>\' . PHP_EOL;
+                  echo \'</gmd:distributorContact>\' . PHP_EOL;
+                  echo \'<gmd:distributorFormat>\' . PHP_EOL;
+                      echo \'<gmd:MD_Format>\' . PHP_EOL;
+                      echo \'<gmd:name>\' . PHP_EOL;
+                          echo \'<gco:CharacterString>\', $file_format, \'</gco:CharacterString>\' . PHP_EOL;
+                      echo \'</gmd:name>\' . PHP_EOL;
+                          echo \'<gmd:version gco:nilReason="inapplicable" />\' . PHP_EOL;
+                          echo \'<gmd:fileDecompressionTechnique>\' . PHP_EOL;
+                              echo \'<gco:CharacterString>zip</gco:CharacterString>\' . PHP_EOL;
+                          echo \'</gmd:fileDecompressionTechnique>\' . PHP_EOL;
+                      echo \'</gmd:MD_Format>\' . PHP_EOL;
+                  echo \'</gmd:distributorFormat>\' . PHP_EOL;
+                  echo \'<gmd:distributorTransferOptions>\' . PHP_EOL;
+                      echo \'<gmd:MD_DigitalTransferOptions>\' . PHP_EOL;
+                          echo \'<gmd:transferSize>\' . PHP_EOL;
+                              echo \'<gco:Real>\', $file_size, \'</gco:Real>\' . PHP_EOL;
+                          echo \'</gmd:transferSize>\' . PHP_EOL;
+                          echo \'<gmd:onLine>\' . PHP_EOL;
+                              echo \'<gmd:CI_OnlineResource>\' . PHP_EOL;
+                                  echo \'<gmd:linkage>\' . PHP_EOL;
+                                      echo \'<gmd:URL>https://data.gulfresearchinitiative.org/data/\', $udi, \'/</gmd:URL>\' . PHP_EOL;
+                                  echo \'</gmd:linkage>\' . PHP_EOL;
+                                  echo \'<gmd:protocol>\' . PHP_EOL;
+                                      echo \'<gco:CharacterString>https</gco:CharacterString>\' . PHP_EOL;
+                                  echo \'</gmd:protocol>\' . PHP_EOL;
+                              echo \'</gmd:CI_OnlineResource>\' . PHP_EOL;
+                          echo \'</gmd:onLine>\' . PHP_EOL;
+                      echo \'</gmd:MD_DigitalTransferOptions>\' . PHP_EOL;
+                  echo \'</gmd:distributorTransferOptions>\' . PHP_EOL;
+              echo \'</gmd:MD_Distributor>\' . PHP_EOL;
+          echo \'</gmd:distributor>\' . PHP_EOL;
+      echo \'</gmd:MD_Distribution>\' . PHP_EOL;
+?>';
+$handler->display->display_options['fields']['php_11']['use_php_click_sortable'] = '0';
+$handler->display->display_options['fields']['php_11']['php_click_sortable'] = '';
+/* Sort criterion: Content: Post date */
+$handler->display->display_options['sorts']['created']['id'] = 'created';
+$handler->display->display_options['sorts']['created']['table'] = 'node';
+$handler->display->display_options['sorts']['created']['field'] = 'created';
+$handler->display->display_options['sorts']['created']['order'] = 'DESC';
+/* Contextual filter: Content: Nid */
+$handler->display->display_options['arguments']['nid']['id'] = 'nid';
+$handler->display->display_options['arguments']['nid']['table'] = 'node';
+$handler->display->display_options['arguments']['nid']['field'] = 'nid';
+$handler->display->display_options['arguments']['nid']['default_action'] = 'access denied';
+$handler->display->display_options['arguments']['nid']['default_argument_type'] = 'fixed';
+$handler->display->display_options['arguments']['nid']['summary']['number_of_records'] = '0';
+$handler->display->display_options['arguments']['nid']['summary']['format'] = 'default_summary';
+$handler->display->display_options['arguments']['nid']['summary_options']['items_per_page'] = '25';
+/* Filter criterion: Content: Published */
+$handler->display->display_options['filters']['status']['id'] = 'status';
+$handler->display->display_options['filters']['status']['table'] = 'node';
+$handler->display->display_options['filters']['status']['field'] = 'status';
+$handler->display->display_options['filters']['status']['value'] = 1;
+$handler->display->display_options['filters']['status']['group'] = 1;
+$handler->display->display_options['filters']['status']['expose']['operator'] = FALSE;
+/* Filter criterion: Content: Type */
+$handler->display->display_options['filters']['type']['id'] = 'type';
+$handler->display->display_options['filters']['type']['table'] = 'node';
+$handler->display->display_options['filters']['type']['field'] = 'type';
+$handler->display->display_options['filters']['type']['value'] = array(
+  'dataset' => 'dataset',
+);
+
+/* Display: Data export */
+$handler = $view->new_display('views_data_export', 'Data export', 'xml');
+$handler->display->display_options['pager']['type'] = 'some';
+$handler->display->display_options['style_plugin'] = 'views_data_export_xml';
+$handler->display->display_options['style_options']['provide_file'] = 0;
+$handler->display->display_options['style_options']['filename'] = 'export.xml';
+$handler->display->display_options['style_options']['parent_sort'] = 0;
+$handler->display->display_options['style_options']['transform'] = 1;
+$handler->display->display_options['style_options']['root_node'] = 'nodes';
+$handler->display->display_options['style_options']['item_node'] = 'gmi:MI_Metadata';
+$handler->display->display_options['style_options']['no_entity_encode'] = array(
+  'field_repo_udi' => 'field_repo_udi',
+  'php' => 'php',
+  'php_1' => 'php_1',
+  'php_2' => 'php_2',
+  'php_3' => 'php_3',
+  'php_4' => 'php_4',
+  'php_5' => 'php_5',
+  'php_6' => 'php_6',
+  'php_7' => 'php_7',
+  'php_8' => 'php_8',
+  'php_9' => 'php_9',
+  'php_10' => 'php_10',
+  'php_11' => 'php_11',
+  'php_12' => 'php_12',
+);
+$handler->display->display_options['path'] = 'dataset/%/export';
