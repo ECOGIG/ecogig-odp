@@ -23,7 +23,7 @@ padding: .5em;
 
 /* filmstrip images */
 body.page-node .node-blog-post .field-name-field-image,
-body.page-node .node-article .field-name-field-image, 
+body.page-node .node-article .field-name-field-image,
 body.page-node .field-name-field-images {
     float: right;
     margin: 0.7em 0 0.7em 0.7em;
@@ -1109,10 +1109,7 @@ body.node-type-video .field-type-taxonomy-term-reference {
 #region-footer-second a {
   color: #80B1D0;
 }
-#block-user-login {
-  background: url('../i/ecogig-data-logo.png') top center no-repeat;
-  padding-top: 50px;
-}
+
 #block-user-login .form-actions input {
   -webkit-border-radius: 5;
   -moz-border-radius: 5;
@@ -1502,7 +1499,7 @@ color: #0B404E;
   margin: 10px 0;
 }
 
-.view-dataset-action-items.view-display-id-block_metadata .views-field.views-field-title, 
+.view-dataset-action-items.view-display-id-block_metadata .views-field.views-field-title,
 .view-dataset-action-items.view-display-id-block_data .views-field.views-field-title{
     border-bottom: 4px solid #FED7D0;
     padding-bottom: 15px;
@@ -1544,7 +1541,7 @@ color: #0B404E;
   text-align: center;
 }
 
-.view-dataset-action-items.view-display-id-block_metadata .views-row-last, 
+.view-dataset-action-items.view-display-id-block_metadata .views-row-last,
 .view-dataset-action-items.view-display-id-block_data .views-row-last{
     margin-bottom: 25px;
 }
@@ -2185,4 +2182,12 @@ td.log-comment {
 
 article .content .field-label-inline .field-item {
     white-space: pre-line;
+}
+
+.logo-img img{
+  max-height: 115px;
+}
+
+#zone-content-wrapper #region-content {
+    min-height: 400px;
 }
