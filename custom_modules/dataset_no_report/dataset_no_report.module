@@ -40,7 +40,7 @@ function dataset_no_report_form_nothing($form, $form_state){
 
   $start_date = new DateTime();
 
-  $path_arr = split('/', current_path());
+  $path_arr = preg_split("/\//", current_path());
   $date_range = $path_arr[count($path_arr) - 1];
   $date_arr = preg_split("/--/", $date_range);
   if(!empty($date_arr)){
