@@ -32,24 +32,19 @@ function ecogig_neat_breadcrumb($variables) {
 function ecogig_neat_image_formatter($vars) {
 		  $item = $vars['item'];
 		  $image = array(
-		    'path' => $item['uri'], 
+		    'path' => $item['uri'],
 		    'alt' => $item['alt'],
 		  );
-		
+
 		  if (isset($item['attributes'])) {
 		    $image['attributes'] = $item['attributes'];
 		  }
-		
+
 		  if (isset($item['width']) && isset($item['height'])) {
 		    $image['width'] = $item['width'];
 		    $image['height'] = $item['height'];
 		  }
-		
-		  // Do not output an empty 'title' attribute.
-		  if (drupal_strlen($item['title']) > 0) {
-		    //$image['title'] = $item['title'];
-		  }
-		
+
 		  if ($vars['image_style']) {
 		    $image['style_name'] = $vars['image_style'];
 		    $output = theme('image_style', $image);
@@ -57,7 +52,7 @@ function ecogig_neat_image_formatter($vars) {
 		  else {
 		    $output = theme('image', $image);
 		  }
-		
+
 		  if (!empty($vars['path']['path'])) {
 		    $path = $vars['path']['path'];
 		    $options = $vars['path']['options'];
@@ -73,36 +68,39 @@ function ecogig_neat_image_formatter($vars) {
 		    }
 		    $output .= "</figure>";
 		  }
-		
+
 		  return $output;
 	}
 
 function ecogig_neat_views_pre_render(&$view) {
   $display_name = '';
-global $user;
+  global $user;
+
+  // Change "My References" view title to "<User>'s References" when viewed by other users
   if ($view->name =='my_references') {
     $uid = arg(2);
     if(!empty($uid)){
       $profile = profile2_load_by_user($uid, 'main');
       if(!empty($profile)){
-	$first_name = '';
-	$last_name = '';
-	if(!empty($profile->field_first_name['und'])){$first_name = $profile->field_first_name['und'][0]['value'];}
-	if(!empty($profile->field_last_name['und'])){$last_name = $profile->field_last_name['und'][0]['value'];}
+      	$first_name = '';
+      	$last_name = '';
+      	if(!empty($profile->field_first_name['und'])){$first_name = $profile->field_first_name['und'][0]['value'];}
+      	if(!empty($profile->field_last_name['und'])){$last_name = $profile->field_last_name['und'][0]['value'];}
 
-	if(!empty($first_name) && !empty($last_name) && $user->uid != $uid){
-	  $display_name = $first_name . ' ' . $last_name . "'s ";
-	}
+      	if(!empty($first_name) && !empty($last_name) && $user->uid != $uid){
+      	  $display_name = $first_name . ' ' . $last_name . "'s ";
+      	}
       }
     }
 
-    if(!empty($display_name)){ 
-      $current_title = !empty($view->build_info['title']) ? $view->build_info['title'] : ''; 
-      $title = str_replace('My', $display_name, $current_title);	
+    if(!empty($display_name)){
+      $current_title = !empty($view->build_info['title']) ? $view->build_info['title'] : '';
+      $title = str_replace('My', $display_name, $current_title);
       $view->build_info['title'] = $title;
     }
   }
 
+  // Include Moment.js with Dataset Progress Report
   if($view->name == 'dataset_progress_report'){
     drupal_add_js(drupal_get_path('theme', 'ecogig_neat') .'/js/moment.min.js', 'file');
   }
@@ -113,11 +111,13 @@ function ecogig_neat_preprocess_page(&$variables){
   if(!empty($variables['node'])){
     $node = $variables['node'];
     if($node->type == 'dataset'){
+      // Add UDI to Dataset node titles if present
       $udi = !empty($node->field_griidc_udi['und'][0]['value']) ? $node->field_griidc_udi['und'][0]['value'] : '';
       if(!empty($udi)){
         $variables['title'] = $udi . '<br/>' . $node->title;
       }
 
+      // Change title for nodes cloned from templates
       if(!empty($variables['page']['content']['content']['content']['system_main']['#node']->clone_from_original_nid)){
         $variables['title'] = 'New Dataset from Template';
         drupal_set_breadcrumb(array());
@@ -129,6 +129,7 @@ function ecogig_neat_preprocess_page(&$variables){
 function ecogig_neat_preprocess_node(&$variables){
   $node = $variables['node'];
   if($node->type == 'dataset'){
+    // Add latest workflow state and comment to node template if available
     $workflow = !empty($node->field_dataset_workflow['und'][0]['value']) ? $node->field_dataset_workflow['und'][0]['value'] : '';
     $workflow = workflow_node_current_state($node);
     if(!empty($workflow)){
@@ -138,6 +139,7 @@ function ecogig_neat_preprocess_node(&$variables){
       $variables['workflow_state'] = !empty($state) ? $state : '';
       $variables['workflow_comment'] = !empty($comment) ? $comment : '';
     }
+
     $record_type = !empty($node->field_record_type[LANGUAGE_NONE][0]['taxonomy_term']) ? $node->field_record_type[LANGUAGE_NONE][0]['taxonomy_term'] : '';
     if(!empty($record_type)){
         $icon_class = !empty($record_type->field_icon_class[LANGUAGE_NONE][0]['value']) ? $record_type->field_icon_class[LANGUAGE_NONE][0]['value'] : '';
@@ -215,7 +217,7 @@ function ecogig_neat_preprocess_field(&$vars, $hook) {
   // Add line breaks to plain text textareas.
   if (
     // Make sure this is a text_long field type.
-    $vars['element']['#field_type'] == 'text_long' 
+    $vars['element']['#field_type'] == 'text_long'
     && !empty($vars['element']['#items'][0]['format'])
     // Check that the field's format is set to null, which equates to plain_text.
     && $vars['element']['#items'][0]['format'] == null
@@ -226,4 +228,3 @@ function ecogig_neat_preprocess_field(&$vars, $hook) {
 
 function ecogig_neat_form_dataset_node_form_alter(&$form, &$form_state, $form_id){
 }
-
