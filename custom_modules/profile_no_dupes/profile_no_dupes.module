@@ -17,6 +17,7 @@ function profile_no_dupes_menu(){
     'page callback' => 'profile_no_dupes_create_profile_callback',
     'page arguments' => array(3, 4),
     'access arguments' => array('create profile content'),
+    'theme callback' => 'ajax_base_page_theme',
     'type' => MENU_CALLBACK,
   );
   return $items;
