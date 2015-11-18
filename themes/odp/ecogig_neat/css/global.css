@@ -2206,6 +2206,8 @@ article .content .field-label-inline .field-item {
   padding: 10px 4px;
 }
 
-#block-system-main-menu ul.menu li a{
-  color: #ff;
+#block-system-main-menu ul.menu li a
+#block-system-main-menu ul.menu li a:active
+{
+  color: #fff;
 }
