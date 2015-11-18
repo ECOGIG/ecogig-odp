@@ -600,7 +600,8 @@ $handler->display->display_options['fields']['php_10']['use_php_setup'] = 0;
 $handler->display->display_options['fields']['php_10']['php_output'] = '<?php
 
 $node = $data->_field_data[\'nid\'][\'entity\'];
-$edit_date = new DateTime(\'@\' . $node->changed);
+
+$edit_date = !empty($node->changed) ? new DateTime(\'@\' . $node->changed) : '';
 $edit_date = ($edit_date instanceof DateTime) ? $edit_date->format(\'Y-m-d\') : "";
 $coordinate_type = $node->field_coordinate_list_descriptio[LANGUAGE_NONE][0][\'value\'];
 
