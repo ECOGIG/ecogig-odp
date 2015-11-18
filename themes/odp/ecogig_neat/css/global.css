@@ -2207,7 +2207,7 @@ article .content .field-label-inline .field-item {
 }
 
 #block-system-main-menu ul.menu li a
-#block-system-main-menu ul.menu li a:active
+#block-system-main-menu ul.menu li a.active
 {
   color: #fff;
 }
