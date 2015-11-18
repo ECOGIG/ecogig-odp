@@ -8,6 +8,8 @@
  * Implements hook_default_page_manager_pages().
  */
 function ecogig_odp_default_page_manager_pages() {
+  $roles = array_flip(user_roles());
+
   $page = new stdClass();
   $page->disabled = FALSE; /* Edit this to true to make a default page disabled initially */
   $page->api_version = 1;
@@ -558,8 +560,9 @@ function ecogig_odp_default_page_manager_pages() {
         'name' => 'role',
         'settings' => array(
           'rids' => array(
-            0 => 10,
-            1 => 9,
+            0 => $roles['Data Manager'],
+            1 => $roles['Information Technology'],
+            2 => $roles['administrator'],
           ),
         ),
         'context' => 'logged-in-user',
@@ -663,7 +666,7 @@ function ecogig_odp_default_page_manager_pages() {
         'name' => 'role',
         'settings' => array(
           'rids' => array(
-            0 => 2,
+            0 => $roles['authenticated user'],
           ),
         ),
         'context' => 'argument_entity_id:user_1',
@@ -940,13 +943,14 @@ function ecogig_odp_default_page_manager_pages() {
         'name' => 'role',
         'settings' => array(
           'rids' => array(
-            0 => 10,
-            1 => 3,
-            2 => 9,
-            3 => 8,
-            4 => 4,
-            5 => 5,
-            6 => 6,
+            0 => $roles['Administration'],
+            1 => $roles['Data Manager'],
+            2 => $roles['Information Technology'],
+            3 => $roles['Principal Investigator (PI)'],
+            4 => $roles['Program Director'],
+            5 => $roles['Public Outreach'],
+            6 => $roles['Research Professional'],
+            7 => $roles['administrator'],
           ),
         ),
         'context' => 'logged-in-user',
@@ -1249,11 +1253,14 @@ function ecogig_odp_default_page_manager_pages() {
         'name' => 'role',
         'settings' => array(
           'rids' => array(
-            0 => 10,
-            1 => 3,
-            2 => 9,
-            3 => 5,
-            4 => 6,
+            0 => $roles['Administration'],
+            1 => $roles['Data Manager'],
+            2 => $roles['Information Technology'],
+            3 => $roles['Principal Investigator (PI)'],
+            4 => $roles['Program Director'],
+            5 => $roles['Public Outreach'],
+            6 => $roles['Research Professional'],
+            7 => $roles['administrator'],
           ),
         ),
         'context' => 'logged-in-user',
@@ -1510,8 +1517,9 @@ function ecogig_odp_default_page_manager_pages() {
         'name' => 'role',
         'settings' => array(
           'rids' => array(
-            0 => 10,
-            1 => 9,
+            0 => $roles['Data Manager'],
+            1 => $roles['Information Technology'],
+            2 => $roles['administrator'],
           ),
         ),
         'context' => 'logged-in-user',
@@ -1658,11 +1666,12 @@ function ecogig_odp_default_page_manager_pages() {
         'name' => 'role',
         'settings' => array(
           'rids' => array(
-            0 => 10,
-            1 => 3,
-            2 => 9,
-            3 => 8,
-            4 => 4,
+            0 => $roles['Administration'],
+            1 => $roles['Data Manager'],
+            2 => $roles['Information Technology'],
+            3 => $roles['Program Director'],
+            4 => $roles['Public Outreach'],
+            5 => $roles['administrator'],
           ),
         ),
         'context' => 'logged-in-user',
@@ -1836,13 +1845,14 @@ function ecogig_odp_default_page_manager_pages() {
         'name' => 'role',
         'settings' => array(
           'rids' => array(
-            0 => 10,
-            1 => 3,
-            2 => 9,
-            3 => 8,
-            4 => 4,
-            5 => 5,
-            6 => 6,
+            0 => $roles['Administration'],
+            1 => $roles['Data Manager'],
+            2 => $roles['Information Technology'],
+            3 => $roles['Principal Investigator (PI)'],
+            4 => $roles['Program Director'],
+            5 => $roles['Public Outreach'],
+            6 => $roles['Research Professional'],
+            7 => $roles['administrator'],
           ),
         ),
         'context' => 'logged-in-user',

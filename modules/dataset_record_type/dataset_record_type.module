@@ -32,10 +32,15 @@ function dataset_record_type_form_dataset_node_form_alter(&$form, &$form_state, 
       $record_type = !empty($params['record_type']) ? $params['record_type'] : '';
       $mode = !empty($params['mode']) ? $params['mode'] : '';
 
+      // Whether or not we got here from a Node Clone operation
+      $clone = !empty($form['clone_from_original_nid']['#value']) ? $form['clone_from_original_nid']['#value'] : '';
+
       $uri = !empty($_SERVER['REQUEST_URI']) ? strtolower($_SERVER['REQUEST_URI']) : '';
       $is_ajax = !empty($uri) ? strpos($uri, 'ajax') !== false : FALSE;
 
-      if(empty($record_type) && empty($mode) && empty($is_ajax)){
+
+
+      if(empty($record_type) && empty($mode) && empty($is_ajax) && empty($clone)){
         drupal_goto('/node/add/dataset/type');
       }
     }
