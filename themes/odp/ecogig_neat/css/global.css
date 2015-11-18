@@ -2191,3 +2191,21 @@ article .content .field-label-inline .field-item {
 #zone-content-wrapper #region-content {
     min-height: 400px;
 }
+
+#block-system-main-menu ul.menu li {
+  background: none;
+  list-style-image: none;
+  list-style-type: none;
+  float: left;
+  display: inline-block;
+  font-weight: bold;
+  color: #fff;
+
+  font-size: 20px;
+  font-family: 'Open Sans Condensed';
+  padding: 10px 4px;
+}
+
+#block-system-main-menu ul.menu li a{
+  color: #ff;
+}
