@@ -2211,3 +2211,117 @@ article .content .field-label-inline .field-item {
 {
   color: #fff;
 }
+
+/* Profile Styles */
+.page-node.node-type-profile #page-title{
+  display: none;
+}
+
+.profile .profile-photo{
+  overflow: hidden;
+  display: inline;
+  float: left;
+  border-radius: 100px;
+  margin: 0 35px 20px 10px;
+  max-height: 125px;
+  max-width: 125px;
+  border: 5px solid #dadada;
+}
+
+.profile .profile-photo{
+  height: 125px;
+  width: 125px;
+}
+
+.profile .panel{
+  background: #fafafa;
+  border:1px solid #dadada;
+  padding: 10px;
+  overflow:hidden;
+  min-height: 150px;
+}
+
+.profile .panel .panel-header{
+  display: block;
+  font-weight: bold;
+  border-bottom: 1px solid #dadada;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  font-family: 'PT Sans', 'Cabin Condensed', 'Trebuchet MS', sans-serif;
+  font-size: 16px;
+}
+
+.profile .pnl-profile-header{
+  font-family: 'PT Sans', 'Cabin Condensed', 'Trebuchet MS', sans-serif;
+}
+
+.profile .pnl-profile-header .field-name-field-website-url{
+  font-family: 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+}
+
+.profile .pnl-profile-header .pnl-profile-name{
+  margin-left:20px;
+}
+
+.profile .profile-name{
+  font-size: 24px;
+}
+
+.profile .profile-org{
+  color: #8A8A8A;
+  font-size: 18px;
+}
+
+.profile .profile-position,
+.profile .profile-dept {
+    overflow: hidden;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.profile .pnl-profile-body {
+    clear: both;
+    border-top: 1px solid #dadada;
+    padding-top: 20px;
+    overflow: hidden;
+    margin: 20px;
+}
+
+.profile .profile-body-content{
+  display: inline-block;
+  width: 50%;
+}
+
+.profile .profile-contact-info{
+  display: inline-block;
+  width: 40%;
+  float:right;
+}
+
+.profile .profile-contact-info .field{
+  margin: 10px 0;
+}
+
+.profile .pnl-publications{
+  margin: 20px;
+}
+
+.profile .pnl-publications .views-row{
+  margin: 0;
+  padding: 15px 10px;
+  border-bottom: 1px solid #dadada;
+
+}
+
+.profile .pnl-publications .views-row .views-field-title{
+  font-size: 14px;
+}
+
+.profile .pnl-publications .views-field-field-date-range,
+.profile .pnl-publications .views-field-field-date-published{
+  font-style: italic;
+}
+
+.profile .pnl-publications .views-row-odd{
+  background: #fff;
+}
