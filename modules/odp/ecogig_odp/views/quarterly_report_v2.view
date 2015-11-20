@@ -153,13 +153,21 @@
   $handler->display->display_options['fields']['field_last_name']['field'] = 'field_last_name';
   $handler->display->display_options['fields']['field_last_name']['relationship'] = 'uid';
   $handler->display->display_options['fields']['field_last_name']['exclude'] = TRUE;
-  /* Field: Content: Author uid */
-  $handler->display->display_options['fields']['uid']['id'] = 'uid';
-  $handler->display->display_options['fields']['uid']['table'] = 'node';
-  $handler->display->display_options['fields']['uid']['field'] = 'uid';
-  $handler->display->display_options['fields']['uid']['label'] = 'Contribution Owner';
-  $handler->display->display_options['fields']['uid']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['uid']['alter']['text'] = '[field_first_name] [field_last_name] ';
+  /* Field: User: My Author Profile */
+  $handler->display->display_options['fields']['field_my_author_profile']['id'] = 'field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['table'] = 'field_data_field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['field'] = 'field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['field_my_author_profile']['label'] = 'Contribution Owner';
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['text'] = '[field_first_name] [field_last_name] ';
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['path'] = 'node/[field_my_author_profile-target_id]';
+  $handler->display->display_options['fields']['field_my_author_profile']['settings'] = array(
+    'link' => 0,
+    'empty_fields_handler' => '',
+    'empty_fields_emptyfieldtext_empty_text' => '',
+  );
   /* Field: Content: Internal / External */
   $handler->display->display_options['fields']['field_internal_external']['id'] = 'field_internal_external';
   $handler->display->display_options['fields']['field_internal_external']['table'] = 'field_data_field_internal_external';
@@ -404,13 +412,22 @@
   $handler->display->display_options['fields']['field_last_name']['field'] = 'field_last_name';
   $handler->display->display_options['fields']['field_last_name']['relationship'] = 'uid';
   $handler->display->display_options['fields']['field_last_name']['exclude'] = TRUE;
-  /* Field: Content: Author uid */
-  $handler->display->display_options['fields']['uid']['id'] = 'uid';
-  $handler->display->display_options['fields']['uid']['table'] = 'node';
-  $handler->display->display_options['fields']['uid']['field'] = 'uid';
-  $handler->display->display_options['fields']['uid']['label'] = 'Contribution Owner';
-  $handler->display->display_options['fields']['uid']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['uid']['alter']['text'] = '[field_first_name] [field_last_name] ';
+  /* Field: User: My Author Profile */
+  $handler->display->display_options['fields']['field_my_author_profile']['id'] = 'field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['table'] = 'field_data_field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['field'] = 'field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['field_my_author_profile']['label'] = 'Contribution Owner';
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['text'] = '[field_first_name] [field_last_name] ';
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['path'] = 'node/[field_my_author_profile-target_id]';
+  $handler->display->display_options['fields']['field_my_author_profile']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_my_author_profile']['settings'] = array(
+    'link' => 1,
+    'empty_fields_handler' => '',
+    'empty_fields_emptyfieldtext_empty_text' => '',
+  );
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -688,13 +705,21 @@
   $handler->display->display_options['fields']['field_last_name']['field'] = 'field_last_name';
   $handler->display->display_options['fields']['field_last_name']['relationship'] = 'uid';
   $handler->display->display_options['fields']['field_last_name']['exclude'] = TRUE;
-  /* Field: Content: Author uid */
-  $handler->display->display_options['fields']['uid']['id'] = 'uid';
-  $handler->display->display_options['fields']['uid']['table'] = 'node';
-  $handler->display->display_options['fields']['uid']['field'] = 'uid';
-  $handler->display->display_options['fields']['uid']['label'] = 'Contribution Owner';
-  $handler->display->display_options['fields']['uid']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['uid']['alter']['text'] = '[field_first_name] [field_last_name]';
+  /* Field: User: My Author Profile */
+  $handler->display->display_options['fields']['field_my_author_profile']['id'] = 'field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['table'] = 'field_data_field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['field'] = 'field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['field_my_author_profile']['label'] = 'Contribution Owner';
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['text'] = '[field_first_name] [field_last_name]';
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['path'] = 'node/[field_my_author_profile-target_id]';
+  $handler->display->display_options['fields']['field_my_author_profile']['settings'] = array(
+    'link' => 0,
+    'empty_fields_handler' => '',
+    'empty_fields_emptyfieldtext_empty_text' => '',
+  );
   /* Field: Content: Author(s) */
   $handler->display->display_options['fields']['field_contrib_author']['id'] = 'field_contrib_author';
   $handler->display->display_options['fields']['field_contrib_author']['table'] = 'field_data_field_contrib_author';
@@ -997,13 +1022,21 @@
   $handler->display->display_options['fields']['field_last_name_1']['field'] = 'field_last_name';
   $handler->display->display_options['fields']['field_last_name_1']['relationship'] = 'uid';
   $handler->display->display_options['fields']['field_last_name_1']['exclude'] = TRUE;
-  /* Field: Content: Author uid */
-  $handler->display->display_options['fields']['uid']['id'] = 'uid';
-  $handler->display->display_options['fields']['uid']['table'] = 'node';
-  $handler->display->display_options['fields']['uid']['field'] = 'uid';
-  $handler->display->display_options['fields']['uid']['label'] = 'Contribution Owner';
-  $handler->display->display_options['fields']['uid']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['uid']['alter']['text'] = '[field_first_name_1] [field_last_name_1]';
+  /* Field: User: My Author Profile */
+  $handler->display->display_options['fields']['field_my_author_profile']['id'] = 'field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['table'] = 'field_data_field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['field'] = 'field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['field_my_author_profile']['label'] = 'Contribution Owner';
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['text'] = '[field_first_name_1] [field_last_name_1]';
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['path'] = 'node/[field_my_author_profile-target_id]';
+  $handler->display->display_options['fields']['field_my_author_profile']['settings'] = array(
+    'link' => 0,
+    'empty_fields_handler' => '',
+    'empty_fields_emptyfieldtext_empty_text' => '',
+  );
   /* Field: Content: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
   $handler->display->display_options['fields']['title']['table'] = 'node';
@@ -1361,13 +1394,22 @@
   $handler->display->display_options['fields']['field_last_name_1']['field'] = 'field_last_name';
   $handler->display->display_options['fields']['field_last_name_1']['relationship'] = 'uid';
   $handler->display->display_options['fields']['field_last_name_1']['exclude'] = TRUE;
-  /* Field: Content: Author uid */
-  $handler->display->display_options['fields']['uid']['id'] = 'uid';
-  $handler->display->display_options['fields']['uid']['table'] = 'node';
-  $handler->display->display_options['fields']['uid']['field'] = 'uid';
-  $handler->display->display_options['fields']['uid']['label'] = 'Contribution Owner';
-  $handler->display->display_options['fields']['uid']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['uid']['alter']['text'] = '[field_first_name_1] [field_last_name_1]';
+  /* Field: User: My Author Profile */
+  $handler->display->display_options['fields']['field_my_author_profile']['id'] = 'field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['table'] = 'field_data_field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['field'] = 'field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['field_my_author_profile']['label'] = 'Contribution Owner';
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['text'] = '[field_first_name_1] [field_last_name_1]
+  ';
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['path'] = 'node/[field_my_author_profile-target_id]';
+  $handler->display->display_options['fields']['field_my_author_profile']['settings'] = array(
+    'link' => 0,
+    'empty_fields_handler' => '',
+    'empty_fields_emptyfieldtext_empty_text' => '',
+  );
   /* Field: Content: Student Type (field_student_type:date_to_timestamp) */
   $handler->display->display_options['fields']['field_student_type_date_to_timestamp']['id'] = 'field_student_type_date_to_timestamp';
   $handler->display->display_options['fields']['field_student_type_date_to_timestamp']['table'] = 'field_data_field_student_type';
@@ -1731,13 +1773,21 @@
   $handler->display->display_options['fields']['field_last_name']['field'] = 'field_last_name';
   $handler->display->display_options['fields']['field_last_name']['relationship'] = 'uid';
   $handler->display->display_options['fields']['field_last_name']['exclude'] = TRUE;
-  /* Field: Content: Author uid */
-  $handler->display->display_options['fields']['uid']['id'] = 'uid';
-  $handler->display->display_options['fields']['uid']['table'] = 'node';
-  $handler->display->display_options['fields']['uid']['field'] = 'uid';
-  $handler->display->display_options['fields']['uid']['label'] = 'Contribution Owner';
-  $handler->display->display_options['fields']['uid']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['uid']['alter']['text'] = '[field_first_name] [field_last_name]';
+  /* Field: User: My Author Profile */
+  $handler->display->display_options['fields']['field_my_author_profile']['id'] = 'field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['table'] = 'field_data_field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['field'] = 'field_my_author_profile';
+  $handler->display->display_options['fields']['field_my_author_profile']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['field_my_author_profile']['label'] = 'Contribution Owner';
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['alter_text'] = TRUE;
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['text'] = '[field_first_name] [field_last_name]';
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['field_my_author_profile']['alter']['path'] = 'node/[field_my_author_profile-target_id]';
+  $handler->display->display_options['fields']['field_my_author_profile']['settings'] = array(
+    'link' => 0,
+    'empty_fields_handler' => '',
+    'empty_fields_emptyfieldtext_empty_text' => '',
+  );
   /* Field: Content: Outreach Type */
   $handler->display->display_options['fields']['field_outreach_type']['id'] = 'field_outreach_type';
   $handler->display->display_options['fields']['field_outreach_type']['table'] = 'field_data_field_outreach_type';
