@@ -1,0 +1,4 @@
+name = Workflow Helpers
+description = Various helper functions for interfacing with Workflows data.
+core = 7.x
+package = Oceanographic Data Portal

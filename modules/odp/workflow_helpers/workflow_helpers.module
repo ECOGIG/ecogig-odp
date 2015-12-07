@@ -1,0 +1,130 @@
+<?php
+
+function workflow_helpers_get_state_name($sid) {
+  $results = db_query('SELECT state FROM {workflow_states} WHERE sid = :sid', array(':sid' => $sid));
+  return $results->fetchField();
+}
+
+function workflow_helpers_get_latest_comment($nid) {
+  $results = db_query('SELECT comment FROM {workflow_node_history} h ' .
+    'LEFT JOIN {users} u ON h.uid = u.uid ' .
+    'WHERE nid = :nid ORDER BY h.hid DESC', array(':nid' => $nid));
+    return $results->fetchField();
+}
+
+function workflow_helpers_get_workflow_id($machine_name){
+  $wid = '';
+
+  $result = db_select('workflows')
+    ->fields('workflows', array('wid'))
+    ->condition('name', $machine_name, '=')
+    ->execute();
+
+  foreach ($result as $workflow) {
+    $wid = $workflow->wid;
+  }
+
+  return $wid;
+}
+
+function workflow_helpers_get_workflows(){
+  $workflows = array();
+
+  $result = db_select('workflows')
+    ->fields('workflows')
+    ->execute();
+
+  foreach ($result as $workflow) {
+    $workflows[$workflow->wid] = $workflow;
+  }
+
+  return $workflows;
+}
+
+function workflow_helpers_get_workflow_object($machine_name){
+  $workflow_obj = NULL;
+
+  $result = db_select('workflows')
+    ->fields('workflows')
+    ->condition('name', $machine_name, '=')
+    ->execute();
+
+  foreach ($result as $workflow) {
+    $workflow_obj = $workflow;
+  }
+
+  return $workflow_obj;
+}
+
+function workflow_helpers_get_workflow_state($wid, $machine_name){
+  $sid = '';
+
+  $result = db_select('workflow_states')
+    ->fields('workflow_states', array('sid'))
+    ->condition('wid', $wid, '=')
+    ->condition('name', $machine_name, '=')
+    ->execute();
+
+  foreach ($result as $state) {
+    $sid = $state->sid;
+  }
+
+  return $sid;
+}
+
+function workflow_helpers_get_workflow_states($wid = NULL){
+  $states = array();
+
+  if(!empty($wid)){
+    $result = db_select('workflow_states')
+      ->fields('workflow_states')
+      ->condition('wid', $wid, '=')
+      ->execute();
+  }
+  else{
+    $result = db_select('workflow_states')
+      ->fields('workflow_states')
+      ->execute();
+  }
+
+  foreach ($result as $state) {
+    $states[$state->name] = $state;
+  }
+
+  return $states;
+}
+
+// Check if a given node has any of its workflow fields set to a list of provided state machine names
+function workflow_helpers_node_has_state($nid, $states){
+  $has_state = FALSE;
+
+  $node = node_load($nid);
+
+  // A list of workflows to check
+  // TODO: Make this configurable through the UI
+  $workflows = array(
+    'identify',
+    'metadata',
+    'data',
+    'availability',
+    'repository'
+  );
+
+  foreach($workflows as $workflow){
+    $workflow_obj = workflow_helpers_get_workflow_object($workflow);
+    $workflow_field = 'field_' . $workflow . '_state';
+    $workflow_states = !empty($workflow_obj) ? workflow_helpers_get_workflow_states($workflow_obj->wid) : array();
+    $state_objects = array();
+    foreach($workflow_states as $state){
+      $state_objects[$state->sid] = $state;
+    }
+
+    $values = field_get_items('node', $node, $workflow_field);
+    $current_value = !empty($values[0]['value']) ? $values[0]['value'] : NULL;
+
+    if(!empty($state_objects[$current_value]) && in_array($state_objects[$current_value]->name, $states)){
+      $has_state = TRUE;
+    }
+  }
+  return $has_state;
+}
