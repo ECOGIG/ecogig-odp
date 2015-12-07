@@ -1,0 +1,397 @@
+<?php
+
+function chosen_entity_modal_init(){
+  drupal_add_css(drupal_get_path('module', 'chosen_entity_modal') . '/css/chosen_entity_modal_overrides.css', array('group' => CSS_THEME, 'every_page' => TRUE, 'weight' => 999));
+  drupal_add_js(drupal_get_path('module', 'chosen_entity_modal') . '/js/chosen_entity_modal.js', array('type' => 'file', 'scope' => 'footer', 'weight' => 5));
+
+
+  //drupal_add_js(drupal_get_path('module', 'uniqueness') . '/uniqueness.js');
+}
+
+/**
+ * Implements hook_menu
+ */
+function chosen_entity_modal_menu(){
+  $items = array();
+  $items['chosen/node/add/%/%'] = array(
+    'page callback' => 'chosen_entity_modal_create_node_callback',
+    'page arguments' => array(3, 4),
+    'access arguments' => array(TRUE),
+    'theme callback' => 'ajax_base_page_theme',
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_field_widget_info_alter().
+ */
+function chosen_entity_modal_field_widget_info_alter(&$info) {
+  $widget_defaults = array(
+    'options_select' => '',
+    'select_or_other' => '',
+  );
+
+  foreach ($widget_defaults as $widget => $default) {
+    if (isset($info[$widget])) {
+      $info[$widget]['settings']['chosen_entity_modal'] = $default;
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function chosen_entity_modal_form_field_ui_field_edit_form_alter(&$form, $form_state) {
+  if (empty($form['#field']['locked']) && isset($form['#instance']['widget']['settings']['chosen_entity_modal'])) {
+    $form['instance']['widget']['settings']['chosen_entity_modal'] = array(
+      '#type' => 'select',
+      '#title' => t('Allow modal-based creation of new content?'),
+      '#options' => array(
+        0 => t('No'),
+        1 => t('Yes'),
+      ),
+      '#default_value' => $form['#instance']['widget']['settings']['chosen_entity_modal'],
+      '#disabled' => !$form['#instance']['widget']['settings']['apply_chosen'],
+      '#empty_option' => t('No'),
+      '#empty_value' => 0,
+      '#chosen' => FALSE,
+    );
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function chosen_entity_modal_field_widget_form_alter(&$element, &$form_state, $context) {
+  if (isset($context['instance']['widget']['settings']['chosen_entity_modal'])) {
+    $value = $context['instance']['widget']['settings']['chosen_entity_modal'];
+    if ($value === '') {
+      return;
+    }
+    else {
+      $element['#chosen_entity_modal'] = !empty($value);
+    }
+  }
+}
+
+// Modal for entity creation.
+function chosen_entity_modal_create_node_callback($content_type, $target_field = NULL){
+  $type = node_type_load($content_type);
+  if($type){
+    if(user_access('create ' . $type->type . ' content')){
+      drupal_add_js(drupal_get_path('module', 'chosen_entity_modal') . '/js/chosen_entity_modal.js', array('type' => 'file', 'scope' => 'footer', 'weight' => 5));
+
+/*
+      $op = UNIQUENESS_ADD_NODE;
+      // Save the content type and operation for later use
+      _uniqueness_widget_store(array('type' => $type->type, 'op' => $op));
+
+      if (user_access('use uniqueness widget') && in_array($op, variable_get('uniqueness_type_' . $type->type, array()))) {
+
+        drupal_add_js(drupal_get_path('module', 'profile_no_dupes') . '/js/profile_no_dupes.uniqueness.js', 'file', 'footer', JS_THEME);
+        drupal_add_js(
+          array(
+            'uniqueness' => _uniqueness_get_js_settings($type->type, NULL),
+          ),
+          'setting'
+          );
+                  /*
+        $form['uniqueness']['#attached']['js'] = array(
+          drupal_get_path('module', 'profile_no_dupes') . '/js/profile_no_dupes.uniqueness.js',
+          array(
+            'data' => array('uniqueness' => _uniqueness_get_js_settings($type->type, NULL)),
+            'type' => 'setting',
+          )
+        );*/
+      //}
+
+      //form_load_include($form_state, 'inc', 'taxonomy', 'taxonomy.admin');
+      global $user;
+      $node = (object) array(
+        'uid' => $user->uid,
+        'name' => (isset($user->name) ? $user->name : ''),
+        'type' => $type->type,
+        'language' => LANGUAGE_NONE,
+        );
+
+      ctools_include('node.pages', 'node', '');
+      ctools_include('ajax');
+      ctools_include('modal');
+
+      $form_state = array(
+        'ajax' => TRUE,
+        'title' => t('Add ' . $type->name),
+        'target_field' => $target_field,
+      );
+      $form_state['build_info']['args'] = array($node);
+
+      $output = ctools_modal_form_wrapper($type->type . '_node_form', $form_state);
+
+      if(!empty($form_state['ajax_commands'])){
+        $output = $form_state['ajax_commands'];
+      }
+
+      if($form_state['executed']){
+        $nid = !empty($form_state['nid']) ? $form_state['nid'] : '';
+        $node = node_load($nid);
+        // Add newly created values to hidden fields used to select new node on modal close
+        $output = array(
+          //ctools_modal_command_dismiss(),
+          array(
+            'command' => 'modal_dismiss',
+          ),
+
+          ajax_command_invoke('#pnl-hdn-node-added input[type=hidden]', 'val', array($nid)),
+          ajax_command_invoke('#pnl-hdn-node-title-added input[type=hidden]', 'val', array($node->title)),
+          ajax_command_invoke('#pnl-hdn-node-field input[type=hidden]', 'val', array($target_field)),
+          ajax_command_invoke('.btn-refresh-nodes', 'mousedown'),
+        );
+      }
+
+      print ajax_render($output);
+      drupal_exit();
+
+    }
+  }
+}
+
+function chosen_entity_modal_form_alter(&$form, &$form_state){
+
+  $has_chosen_fields = FALSE;
+  $target_field = !empty($form_state['target_field']) ? $form_state['target_field'] : '';
+  if(!empty($target_field)){
+
+    $form['hdn-target-field'] = array(
+      '#type' => 'hidden',
+      '#prefix' => '<div id="pnl-hdn-target-field">',
+      '#suffix' => '</div>',
+      '#default_value' => $target_field,
+      '#value' => $target_field,
+    );
+  }
+  foreach($form as $item_name => $form_item){
+    if(strrpos($item_name, 'field_', -strlen($item_name)) !== FALSE){
+      $is_select = !empty($form_item[LANGUAGE_NONE]['#type']) ? $form_item[LANGUAGE_NONE]['#type'] == "select" : FALSE;
+      $is_chosen = !empty($form_item[LANGUAGE_NONE]['#chosen']) ? $form_item[LANGUAGE_NONE]['#chosen'] : FALSE;
+      $allow_modal = !empty($form_item[LANGUAGE_NONE]['#chosen_entity_modal']) ? $form_item[LANGUAGE_NONE]['#chosen_entity_modal'] : FALSE;
+
+
+      if($is_select && $is_chosen && $allow_modal){
+        $info = field_info_field($item_name);
+        $content_type = !empty($info['settings']['handler_settings']['target_bundles']) ? $first_key = key($info['settings']['handler_settings']['target_bundles']) : '';
+
+        $type = node_type_load($content_type);
+
+        if($type){
+          if(user_access('add ' . $type->type . ' content')){
+            ctools_include('modal');
+            ctools_modal_add_js();
+
+            $has_chosen_fields = TRUE;
+            //$vocab = taxonomy_vocabulary_machine_name_load($vocab_machine_name);
+            //$vid = $vocab->vid;
+
+            $field_name_html = str_replace('_', '-', $item_name);
+            $pnl_name = 'pnl-' . $field_name_html . '-select';
+            $modal_link = '<span class="modal-create-node-link">' . l(t("Add new " . $type->name), 'chosen/node/add/' . $type->type . '/' . $field_name_html, array('attributes' => array('class' => 'ctools-use-modal lnk-profile-modal', 'data-form-id' => $form_id, 'data-target-field' => $field_name_html))) . '</span>';
+            $form[$item_name][LANGUAGE_NONE]['#description'] = $form_item[LANGUAGE_NONE]['#description'] .   "<br/>Don't see the item you're looking for? " . $modal_link;
+            $form[$item_name]['#prefix'] = '<div id="' . $pnl_name . '">';
+            $form[$item_name]['#suffix'] = '</div>';
+
+            $form[$item_name][$item_name . '_refresh'] = array(
+              '#type' => 'button',
+              '#value' => t('Refresh ' . $form_item[LANGUAGE_NONE]['#title']),
+              '#attributes' => array(
+                'class' => array(
+                  'btn-refresh-nodes',
+                  'hidden',
+                ),
+                'data-target-field' => $field_name_html,
+              ),
+              '#ajax' => array(
+                'callback' => 'chosen_entity_modal_rebuild_callback',
+                'wrapper' => $pnl_name,
+              ),
+              '#name' => $item_name,
+              '#limit_validation_errors' => array(),
+              '#weight' => $form[$item_name]['#weight'] + 1,
+            );
+
+          }
+        }
+      }
+    }
+  }
+
+  if($has_chosen_fields){
+    $form['hdn-node-added'] = array(
+      '#type' => 'hidden',
+      '#prefix' => '<div id="pnl-hdn-node-added">',
+      '#suffix' => '</div>',
+    );
+
+    $form['hdn-node-title-added'] = array(
+      '#type' => 'hidden',
+      '#prefix' => '<div id="pnl-hdn-node-title-added">',
+      '#suffix' => '</div>',
+    );
+
+    $form['hdn-node-field'] = array(
+      '#type' => 'hidden',
+      '#prefix' => '<div id="pnl-hdn-node-field">',
+      '#suffix' => '</div>',
+    );
+
+    $form['#validate'][] = 'chosen_entity_modal_extra_validate';
+    $form['submit']['#limit_validation_errors'] = array();
+
+
+  }
+  if(module_exists('uniqueness')){
+    chosen_entity_modal_init_uniqueness($form);
+  }
+}
+
+function chosen_entity_modal_rebuild_callback($form, &$form_state){
+  $elem = !empty($form_state['triggering_element']['#name']) ? $form_state['triggering_element']['#name'] : '';
+  if(!empty($form[$elem])){
+    $field_name_html = str_replace('_', '-', $elem);
+    $pnl_name = 'pnl-' . $field_name_html . '-select';
+
+    $info = field_info_field($elem);
+    $content_type = !empty($info['settings']['handler_settings']['target_bundles']) ? $first_key = key($info['settings']['handler_settings']['target_bundles']) : '';
+    $type = node_type_load($content_type);
+
+    $nodes = node_load_multiple(array(), array('type' => $type->type));
+
+    $options = array();
+    foreach($nodes as $node){
+      $options[$node->nid] = $node->title;
+    }
+
+    $form[$elem]['#prefix'] = '<div id="' . $pnl_name . '">';
+    $form[$elem]['#suffix'] = '</div>';
+    $form[$elem][LANGUAGE_NONE]['#options'] = $options;
+
+    return $form[$elem];
+  }
+}
+
+function chosen_entity_modal_extra_validate($form, &$form_state){
+    ctools_include('modal');
+    ctools_modal_add_js();
+
+
+    chosen_entity_modal_parse_chosen_weights($form, $form_state);
+    chosen_entity_modal_init_uniqueness($form);
+}
+
+function chosen_entity_modal_get_chosen_weights($form, $field_name){
+  $weights = '';
+  if(count($form[$field_name][LANGUAGE_NONE]['#default_value']) > 0){
+    $weights .= $field_name;
+    foreach($form[$field_name][LANGUAGE_NONE]['#default_value'] as $index => $nid){
+      $weights .= '[' . $nid . ',' . (intval($index) + 1) .']';
+    }
+    $weights .= ':';
+  }
+  return $weights;
+}
+
+function chosen_entity_modal_parse_chosen_weights($form, &$form_state){
+  if(!empty($form_state['values']['select_weights'])){
+    $weights = explode(":", $form_state['values']['select_weights']);
+    $re = "/([a-zA-Z_\\d]+)([\\[\\d+,\\d+\\]]+)/";
+    foreach($weights as $weight){
+      $matches = array();
+      if(!empty($weight) && preg_match($re, $weight, $matches) === 1){
+        if(count($matches) == 3){
+          $field_name = $matches[1];
+          $field_vals = explode(":", str_replace("]", "", str_replace("[", "", str_replace("][", ":", $matches[2]))));
+
+          $field_type = $form[$field_name][LANGUAGE_NONE]['#entity_type'];
+          $field_bundle = $form[$field_name][LANGUAGE_NONE]['#bundle'];
+          $field_info = field_info_field($field_name);
+          $field_instance = field_info_instance($field_type, $field_name, $field_bundle);
+          $sortable = !empty($field_instance['widget']['settings']['chosen_sortable']) ? $field_instance['widget']['settings']['chosen_sortable'] : FALSE;
+          if($sortable){
+            foreach($field_vals as $val){
+              $ref_arr = explode(",", $val);
+              if(count($ref_arr) == 2){
+                $ref = $ref_arr[0];
+                $ref_weight = ($ref_arr[1] >= 0) ? ($ref_arr[1] - 1) : 0;
+                if(!empty($form_state['values'][$field_name]) && !empty($ref)){
+                  unset($form_state['values'][$field_name][LANGUAGE_NONE][$ref_weight]);
+                  $form_state['values'][$field_name][LANGUAGE_NONE][$ref_weight]['target_id'] = $ref;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+}
+
+function chosen_entity_modal_init_uniqueness(&$form){
+  $op = empty($form['#node']->nid) ? UNIQUENESS_ADD_NODE : UNIQUENESS_EDIT_NODE;
+  $type = !empty($form['#bundle']) ? $form['#bundle'] : NULL;
+  // Save the content type and operation for later use
+  _uniqueness_widget_store(array('type' => $type, 'op' => $op));
+
+  if (user_access('use uniqueness widget') && in_array($op, variable_get('uniqueness_type_' . $type, array()))) {
+    // Add our javascript.
+    $form['uniqueness']['#attached']['js'] = array(
+      drupal_get_path('module', 'uniqueness') . '/uniqueness.js',
+      array(
+        'data' => array('uniqueness' => _uniqueness_get_js_settings($type, $form['nid']['#value'])),
+        'type' => 'setting',
+      )
+    );
+
+    // Save relevant form values in a temporary store, so that we can generate
+    // the list of related content right away for node previews or when
+    // editing existing nodes. (The store is needed because we cannot pass
+    // data directly to a block from within this function.)
+    $values = array();
+    // Store the node id.
+    if (!empty($form['nid']['#value'])) {
+      $values['nid'] = $form['nid']['#value'];
+    }
+    // Store the title.
+    if (!empty($form['title']['#default_value'])) {
+      $values['title'] = strip_tags($form['title']['#default_value']);
+    }
+    // Store the tags.
+    if (!empty($values['taxonomy']['tags'][1])) {
+      $values['tags'] = strip_tags($form['taxonomy']['tags'][1]['#default_value']);
+    }
+    _uniqueness_store($values);
+
+    // Embed inline widget if enabled.
+    if (uniqueness_widget_enabled(UNIQUENESS_WIDGET_INLINE)) {
+      // Get rendered list of results.
+      $count = 0;
+      $content = uniqueness_widget_content($count);
+
+      // Only add the inline uniqueness widget if it has not been defined
+      // already. This makes it possible for other modules to customize the
+      // form element in their own hook_form_alter() implementation.
+      $form['uniqueness'] += array(
+        '#type' => 'fieldset',
+        '#title' => filter_xss_admin(variable_get('uniqueness_default_title', t('Related content'))),
+        '#collapsible' => 1,
+        '#collapsed' => ($count == 0),
+        '#weight' => -100,
+        'uniqueness_type' => array(),
+      );
+      $form['uniqueness']['uniqueness_type'] += array(
+        '#type' => 'item',
+        '#title' => '',
+        '#markup' => $content,
+      );
+    }
+  }
+}

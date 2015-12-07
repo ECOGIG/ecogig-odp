@@ -1,0 +1,7 @@
+name = Chosen Entity Modal
+description = Allow modal-based creation of entity reference nodes for Chosen elements.
+package = User interface
+core = 7.x
+version = 7.x-1.0
+dependencies[] = chosen
+dependencies[] = ctools
