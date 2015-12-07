@@ -319,7 +319,147 @@ function ecogig_neat_preprocess_field(&$vars, $hook) {
   ) {
     $vars['items'][0]['#markup'] = nl2br($vars['items'][0]['#markup']);
   }
+
+  if(!empty($vars['element']['#field_name']) && $vars['element']['#field_name'] == 'field_doi'){
+    if(!empty($vars['element']['#items'][0]['safe_value'])){
+      $doi = $vars['element']['#items'][0]['safe_value'];
+      $doi = str_replace('doi:', '', $doi);
+      $vars['items'][0]['#markup'] = '<a href="http://dx.doi.org/' . $doi . '">doi:' . $doi . '</a>';
+    }
+
+  }
+
+  if(!empty($vars['element']['#field_name']) && $vars['element']['#field_name'] == 'field_ecogig_contribution_number'){
+    $is_data_manager = user_access('override dataset edit');
+
+    $contribution_number = !empty($vars['element']['#items'][0]['value']) ? intval($vars['element']['#items'][0]['value']) : NULL;
+    $field_title = $vars['element']['#title'];
+    $markup = $vars['element'][0]['#markup'];
+    $node = !empty($vars['element']['#object']) ? $vars['element']['#object'] : NULL;
+
+    if(!empty($node)){
+      drupal_add_js(
+        array(
+          'ecogig_neat' => array(
+            'currentNid' => $node->nid,
+          )
+        ),
+        'setting'
+      );
+
+      if(empty($contribution_number)){
+        if($is_data_manager){
+          $markup = '<span id="pnl-contribution-number"><button class="btn btn-create" id="btn-generate-contribution">Generate Number</button></span>';
+        }
+        else{
+          if(node_access('update', $node)){
+            $markup = '<span id="pnl-contribution-number"><button class="btn btn-create" id="btn-request-contribution">Request Number</button></span>';
+          }
+        }
+      }
+      else{
+        // Use -1 as an indicator that a user has requested a number
+        if($contribution_number < 0){
+          if($is_data_manager){
+            $markup = '<span id="pnl-contribution-number">' .
+              'Requested&nbsp;&nbsp;' .
+              '<button class="btn btn-create" href="" id="btn-generate-contribution">Generate Number</button>' .
+              '<button class="btn btn-delete" id="btn-deny-contribution">Deny Request</button>' .
+              '</span>';
+          }
+          else{
+            $markup = '<span id="pnl-contribution-number">Requested</span>';
+          }
+        }
+
+      }
+    }
+    $vars['items'][0]['#markup'] = $markup;
+  }
 }
 
 function ecogig_neat_form_dataset_node_form_alter(&$form, &$form_state, $form_id){
+
+}
+
+function ecogig_neat_get_workflow_id($machine_name){
+  $wid = '';
+
+  $result = db_select('workflows')
+    ->fields('workflows', array('wid'))
+    ->condition('name', $machine_name, '=')
+    ->execute();
+
+  foreach ($result as $workflow) {
+    $wid = $workflow->wid;
+  }
+
+  return $wid;
+}
+
+function ecogig_neat_get_workflows(){
+  $workflows = array();
+
+  $result = db_select('workflows')
+    ->fields('workflows')
+    ->execute();
+
+  foreach ($result as $workflow) {
+    $workflows[$workflow->wid] = $workflow;
+  }
+
+  return $workflows;
+}
+
+function ecogig_neat_get_workflow_object($machine_name){
+  $workflow_obj = NULL;
+
+  $result = db_select('workflows')
+    ->fields('workflows')
+    ->condition('name', $machine_name, '=')
+    ->execute();
+
+  foreach ($result as $workflow) {
+    $workflow_obj = $workflow;
+  }
+
+  return $workflow_obj;
+}
+
+function ecogig_neat_get_workflow_state($wid, $machine_name){
+  $sid = '';
+
+  $result = db_select('workflow_states')
+    ->fields('workflow_states', array('sid'))
+    ->condition('wid', $wid, '=')
+    ->condition('name', $machine_name, '=')
+    ->execute();
+
+  foreach ($result as $state) {
+    $sid = $state->sid;
+  }
+
+  return $sid;
+}
+
+function ecogig_neat_get_workflow_states($wid = NULL){
+  $states = array();
+
+  if(!empty($wid)){
+    $result = db_select('workflow_states')
+      ->fields('workflow_states')
+      ->condition('wid', $wid, '=')
+      ->execute();
+  }
+  else{
+    $result = db_select('workflow_states')
+      ->fields('workflow_states')
+      ->execute();
+  }
+
+  foreach ($result as $state) {
+    $states[$state->name] = $state;
+  }
+
+  return $states;
 }
