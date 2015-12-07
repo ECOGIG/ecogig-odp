@@ -1,0 +1,215 @@
+<?php
+
+function odp_api_permission(){
+  return array(
+    'use odp api' => array(
+      'title' => t('Use ODP API'),
+      'description' => t('Perform functions using the ODP API.'),
+    ),
+  );
+}
+
+function odp_api_menu(){
+  $items = array();
+
+  $items['odp/node/%/update'] = array(
+    'title' => t('Node AJAX Update'),
+    'page callback' => 'odp_api_node_update_ajax',
+    'page arguments' => array(2),
+    'access arguments' => array('use odp api'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['odp/node/%/generate-contribution'] = array(
+    'title' => t('Node AJAX Generate Contribution Number'),
+    'page callback' => 'odp_api_node_generate_contribution_ajax',
+    'page arguments' => array(2),
+    'access arguments' => array('use odp api'),
+    'type' => MENU_CALLBACK,
+  );
+
+
+  return $items;
+}
+
+
+function odp_api_node_update_ajax($nid){
+  $response = array();
+
+  $data = !empty($_POST['data']) ? $_POST['data']: NULL;
+  $decoded = drupal_json_decode($data);
+  $updated = array();
+
+  $errors = array();
+  $node = node_load($nid);
+
+  if(node_access('update', $node)){
+    foreach($decoded as $field_name => $value){
+      // Get instance settings and current value for field
+      $instance = field_info_instance('node', $field_name, 'project_issue');
+      $value_id = !empty($instance['default_value'][0]) ? key($instance['default_value'][0]) : 'value';
+      $node->{$field_name}[LANGUAGE_NONE][0][$value_id] = $value;
+    }
+
+    // Use default field validation for all fields
+    try {
+      field_attach_validate('node', $node);
+    }
+    catch (FieldValidationException $e) {
+      // Return error messages in our JSON response if present
+      foreach($e->errors as $key => $error){
+        $message = !empty($error[LANGUAGE_NONE][0][0]['message']) ? $error[LANGUAGE_NONE][0][0]['message'] : $key . ": illegal value.";
+        $errors[] = array(
+          'type' => 'validation',
+          'field' => $key,
+          'message' => t($message),
+        );
+      }
+    }
+  }
+  else{
+    $errors[] = array(
+      'type' => 'access',
+      'message' => 'You are not allowed to update this item.',
+    );
+  }
+
+  if(count($errors) == 0){
+    // Make sure we save a revision for the node
+    $node->revision = 1;
+
+    try {
+      node_save($node);
+      $success = TRUE;
+    }
+    catch (PDOException $e) {
+      $message = !empty($e->errorInfo[2]) ? $e->errorInfo[2] : 'Error saving data.';
+      $errors[] = array(
+        'type' => 'validation',
+        'message' => t($message),
+      );
+    }
+
+    if($success){
+      // Reload node to get updated view values
+      $node = node_load($nid);
+
+/*
+      foreach($updated as $field_name => $value){
+        $field = field_get_items('node', $node, $field_name);
+        $view_value = field_view_value('node', $node, $field_name, $field[0]);
+
+        // Include raw value and display value with our JSON response
+        $updated[$field_name]['raw_value'] = !empty($field[0]['value']) ? $field[0]['value'] : '';
+        $updated[$field_name]['view_value'] = $view_value;
+
+        // Get any custom CSS classes for fields if they are specified
+        $classes = '';
+        if(in_array($field_name, $fields_with_classes)){
+          $field_info = field_info_field($field_name);
+          $codes = list_allowed_values($field_info);
+          foreach($codes as $key => $code){
+            $config_key = 'issue_' . str_replace('field_issue_', '', $field_name) . '_styles_' . $key;
+            if(intval($key) == intval($updated[$field_name]['raw_value'] )){
+              $classes = variable_get($config_key);
+            }
+          }
+          $updated[$field_name]['classes'] = $classes;
+        }
+      }*/
+      // Successful response contains "success" indicator, updated node object, and list of updated fields
+      $response['type'] = 'success';
+      $response['node'] = $node;
+    }
+  }
+
+  if(count($errors) > 0){
+    $response['type'] = 'error';
+    $response['errors'] = $errors;
+  }
+
+  return drupal_json_output($response);
+}
+
+function odp_api_get_next_contribution_number(){
+  $max = db_query('SELECT MAX(field_ecogig_contribution_number_value) + 1 FROM {field_data_field_ecogig_contribution_number}')->fetchField();
+  return $max;
+}
+
+function odp_api_node_generate_contribution_ajax($nid){
+  $response = array();
+
+  $action = !empty($_POST['action']) ? $_POST['action']: NULL;
+  $errors = array();
+  $node = node_load($nid);
+
+  if(node_access('update', $node)){
+    if($action == 'generate'){
+      $num = odp_api_get_next_contribution_number();
+      $node->field_ecogig_contribution_number[LANGUAGE_NONE][0]['value'] = $num;
+    }
+
+    if($action == 'request'){
+      $node->field_ecogig_contribution_number[LANGUAGE_NONE][0]['value'] = -1;
+    }
+
+    if($action == 'deny'){
+      $node->field_ecogig_contribution_number[LANGUAGE_NONE][0]['value'] = NULL;
+    }
+
+    // Use default field validation for all fields
+    try {
+      field_attach_validate('node', $node);
+    }
+    catch (FieldValidationException $e) {
+      // Return error messages in our JSON response if present
+      foreach($e->errors as $key => $error){
+        $message = !empty($error[LANGUAGE_NONE][0][0]['message']) ? $error[LANGUAGE_NONE][0][0]['message'] : $key . ": illegal value.";
+        $errors[] = array(
+          'type' => 'validation',
+          'field' => $key,
+          'message' => t($message),
+        );
+      }
+    }
+  }
+  else{
+    $errors[] = array(
+      'type' => 'access',
+      'message' => 'You are not allowed to update this item.',
+    );
+  }
+
+  if(count($errors) == 0){
+    // Make sure we save a revision for the node
+    $node->revision = 1;
+
+    try {
+      node_save($node);
+      $success = TRUE;
+    }
+    catch (PDOException $e) {
+      $message = !empty($e->errorInfo[2]) ? $e->errorInfo[2] : 'Error saving data.';
+      $errors[] = array(
+        'type' => 'validation',
+        'message' => t($message),
+      );
+    }
+
+    if($success){
+      // Reload node to get updated view values
+      $node = node_load($nid);
+
+      // Successful response contains "success" indicator, updated node object, and list of updated fields
+      $response['type'] = 'success';
+      $response['node'] = $node;
+    }
+  }
+
+  if(count($errors) > 0){
+    $response['type'] = 'error';
+    $response['errors'] = $errors;
+  }
+
+  return drupal_json_output($response);
+}

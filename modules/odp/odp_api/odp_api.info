@@ -1,0 +1,5 @@
+name = ODP API
+description = API for ODP functions.
+core = 7.x
+version = 7.x-dev
+package = Oceanographic Data Portal
