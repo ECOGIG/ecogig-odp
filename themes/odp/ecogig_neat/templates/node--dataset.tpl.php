@@ -13,21 +13,25 @@
 
 <div class="panel-display panel-2col clearfix">
   <div class="panel-col-first">
-    <div<?php print $content_attributes; ?>>
-      <?php
-        // We hide the comments and links now so that we can render them later.
-        hide($content['comments']);
-        hide($content['links']);
-        print render($content);
-      ?>
-    </div>
-  </div>
-  <div class="panel-col-last pnl-dataset-col2">
+    <?php
+      $block = block_load('odp_dashboard_blocks', 'dataset_nav');
+      print drupal_render(_block_get_renderable_array(_block_render_blocks(array($block))));
+    ?>
+
     <?php if(!empty($node->current_revision_id) && $node->current_revision_id != $node->vid): ?>
       <?php if(user_access('revert revisions')): ?>
         <a class="btn btn-create-dataset" href="/node/<?php echo $node->nid ?>/revisions/<?php echo $node->vid ?>/revert">Revert</a>
       <?php endif; ?>
     <?php else: ?>
+      <?php if(node_access('update', $node)): ?>
+        <a class="btn btn-create-dataset" href="/node/<?php echo $node->nid ?>/edit">Edit Dataset</a>
+      <?php endif; ?>
+
+      <?php if(node_access('update', $node)): ?>
+        <a class="btn btn-create-dataset" href="/node/<?php echo $node->nid ?>/workflow">View All Notes</a>
+        <a class="btn btn-create-dataset" href="/node/<?php echo $node->nid ?>/revisions">Dataset Revisions</a>
+      <?php endif; ?>
+      <a class="btn btn-create-dataset" href="/dataset/<?php echo $node->nid ?>/xml">Export Metadata XML</a>
       <?php if(!empty($record_type_name)): ?>
         <div class="pnl-record-type" data-node="<?php echo $node->nid ?>">
           <h3 class="pnl-header">Dataset Record Type</h3>
@@ -47,21 +51,22 @@
           </div>
         </div>
       <?php endif; ?>
-      
-
-      <?php if(node_access('update', $node)): ?>
-        <a class="btn btn-create-dataset" href="/node/<?php echo $node->nid ?>/edit">Edit Record</a>
-      <?php endif; ?>
-      <div class="pnl-workflow-status">
-        <h3 class="workflow-header header-action-item">Current Workflow Status</h3>
-        <div class="workflow-notes"><h4><?php print render($workflow_state); ?></h4><?php print render($workflow_comment); ?></div>
-      </div>
-      <?php if(node_access('update', $node)): ?>
-        <a class="btn btn-create-dataset" href="/node/<?php echo $node->nid ?>/workflow">View All Notes</a>
-        <a class="btn btn-create-dataset" href="/node/<?php echo $node->nid ?>/revisions">Dataset Revisions</a>
-      <?php endif; ?>
-      <a class="btn btn-create-dataset" href="/dataset/<?php echo $node->nid ?>/xml">Export Metadata XML</a>
     <?php endif; ?>
+  </div>
+  <div class="panel-col-last pnl-dataset-col2">
+    <div<?php print $content_attributes; ?>>
+    <div class="pnl-workflow-states">
+      <?php print render($workflow_states); ?>
+    </div>
+      <?php
+        // We hide the comments and links now so that we can render them later.
+        hide($content['comments']);
+        hide($content['links']);
+        hide($content['group_dataset_workflow']);
+
+        print render($content);
+      ?>
+    </div>
   </div>
 </div>
 
@@ -73,4 +78,3 @@
     <?php print render($content['comments']); ?>
   </div>
 </article>
-
