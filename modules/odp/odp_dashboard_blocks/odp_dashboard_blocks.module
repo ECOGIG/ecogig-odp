@@ -1,0 +1,491 @@
+<?php
+
+/**
+* Implements hook_block_info().
+*/
+function odp_dashboard_blocks_block_info(){
+  $blocks = array();
+
+  $blocks['content_type_nav'] = array(
+    'info' => t('Nav actions per content type'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['dataset_nav'] = array(
+    'info' => t('Content Type Nav - Dataset'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['publication_nav'] = array(
+    'info' => t('Content Type Nav - Publication'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['contribution_nav'] = array(
+    'info' => t('Content Type Nav - Contribution'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['expedition_nav'] = array(
+    'info' => t('Content Type Nav - Expedition'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['content_type_actions'] = array(
+    'info' => t('Node-specific actions per content type'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['dataset_action_items'] = array(
+    'info' => t('Dataset Action Items'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+* Implements hook_block_view()
+*/
+function odp_dashboard_blocks_block_view($delta = ''){
+  $block = array();
+
+  switch($delta){
+    case 'dataset_nav':
+      $block['content'] = odp_dashboard_blocks_dataset_nav_block();
+      break;
+    case 'publication_nav':
+      $block['content'] = odp_dashboard_blocks_publication_nav_block();
+      break;
+    case 'contribution_nav':
+      $block['content'] = odp_dashboard_blocks_contribution_nav_block();
+      break;
+    case 'expedition_nav':
+      $block['content'] = odp_dashboard_blocks_expedition_nav_block();
+      break;
+    case 'content_type_nav':
+      $block['content'] = '';
+      break;
+    case 'content_type_actions':
+      $block['content'] = odp_dashboard_blocks_content_type_actions_block();
+      break;
+    case 'dataset_action_items':
+      $block['content'] = odp_dashboard_blocks_dataset_action_items_block();
+      break;
+  }
+
+  return $block;
+}
+
+function odp_dashboard_blocks_block_wrapper(){
+  $content = array();
+  $content['wrapper'] = array(
+    '#prefix' => '<div class="pnl-actions pnl-content-type-actions">',
+    '#suffix' => '</div>',
+  );
+
+  $content['wrapper']['list'] = array(
+    '#prefix' => '<ul class="action-items">',
+    '#suffix' => '</ul>',
+  );
+  return $content;
+}
+
+function odp_dashboard_blocks_dataset_nav_block(){
+  $content = array();
+  if(user_access('create dataset content')){
+    $content = odp_dashboard_blocks_block_wrapper();
+
+    $content['wrapper']['list']['action_dashboard'] = array(
+      '#prefix' => '<li class="action-item action-dashboard">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/dashboard"><i class="fa fa-dashboard"></i>&nbsp;My Dashboard</a>',
+    );
+
+    $content['wrapper']['list']['action_my_datasets'] = array(
+      '#prefix' => '<li class="action-item action-my-datasets">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/data/my"><i class="fa fa-user"></i>&nbsp;My Datasets</a>',
+    );
+
+    $content['wrapper']['list']['action_all_datasets'] = array(
+      '#prefix' => '<li class="action-item action-all-datasets">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/data/all"><i class="fa fa-users"></i>&nbsp;All Datasets</a>',
+    );
+
+    $content['wrapper']['list']['action_my_templates'] = array(
+      '#prefix' => '<li class="action-item action-my-templates">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/data/my/templates"><i class="fa fa-copy"></i>&nbsp;My Dataset Templates</a>',
+    );
+
+    $content['wrapper']['list']['action_add_dataset'] = array(
+      '#prefix' => '<li class="action-item action-add-content">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/node/add/dataset"><i class="fa fa-file-o"></i>&nbsp;Add New Dataset</a>',
+    );
+  }
+
+  return $content;
+}
+
+function odp_dashboard_blocks_publication_nav_block(){
+  $content = array();
+  if(user_access('create dataset content')){
+    $content = odp_dashboard_blocks_block_wrapper();
+
+    $content['wrapper']['list']['action_dashboard'] = array(
+      '#prefix' => '<li class="action-item action-dashboard">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/dashboard"><i class="fa fa-dashboard"></i>&nbsp;My Dashboard</a>',
+    );
+
+    $content['wrapper']['list']['action_my_publications'] = array(
+      '#prefix' => '<li class="action-item action-my-publications">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/publication/my"><i class="fa fa-user"></i>&nbsp;My Publications</a>',
+    );
+
+    $content['wrapper']['list']['action_all_publications'] = array(
+      '#prefix' => '<li class="action-item action-all-publications">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/publication/all"><i class="fa fa-users"></i>&nbsp;All Publications</a>',
+    );
+
+    $content['wrapper']['list']['action_add_publication'] = array(
+      '#prefix' => '<li class="action-item action-add-content">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/node/add/publications"><i class="fa fa-book"></i>&nbsp;Add New Publication</a>',
+    );
+  }
+
+  return $content;
+}
+
+function odp_dashboard_blocks_contribution_nav_block(){
+  $content = array();
+  if(user_access('create dataset content')){
+    $content = odp_dashboard_blocks_block_wrapper();
+
+    $content['wrapper']['list']['action_dashboard'] = array(
+      '#prefix' => '<li class="action-item action-dashboard">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/dashboard"><i class="fa fa-dashboard"></i>&nbsp;My Dashboard</a>',
+    );
+    $content['wrapper']['list']['action_quarterly_report'] = array(
+      '#prefix' => '<li class="action-item action-report">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/reports/quarterly-report/"><i class="fa fa-pie-chart"></i>&nbsp;Current Quarter Reporting</a>',
+    );
+
+    $content['wrapper']['list']['action_all_contributions'] = array(
+      '#prefix' => '<li class="action-item action-all">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/contribution/all"><i class="fa fa-users"></i>&nbsp;All Contributions</a>',
+    );
+
+    $content['wrapper']['list']['action_my_contributions'] = array(
+      '#prefix' => '<li class="action-item action-my-contributions action-parent">' .
+        '<a href="/contribution/my/all"><i class="fa fa-folder-open"></i>&nbsp;My Contributions</a>' .
+        '<ul class="action-parent">',
+      '#suffix' => '</ul></li>',
+    );
+
+    $content['wrapper']['list']['action_my_contributions']['action_my_presentations'] = array(
+      '#prefix' => '<li class="action-item action-my-content">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/contribution/my/presentation"><i class="fa fa-line-chart"></i>&nbsp;My Presentations</a>',
+    );
+
+    $content['wrapper']['list']['action_my_contributions']['action_my_workshops'] = array(
+      '#prefix' => '<li class="action-item action-my-content">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/contribution/my/workshop"><i class="fa fa-building"></i>&nbsp;My Workshops</a>',
+    );
+
+    $content['wrapper']['list']['action_my_contributions']['action_my_public_outreach'] = array(
+      '#prefix' => '<li class="action-item action-my-content">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/contribution/my/public-outreach"><i class="fa fa-bullhorn"></i>&nbsp;My Public Outreach</a>',
+    );
+
+    $content['wrapper']['list']['action_my_contributions']['action_my_participants'] = array(
+      '#prefix' => '<li class="action-item action-my-content">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/contribution/my/participant"><i class="fa fa-users"></i>&nbsp;My Participants</a>',
+    );
+
+    $content['wrapper']['list']['action_my_contributions']['action_my_students'] = array(
+      '#prefix' => '<li class="action-item action-my-content">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/contribution/my/students"><i class="fa fa-graduation-cap"></i>&nbsp;My Students</a>',
+    );
+
+    $content['wrapper']['list']['action_add_items'] = array(
+      '#prefix' => '<li class="action-item action-parent">' .
+        '<a href="/node/add"><i class="fa fa-plus"></i>&nbsp;Add New Contribution</a>' .
+        '<ul class="action-parent">',
+      '#suffix' => '</ul></li>',
+    );
+
+    $content['wrapper']['list']['action_add_items']['action_add_presentation'] = array(
+      '#prefix' => '<li class="action-item action-add-content">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/node/add/presentation"><i class="fa fa-line-chart"></i>&nbsp;Presentation</a>',
+    );
+
+    $content['wrapper']['list']['action_add_items']['action_add_workshop'] = array(
+      '#prefix' => '<li class="action-item action-add-content">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/node/add/workshop"><i class="fa fa-building"></i>&nbsp;Workshop</a>',
+    );
+
+    $content['wrapper']['list']['action_add_items']['action_add_outreach'] = array(
+      '#prefix' => '<li class="action-item action-add-content">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/node/add/public-outreach"><i class="fa fa-bullhorn"></i>&nbsp;Public Outreach</a>',
+    );
+
+    $content['wrapper']['list']['action_add_items']['action_add_student'] = array(
+      '#prefix' => '<li class="action-item action-add-content">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/node/add/students"><i class="fa fa-graduation-cap"></i>&nbsp;Student</a>',
+    );
+
+    $content['wrapper']['list']['action_add_items']['action_add_participant'] = array(
+      '#prefix' => '<li class="action-item action-add-content">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/node/add/participant"><i class="fa fa-user"></i>&nbsp;Participant</a>',
+    );
+
+  }
+  return $content;
+}
+
+function odp_dashboard_blocks_expedition_nav_block(){
+  $content = array();
+  if(user_access('create dataset content')){
+    $content = odp_dashboard_blocks_block_wrapper();
+
+    $content['wrapper']['list']['action_dashboard'] = array(
+      '#prefix' => '<li class="action-item action-dashboard">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/dashboard"><i class="fa fa-dashboard"></i>&nbsp;My Dashboard</a>',
+    );
+
+    $content['wrapper']['list']['action_next'] = array(
+      '#prefix' => '<li class="action-item action-dashboard">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/dashboard/cruises/upcoming/my"><i class="fa fa-ship"></i>&nbsp;My Next Cruise</a>',
+    );
+
+    $content['wrapper']['list']['action_upcoming'] = array(
+      '#prefix' => '<li class="action-item action-upcoming-expeditions">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/dashboard/cruises/upcoming"><i class="fa fa-reorder"></i>&nbsp;All Upcoming Cruises</a>',
+    );
+
+    $content['wrapper']['list']['action_all_publications'] = array(
+      '#prefix' => '<li class="action-item action-all-publications">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/dashboard/cruises/past"><i class="fa fa-history"></i>&nbsp;Past Cruises</a>',
+    );
+
+  }
+
+  return $content;
+}
+
+function odp_dashboard_blocks_content_type_actions_block(){
+  $node = menu_get_object();
+  $content = array(
+    'message' => array(
+      '#type' => 'markup',
+      '#markup' => 'no',
+      '#suffix' => '',
+    ),
+  );
+
+  return $content;
+}
+
+function odp_dashboard_blocks_get_latest_changes($node, $uid = NULL, $type){
+  if(empty($uid)){
+    global $user;
+    $uid = $user->uid;
+  }
+  $current_user = user_load($uid);
+
+  $is_data_manager = user_access('override dataset edit', $current_user);
+  $states = array();
+  $allowed_states = array();
+
+  // PI action items
+  if(!$is_data_manager){
+    if($type == 'action_item'){
+      $allowed_state_names = array(
+        'need_metadata',
+        'metadata_return',
+        'need_data_files',
+        'need_data_file_review_and_approval',
+        'data_return',
+        'data_listed_as_private',
+      );
+    }
+    // PI alerts (no action required)
+    if($type == 'alert'){
+      $allowed_state_names = array(
+        'udi_from_repo_assigned',
+        'doi_assigned',
+        'identify_complete',
+        'metadata_complete',
+        'data_complete',
+        'data_listed_as_public',
+      );
+    }
+  }
+  else{
+    // Data manager action items
+    if($type == 'action_item'){
+      $allowed_state_names = array(
+        'request_a_udi_from_repo',
+        'request_a_doi_from_repo',
+        'metadata_supplied',
+        'repo_return',
+        'data_files_supplied',
+        'data_files_approved_by_pi',
+        'ready_for_submission',
+        'submitted_to_repo',
+        'list_data_as_public',
+      );
+    }
+  }
+
+  // All of our workflows that we want to check
+  $workflows = array(
+    'field_identify_state',
+    'field_metadata_state',
+    'field_data_state',
+    'field_availability_state',
+    'field_repository_state'
+  );
+
+  // Get the current value of each workflow, and check to see if it is in the list of states we want to display
+  foreach($workflows as $workflow){
+    $workflow_name = str_replace(array('field_', '_state'), '', $workflow);
+    $workflow_obj = workflow_helpers_get_workflow_object($workflow_name);
+
+    $workflow_states = !empty($workflow_obj) ? workflow_helpers_get_workflow_states($workflow_obj->wid) : array();
+    $state_objects = array();
+    foreach($workflow_states as $state){
+      if(in_array($state->name, $allowed_state_names)){
+        $allowed_states[] = $state->sid;
+      }
+      $state_objects[$state->sid] = $state;
+    }
+
+    $values = field_get_items('node', $node, $workflow);
+    $current_value = !empty($values[0]['value']) ? $values[0]['value'] : NULL;
+
+    if(!empty($current_value) && in_array($current_value, $allowed_states)){
+
+      $results = db_query('SELECT hid, sid, comment, field_name FROM {workflow_node_history} h ' .
+        'WHERE nid = :nid ' .
+        'AND field_name = :workflow_field ' .
+        'AND sid = :current_value ' .
+        'AND stamp = (SELECT MAX(stamp) FROM workflow_node_history WHERE nid = h.nid AND sid = h.sid)' .
+        'ORDER BY h.hid DESC',
+        array(
+          ':nid' => $node->nid,
+          ':workflow_field' => $workflow,
+          ':current_value' => $current_value
+        ))->fetchAll();
+      foreach($results as $row){
+        $hid = $row->hid;
+        $comment = !empty($row->comment) ? $row->comment : '';
+        $sid = $row->sid;
+        $state_name = !empty($state_objects[$sid]) ? $state_objects[$sid]->state : '';
+        $workflow_name = !empty($workflow_obj->label) ? $workflow_obj->label : '';
+        $workflow_class = drupal_clean_css_identifier(strtolower($workflow_name));
+        $state_class = drupal_clean_css_identifier(strtolower($state_name));
+
+
+        $states[$hid] = array(
+          'sid' => $sid,
+          'state_name' => $state_name,
+          'workflow_name' => $workflow_name,
+          'comment' => $comment,
+          'workflow_class' => $workflow_class,
+          'state_class' => $state_class,
+
+        );
+      }
+    }
+  }
+  return $states;
+}
+
+function odp_dashboard_blocks_dataset_action_items_block($nid = NULL, $uid = NULL){
+  $output = array();
+  if(!empty($nid)){
+    $node = node_load($nid);
+  }
+  if(!empty($node)){
+    $states = odp_dashboard_blocks_get_latest_changes($node, $uid, 'action_item');
+
+    foreach($states as $id => $state){
+      $output[$id] = array(
+        '#prefix' => '<div class="pnl-workflow-state">',
+        '#suffix' => '</div>',
+      );
+
+      $output[$id]['workflow_name'] = array(
+        '#prefix' => '<span class="workflow-name ' . $state['workflow_class'] . '">',
+        '#suffix' => '</span>',
+        '#markup' => $state['workflow_name'],
+      );
+
+      $output[$id]['state_name'] = array(
+        '#prefix' => '<span class="state-name ' . $state['state_class'] . '">',
+        '#suffix' => '</span>',
+        '#markup' => $state['state_name'],
+      );
+    }
+  }
+  return $output;
+}
+
+function odp_dashboard_blocks_dataset_alerts_block($nid = NULL, $uid = NULL){
+  $output = array();
+  if(!empty($nid)){
+    $node = node_load($nid);
+  }
+  if(!empty($node)){
+    $states = odp_dashboard_blocks_get_latest_changes($node, $uid, 'alert');
+    foreach($states as $id => $state){
+      $output[$id] = array(
+        '#prefix' => "<div class='pnl-workflow-state'>",
+        '#suffix' => "</div>",
+      );
+
+      $output[$id]['workflow_name'] = array(
+        '#prefix' => '<span class="workflow-name">',
+        '#suffix' => '</span>',
+        '#markup' => $state['workflow_name'],
+      );
+
+      $output[$id]['state_name'] = array(
+        '#prefix' => '<span class="state-name">',
+        '#suffix' => '</span>',
+        '#markup' => $state['state_name'],
+      );
+    }
+  }
+  return $output;
+}
+
+function odp_dashboard_blocks_term_page($term) {
+      drupal_set_title($term->name);
+      return taxonomy_term_view($term, 'full');
+}

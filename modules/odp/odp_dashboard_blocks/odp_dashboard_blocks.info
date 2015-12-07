@@ -1,0 +1,4 @@
+name = ODP Dashboard Blocks
+description = Adds blocks for ODP dashboard items.
+core = 7.x
+package = Oceanographic Data Portal
