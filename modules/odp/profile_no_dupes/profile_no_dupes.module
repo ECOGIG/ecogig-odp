@@ -617,7 +617,26 @@ function profile_no_dupes_create_profile_form($form, $form_state){
   $form['last_name']['field_last_name']['und'][0]['value']['#required'] = TRUE;
 
   $form['email'] = field_default_form('node', NULL, $field_email, $instance_email, LANGUAGE_NONE, NULL, $form, $form_state);
-  $form['email']['field_email']['und'][0]['email']['#required'] = TRUE;
+
+  $roles = user_roles();
+  $required_roles = array();
+
+  foreach($roles as $rid => $role){
+    if(in_array($role, array('Information Technology', 'Program Director', 'Data Manager'))){
+      $admin_roles[$rid] = $role;
+    }
+  }
+
+  $is_admin = FALSE;
+  foreach($admin_roles as $rid => $role){
+    if(user_has_role($rid)){
+      $is_admin = TRUE;
+    }
+  }
+
+  if(!$is_admin){
+    $form['email']['field_email']['und'][0]['email']['#required'] = TRUE;
+  }
 
   $form['ins_dept'] = field_default_form('node', NULL, $field_ins_dept, $instance_ins_dept, LANGUAGE_NONE, NULL, $form, $form_state);
 
@@ -656,7 +675,25 @@ function profile_no_dupes_create_profile_form_validate($form, &$form_state){
     }
   }
   else{
-    form_set_error('field_email', t('Email address is required.'));
+    $roles = user_roles();
+    $required_roles = array();
+
+    foreach($roles as $rid => $role){
+      if(in_array($role, array('Information Technology', 'Program Director', 'Data Manager'))){
+        $admin_roles[$rid] = $role;
+      }
+    }
+
+    $is_admin = FALSE;
+    foreach($admin_roles as $rid => $role){
+      if(user_has_role($rid)){
+        $is_admin = TRUE;
+      }
+    }
+
+    if(!$is_admin){
+      form_set_error('field_email', t('Email address is required.'));
+    }
   }
 
   if(empty($first_name)){
