@@ -2,6 +2,8 @@
 
 /* Change text on button of Search */
 function ecogig_neat_form_alter (&$form, &$form_state, $form_id) {
+  $is_data_manager = user_access('override dataset edit');
+
   if ($form_id=='search_block_form') {
     $form['search_block_form']['#attributes']['placeholder'] = 'Search this site';
     $form['actions']['submit']['#value'] = t('Go');
@@ -9,6 +11,94 @@ function ecogig_neat_form_alter (&$form, &$form_state, $form_id) {
   if ($form_id=='search_form') {
     $form['search_form']['#attributes']['placeholder'] = 'Search this site';
     $form['actions']['submit']['#value'] = t('Go');
+  }
+
+  if($form_id == 'dataset_node_form'){
+    // Hide the various workflow fields from non-data managers
+    if(!$is_data_manager){
+      unset($form['#groups']['group_workflow_state']);
+      unset($form['#fieldgroups']['group_workflow_state']);
+
+      foreach($form as $key => $field){
+        $is_state_field = (($temp = strlen($key) - strlen('_state')) >= 0 && strpos($key, '_state', $temp) !== FALSE);
+        if($is_state_field){
+          $form[$key]['#access'] = FALSE;
+        }
+      }
+    }
+
+
+  }
+
+  if(!empty($form['field_ecogig_contribution_number'])){
+
+    $node = !empty($form['#node']) ? $form['#node'] : NULL;
+
+    if(!$is_data_manager && empty($form['nid']['#value'])){
+      $form['field_ecogig_contribution_number'][LANGUAGE_NONE]['#access'] = FALSE;
+    }
+    if(!empty($node) && property_exists($node, 'field_ecogig_contribution_number')){
+      drupal_add_js(
+        array(
+          'ecogig_neat' => array(
+            'currentNid' => $node->nid,
+          )
+        ),
+        'setting'
+      );
+
+      $contribution_number = !empty($node->field_ecogig_contribution_number) ? $node->field_ecogig_contribution_number[LANGUAGE_NONE][0]['value'] : NULL;
+      $field_con_number = !empty($form['field_ecogig_contribution_number'][LANGUAGE_NONE]) ? $form['field_ecogig_contribution_number'][LANGUAGE_NONE] : array();
+      $field_title = !empty($field_con_number['#title']) ? $field_con_number['#title'] : 'Contribution Number';
+
+      if(empty($contribution_number)){
+        if($is_data_manager){
+          //$field_con_number['#prefix'] = '<span id="pnl-contribution-number-form">';
+          //$field_con_number['#suffix'] = '<button class="btn btn-create" id="btn-generate-contribution">Generate Number</button>' .
+            //'</span>';
+        }
+        else{
+          //$field_con_number = array(
+            //'#prefix' => '<span id="pnl-contribution-number">',
+            //'#markup' => '<button class="btn btn-create" id="btn-request-contribution">Request Number</button>',
+            //'#suffix' => '</span>',
+          //);
+
+          //$field_con_number['#prefix'] = '<span id="pnl-contribution-number-form">';
+          //$field_con_number['#suffix'] = '<button class="btn btn-create" id="btn-request-contribution">Request Number</button>' .
+            //'</span>';
+          //$field_con_number['#disabled'] = TRUE;
+        }
+
+      }
+      else{
+        // Use -1 as an indicator that a user has requested a number
+        if($contribution_number < 0){
+          $field_con_number = array(
+            '#prefix' => '<label>' . $field_title . '</label>',
+            '#markup' => '<span id="pnl-contribution-number">Number requested</span>',
+          );
+
+          if($is_data_manager){
+            $field_con_number = array(
+              '#prefix' => '<label>' . $field_title . '</label>',
+              '#suffix' => '<span id="pnl-contribution-number">' .
+                '<button class="btn btn-create" id="btn-generate-contribution">Requested - Generate Number</button>' .
+                '<button class="btn btn-delete" id="btn-deny-contribution">Deny Request</button>' .
+                '</span>',
+            );
+          }
+        }
+        else{
+          if(!$is_data_manager){
+            $field_con_number['#disabled'] = TRUE;
+
+          }
+        }
+      }
+
+      $form['field_ecogig_contribution_number'][LANGUAGE_NONE] = $field_con_number;
+    }
   }
 }
 
