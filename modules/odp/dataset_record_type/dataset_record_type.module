@@ -128,29 +128,37 @@ function dataset_record_type_choose_type_form(){
   $terms = taxonomy_get_tree($vocab->vid);
   foreach($terms as $term_obj){
     $term = taxonomy_term_load($term_obj->tid);
-    $icon_class = !empty($term->field_icon_class[LANGUAGE_NONE][0]['value']) ? $term->field_icon_class[LANGUAGE_NONE][0]['value'] : '';
-    $icon = '';
-    if(!empty($icon_class)){
-      $icon = '<i class="' . $icon_class . '"></i>';
-    }
-    $term_elem = 'type_' . $term->tid;
-    $form['wrapper'][$term_elem] = array(
-      '#prefix' => '<span class="pnl-type-option type-' . $term->tid .'"><a href="/node/add/dataset?record_type=' . $term->tid . '">',
-      '#suffix' => '</a></span>',
-    );
+    $allow_creation = !empty($term->field_allow_type_creation[LANGUAGE_NONE][0]['value']) ? $term->field_allow_type_creation[LANGUAGE_NONE][0]['value'] : FALSE;
 
-    $form['wrapper'][$term_elem]['icon'] = array(
-      '#markup' => $icon,
-    );
-
-    $form['wrapper'][$term_elem]['name'] = array(
-      '#markup' => '<span class="type-option-title">' . $term->name . '</span>',
-    );
-
-    if(!empty($term->description)){
-      $form['wrapper'][$term_elem]['body'] = array(
-        '#markup' => '<span class="type-option-body">' . $term->description . '</span>',
+    if($allow_creation){
+      $icon_class = !empty($term->field_icon_class[LANGUAGE_NONE][0]['value']) ? $term->field_icon_class[LANGUAGE_NONE][0]['value'] : '';
+      $icon_image = !empty($term->field_icon_image[LANGUAGE_NONE][0]) ? $term->field_icon_image[LANGUAGE_NONE][0] : '';
+      $icon = '';
+      if(!empty($icon_class)){
+        $icon = '<i class="' . $icon_class . '"></i>';
+      }
+      if(!empty($icon_image)){
+        $icon = drupal_render(field_view_field('taxonomy_term', $term, 'field_icon_image'));
+      }
+      $term_elem = 'type_' . $term->tid;
+      $form['wrapper'][$term_elem] = array(
+        '#prefix' => '<span class="pnl-type-option type-' . $term->tid .'"><a href="/node/add/dataset?record_type=' . $term->tid . '">',
+        '#suffix' => '</a></span>',
       );
+
+      $form['wrapper'][$term_elem]['icon'] = array(
+        '#markup' => $icon,
+      );
+
+      $form['wrapper'][$term_elem]['name'] = array(
+        '#markup' => '<span class="type-option-title">' . $term->name . '</span>',
+      );
+
+      if(!empty($term->description)){
+        $form['wrapper'][$term_elem]['body'] = array(
+          '#markup' => '<span class="type-option-body">' . $term->description . '</span>',
+        );
+      }
     }
   }
 
