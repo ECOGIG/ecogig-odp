@@ -135,6 +135,11 @@ function ecogig_neat_image_formatter($vars) {
 		    $image['height'] = $item['height'];
 		  }
 
+		  // Do not output an empty 'title' attribute.
+		  if (drupal_strlen($item['title']) > 0) {
+		    //$image['title'] = $item['title'];
+		  }
+
 		  if ($vars['image_style']) {
 		    $image['style_name'] = $vars['image_style'];
 		    $output = theme('image_style', $image);
