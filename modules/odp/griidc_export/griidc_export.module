@@ -38,7 +38,7 @@ function griidc_export_build_file($nid){
     $output = views_embed_view('dataset_export', 'xml', $nid);
     file_unmanaged_save_data($output, $dest, FILE_EXISTS_REPLACE);
 
-    $user = $original_user;
+    $user = $orig_user;
     drupal_save_session($old_state);
 
     file_transfer($dest, array(
