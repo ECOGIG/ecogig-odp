@@ -55,7 +55,7 @@
   </div>
   <div class="panel-col-last pnl-dataset-col2">
     <div<?php print $content_attributes; ?>>
-    <div class="pnl-workflow-states">
+    <div class="pnl-workflow-states" id="pnl-workflow-states">
       <?php print render($workflow_states); ?>
     </div>
       <?php

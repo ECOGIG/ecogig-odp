@@ -50,10 +50,10 @@ function ecogig_neat_alpha_preprocess_node(&$vars) {
 
   }
   if($vars['type'] == 'dataset'){
-    $node = $vars['node'];
-
-    $vars['workflow_states'] = ecogig_neat_build_state_display($vars);
-
+    if(module_exists('odp_workflow_states')){
+      $node = $vars['node'];
+      $vars['workflow_states'] = odp_workflow_states_build_state_display($node);
+    }
   }
 }
 

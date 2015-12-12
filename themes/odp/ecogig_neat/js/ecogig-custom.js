@@ -2,6 +2,86 @@
   Drupal.behaviors.ecogigCustom = {
     attach: function (context, settings) {
       var url = window.location.href;
+
+      var disableForm = function(form){
+        $.each(form.elements, function(i, element){
+          element.readonly = true;
+          element.disabled = 'disabled';
+        });
+      };
+
+      var bindWorkflowHandlers = function(){
+        $('.modal-link-workflow').each(function(){
+          var obj = this;
+          var nid = $(obj).data('nid');
+          var field = $(obj).data('field');
+          var url = '/node/' + nid + '/workflow/history/' + field + '/nojs/5';
+          $(obj).click(Drupal.CTools.Modal.clickAjaxLink);
+          var element_settings = {};
+          element_settings.url = url;
+          element_settings.event = 'click';
+          var base = url;
+          Drupal.ajax[base] = new Drupal.ajax(base, obj, element_settings);
+          $(obj).addClass('modal-trigger-processed');
+        })
+        $('.mode-edit select').change(function(){
+          var parentForm = this.form;
+          var oldState = $(this).data('original-sid');
+          var newState = $(this).val();
+
+          if(parentForm){
+            if(oldState != newState){
+              $(parentForm).find('.workflow-update').show();
+            }
+            else{
+              $(parentForm).find('.workflow-update').hide();
+
+            }
+          }
+        });
+
+        $('.mode-edit button.workflow-update').click(function(e){
+          e.preventDefault();
+
+          if(!$(this).hasClass('disabled')){
+
+            var parentForm = this.form;
+
+            if(parentForm){
+              $(this).text('Updating...');
+              disableForm(parentForm);
+              var ddlStates = $(parentForm).find('select').first();
+              var newState = $(ddlStates).val();
+
+              var editField = $(parentForm).data('edit');
+              var fields = {};
+              var nid = Drupal.settings.ecogig_neat.currentNid;
+              var commentField = $(parentForm).find('textarea').first();
+              var comment = $(commentField).val();
+              if(comment){
+                if (comment.indexOf('&') > -1)
+                {
+                  var searchStr = "&";
+                  var replaceStr = "%26";
+                  var re = new RegExp(searchStr, "g");
+                  comment = comment.replace(re, replaceStr);
+                }
+                fields['workflow_comment'] = {
+                  comment: comment,
+                  sid: newState,
+                }
+              }
+
+              if(nid){
+                fields[editField] = newState;
+
+                updateNode(nid, fields);
+              }
+            }
+          }
+        });
+      };
+
       $('.pnl-content-type-actions a').each(function(){
         if(this.href && this.href == url){
           var container = $(this).parent().parent();
@@ -74,12 +154,13 @@
         var isDataManager = Drupal.settings.ecogig_neat.is_data_manager;
         if(isDataManager){
           var updateNode = function(nid, fields){
-            var url =  Drupal.settings.basePath + "odp/node/" + nid + "/update";
+            var updateType = 'workflow';
+            var url =  Drupal.settings.basePath + "odp/node/" + nid + "/update/" + updateType;
             $.ajax({
               type: "POST",
               dataType: "json",
               url: url,
-              async: false,
+              async: true,
               data: '&data=' + JSON.stringify(fields),
               dataType: "json",
               success: function(response){
@@ -88,7 +169,11 @@
                   if(response.type && response.type == 'success' && response.node){
                     // The updated Drupal node
                     var node = response.node;
-                    window.location.href = window.location.href;
+                    if(response.html){
+                      $('#pnl-workflow-states').html(response.html);
+                      bindWorkflowHandlers();
+                    }
+                    //window.location.href = window.location.href;
                   }
                   if(response.type && response.type == 'error'){
 
@@ -136,24 +221,12 @@
             $(clicked).addClass('mode-edit');
 
           });
+          bindWorkflowHandlers();
 
-          $('.mode-edit select').change(function(){
-            var parentForm = this.form;
-            var newState = $(this).val();
-
-            if(parentForm){
-              var editField = $(parentForm).data('edit');
-              var fields = {};
-              var nid = Drupal.settings.ecogig_neat.currentNid;
-
-              if(nid){
-                fields[editField] = newState;
-                updateNode(nid, fields);
-              }
-            }
-          });
         }
       }
+
+
 
 	var checkRequired = function(elem){
           if(!$(elem).val()){
