@@ -12,10 +12,10 @@ function odp_api_permission(){
 function odp_api_menu(){
   $items = array();
 
-  $items['odp/node/%/update'] = array(
+  $items['odp/node/%/update/%'] = array(
     'title' => t('Node AJAX Update'),
     'page callback' => 'odp_api_node_update_ajax',
-    'page arguments' => array(2),
+    'page arguments' => array(2,4),
     'access arguments' => array('use odp api'),
     'type' => MENU_CALLBACK,
   );
@@ -28,12 +28,34 @@ function odp_api_menu(){
     'type' => MENU_CALLBACK,
   );
 
+  $items['data/%/metadata-supplied'] = array(
+    'title' => t('Mark dataset Metadata status as Metadata Supplied'),
+    'page callback' => 'odp_api_node_complete_metadata',
+    'page arguments' => array(1),
+    'access arguments' => array('use odp api'),
+    'type' => MENU_CALLBACK,
+  );
 
   return $items;
 }
 
+// Mark a dataset's Metadata workflow as Metadata Supplied from a URL - used to present a link
+// in alerts upon saving datasets with completed metadata fields
+function odp_api_node_complete_metadata($nid){
+  $node = node_load($nid);
+  if(node_access('update', $node)){
+    $workflow = workflow_helpers_get_workflow_object('metadata');
+    $states = workflow_helpers_get_workflow_states($workflow->wid);
+    $sid = !empty($states['metadata_supplied']) ? $states['metadata_supplied']->sid : NULL;
+    if(!empty($sid) && property_exists($node, 'field_metadata_state')){
+      $node->field_metadata_state[LANGUAGE_NONE][0]['value'] = $sid;
+      node_save($node);
+    }
+  }
+  drupal_goto('/node/' . $nid);
+}
 
-function odp_api_node_update_ajax($nid){
+function odp_api_node_update_ajax($nid, $type){
   $response = array();
 
   $data = !empty($_POST['data']) ? $_POST['data']: NULL;
@@ -43,12 +65,20 @@ function odp_api_node_update_ajax($nid){
   $errors = array();
   $node = node_load($nid);
 
+
   if(node_access('update', $node)){
+    $workflow_comment = array();
+
     foreach($decoded as $field_name => $value){
       // Get instance settings and current value for field
-      $instance = field_info_instance('node', $field_name, 'project_issue');
-      $value_id = !empty($instance['default_value'][0]) ? key($instance['default_value'][0]) : 'value';
-      $node->{$field_name}[LANGUAGE_NONE][0][$value_id] = $value;
+      $instance = field_info_instance('node', $field_name, 'dataset');
+      if(!empty($instance)){
+        $value_id = !empty($instance['default_value'][0]) ? key($instance['default_value'][0]) : 'value';
+        $node->{$field_name}[LANGUAGE_NONE][0][$value_id] = $value;
+      }
+      if($type == 'workflow' && $field_name == 'workflow_comment'){
+        $workflow_comment = $value;
+      }
     }
 
     // Use default field validation for all fields
@@ -80,6 +110,19 @@ function odp_api_node_update_ajax($nid){
 
     try {
       node_save($node);
+      if(!empty($workflow_comment)){
+
+        $hid = workflow_helpers_get_latest_state_entry($node->nid, $workflow_comment['sid']);
+        $transitions = entity_load('WorkflowTransition', array($hid));
+        $transition = !empty($transitions[$hid]) ? $transitions[$hid] : NULL;
+        if(!empty($transition)){
+          workflow_helpers_update_comment($hid, $workflow_comment['comment']);
+
+
+        }
+
+      }
+
       $success = TRUE;
     }
     catch (PDOException $e) {
@@ -120,6 +163,12 @@ function odp_api_node_update_ajax($nid){
       // Successful response contains "success" indicator, updated node object, and list of updated fields
       $response['type'] = 'success';
       $response['node'] = $node;
+
+      // If this was a workflow status update, rebuild the status display to get the latest states / icons
+      if($type == 'workflow' && module_exists('odp_workflow_states')){
+        $new_states_block = odp_workflow_states_build_state_display($node, $ajax = TRUE);
+        $response['html'] = $new_states_block;
+      }
     }
   }
 
