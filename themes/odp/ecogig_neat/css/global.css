@@ -1700,6 +1700,10 @@ a.disabled{
   color: #949494;
 }
 
+button.btn.btn-update-workflow.workflow-update:disabled {
+    color: #00B500;
+    background: #FFF;
+}
 /*
 #pnl-contrib-data {
     margin:40px 0;
@@ -2522,7 +2526,7 @@ article .content .field-label-inline .field-item {
 }
 
 .pnl-state form.mode-edit{
-  padding: 0 20px;
+  padding: 0 20px 20px 20px;
 }
 
 .pnl-state form.mode-edit,
@@ -2532,7 +2536,16 @@ article .content .field-label-inline .field-item {
   position:absolute;
   border-radius: 0 6px 6px 6px;
   color: #F0F8FF;
+  width: 400px;
+  text-align: left;
+}
 
+.pnl-state .form-item.form-type-select{
+  display: inline-block;
+}
+
+.pnl-state .workflow-update{
+  display: none;
 }
 
 .pnl-state.complete i {
@@ -2541,6 +2554,11 @@ article .content .field-label-inline .field-item {
 
 .pnl-state.open i {
     color: #8e8e8e;
+}
+
+.pnl-state .modal-link a{
+  color: #fff;
+  font-size:12px;
 }
 
 .pnl-datasets .node-item {
@@ -2721,4 +2739,12 @@ article .content .field-label-inline .field-item {
 .item-list li.glossary-term a:hover,
 .item-list li.support-article a:hover{
   text-decoration: none;
+}
+
+.table-workflow-history td{
+  white-space: pre-line;
+}
+
+.view-workflow-history .btn-back{
+  margin-bottom: 15px;
 }

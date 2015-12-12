@@ -27,8 +27,8 @@
         <a class="btn btn-create-dataset" href="/node/<?php echo $node->nid ?>/edit">Edit Dataset</a>
       <?php endif; ?>
 
+      <a class="btn btn-create-dataset" href="/node/<?php echo $node->nid ?>/workflow/history">View All Notes</a>
       <?php if(node_access('update', $node)): ?>
-        <a class="btn btn-create-dataset" href="/node/<?php echo $node->nid ?>/workflow">View All Notes</a>
         <a class="btn btn-create-dataset" href="/node/<?php echo $node->nid ?>/revisions">Dataset Revisions</a>
       <?php endif; ?>
       <a class="btn btn-create-dataset" href="/dataset/<?php echo $node->nid ?>/xml">Export Metadata XML</a>
