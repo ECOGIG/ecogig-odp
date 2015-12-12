@@ -12,6 +12,29 @@ function workflow_helpers_get_latest_comment($nid) {
     return $results->fetchField();
 }
 
+function workflow_helpers_get_all_state_entries($nid, $sid) {
+  $results = db_query('SELECT hid FROM {workflow_node_history} h ' .
+    'WHERE nid = :nid AND sid = :sid ORDER BY h.hid DESC', array(':nid' => $nid, ':sid' => $sid));
+    return $results->fetchAll();
+}
+
+
+function workflow_helpers_get_latest_state_entry($nid, $sid) {
+  $results = db_query('SELECT hid FROM {workflow_node_history} h ' .
+    'WHERE nid = :nid AND sid = :sid ORDER BY h.hid DESC', array(':nid' => $nid, ':sid' => $sid))->fetchField();
+
+  return $results;
+}
+
+function workflow_helpers_update_comment($hid, $comment){
+  db_update('workflow_node_history')
+    ->fields(array(
+      'comment' => $comment,
+    ))
+    ->condition('hid', $hid, '=')
+    ->execute();
+}
+
 function workflow_helpers_get_workflow_id($machine_name){
   $wid = '';
 
