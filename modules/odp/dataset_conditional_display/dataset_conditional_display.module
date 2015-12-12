@@ -95,6 +95,7 @@ function dataset_conditional_display_form_dataset_node_form_alter(&$form, &$form
     }
     if(!user_access('override dataset edit')){
 
+/*
       if(!empty($form['nid']['#value']) && ($workflow_sid == DS_CON_NEW_REQUEST
         || $workflow_sid == DS_CON_METADATA_SUPPLIED
         || $workflow_sid == DS_CON_METADATA_APPROVED
@@ -117,7 +118,7 @@ function dataset_conditional_display_form_dataset_node_form_alter(&$form, &$form
           foreach(element_children($form) as $key) {
             $form[$key]['#disabled'] = TRUE;
           }
-        }
+        }*/
     }
   }
   else{
@@ -131,12 +132,12 @@ function dataset_conditional_display_form_dataset_node_form_alter(&$form, &$form
       '#type' => 'hidden',
       '#default_value' => $workflow_sid,
     );
- 
+
     $form['#attached']['js'][] = array(
       'type' => 'file',
       'data' => drupal_get_path('module', 'dataset_conditional_display') . '/js/dataset_conditional_display.js',
     );
- 
+
     $form['workflow_warning'] = array(
       '#markup' => '<div class="pnl-redirect-notice pnl-workflow-alert">You have not made any changes to the Workflow State for this dataset record. Please make sure that this is             intentional.</div>',
       '#weight' => $form['field_email_contact_on_update']['#weight'] + 1,
