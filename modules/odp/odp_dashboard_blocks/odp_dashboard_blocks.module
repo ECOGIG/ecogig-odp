@@ -72,6 +72,9 @@ function odp_dashboard_blocks_block_view($delta = ''){
     case 'dataset_action_items':
       $block['content'] = odp_dashboard_blocks_dataset_action_items_block();
       break;
+    case 'dataset_workflow_history':
+      $block['content'] = odp_dashboard_blocks_dataset_workflow_history_block();
+      break;
   }
 
   return $block;
@@ -310,6 +313,71 @@ function odp_dashboard_blocks_content_type_actions_block(){
   return $content;
 }
 
+function odp_dashboard_blocks_get_all_changes($node, $limit = NULL){
+  $states = array();
+
+  // All of our workflows that we want to check
+  $workflows = array(
+    'field_identify_state',
+    'field_metadata_state',
+    'field_data_state',
+    'field_availability_state',
+    'field_repository_state',
+    'field_dataset_workflow'
+  );
+
+  foreach($workflows as $workflow){
+    $workflow_name = str_replace(array('field_', '_state'), '', $workflow);
+    // Stupid hacky workaround to support old workflow field
+    if($workflow_name == 'dataset_workflow'){$workflow_name .= 's';}
+    $workflow_obj = workflow_helpers_get_workflow_object($workflow_name);
+
+    $workflow_states = !empty($workflow_obj) ? workflow_helpers_get_workflow_states($workflow_obj->wid) : array();
+    $state_objects = array();
+    foreach($workflow_states as $state){
+      $state_objects[$state->sid] = $state;
+    }
+
+    $results = db_query('SELECT hid, sid, old_sid, comment, field_name, stamp FROM {workflow_node_history} h ' .
+      'WHERE nid = :nid ' .
+      'AND field_name = :workflow_field ' .
+      'ORDER BY stamp ASC',
+      array(
+        ':nid' => $node->nid,
+        ':workflow_field' => $workflow,
+      ))->fetchAll();
+    foreach($results as $row){
+      $hid = $row->hid;
+      $comment = !empty($row->comment) ? $row->comment : '';
+      $sid = $row->sid;
+      $old_sid = $row->old_sid;
+      $state_name = !empty($state_objects[$sid]) ? $state_objects[$sid]->state : '';
+      $old_state_name = !empty($state_objects[$old_sid]) ? $state_objects[$old_sid]->state : '';
+      $workflow_name = !empty($workflow_obj->label) ? $workflow_obj->label : '';
+      $workflow_class = drupal_clean_css_identifier(strtolower($workflow_name));
+      $state_class = drupal_clean_css_identifier(strtolower($state_name));
+      $old_state_class = drupal_clean_css_identifier(strtolower($old_state_name));
+      $timestamp = $row->stamp;
+
+
+      $states[$hid] = array(
+        'wid' => $workflow_obj->wid,
+        'sid' => $sid,
+        'old_sid' => $old_sid,
+        'state_name' => $state_name,
+        'old_state_name' => $old_state_name,
+        'workflow_name' => $workflow_name,
+        'comment' => $comment,
+        'workflow_class' => $workflow_class,
+        'state_class' => $state_class,
+        'old_state_class' => $old_state_class,
+        'timestamp' => $timestamp,
+      );
+    }
+  }
+  return $states;
+}
+
 function odp_dashboard_blocks_get_latest_changes($node, $uid = NULL, $type){
   if(empty($uid)){
     global $user;
@@ -321,44 +389,46 @@ function odp_dashboard_blocks_get_latest_changes($node, $uid = NULL, $type){
   $states = array();
   $allowed_states = array();
 
-  // PI action items
-  if(!$is_data_manager){
-    if($type == 'action_item'){
-      $allowed_state_names = array(
-        'need_metadata',
-        'metadata_return',
-        'need_data_files',
-        'need_data_file_review_and_approval',
-        'data_return',
-        'data_listed_as_private',
-      );
+  if($type != 'all'){
+    // PI action items
+    if(!$is_data_manager){
+      if($type == 'action_item'){
+        $allowed_state_names = array(
+          'need_metadata',
+          'metadata_return',
+          'need_data_files',
+          'need_data_file_review_and_approval',
+          'data_return',
+          'data_listed_as_private',
+        );
+      }
+      // PI alerts (no action required)
+      if($type == 'alert'){
+        $allowed_state_names = array(
+          'udi_from_repo_assigned',
+          'doi_assigned',
+          'identify_complete',
+          'metadata_complete',
+          'data_complete',
+          'data_listed_as_public',
+        );
+      }
     }
-    // PI alerts (no action required)
-    if($type == 'alert'){
-      $allowed_state_names = array(
-        'udi_from_repo_assigned',
-        'doi_assigned',
-        'identify_complete',
-        'metadata_complete',
-        'data_complete',
-        'data_listed_as_public',
-      );
-    }
-  }
-  else{
-    // Data manager action items
-    if($type == 'action_item'){
-      $allowed_state_names = array(
-        'request_a_udi_from_repo',
-        'request_a_doi_from_repo',
-        'metadata_supplied',
-        'repo_return',
-        'data_files_supplied',
-        'data_files_approved_by_pi',
-        'ready_for_submission',
-        'submitted_to_repo',
-        'list_data_as_public',
-      );
+    else{
+      // Data manager action items
+      if($type == 'action_item'){
+        $allowed_state_names = array(
+          'request_a_udi_from_repo',
+          'request_a_doi_from_repo',
+          'metadata_supplied',
+          'repo_return',
+          'data_files_supplied',
+          'data_files_approved_by_pi',
+          'ready_for_submission',
+          'submitted_to_repo',
+          'list_data_as_public',
+        );
+      }
     }
   }
 
@@ -379,8 +449,13 @@ function odp_dashboard_blocks_get_latest_changes($node, $uid = NULL, $type){
     $workflow_states = !empty($workflow_obj) ? workflow_helpers_get_workflow_states($workflow_obj->wid) : array();
     $state_objects = array();
     foreach($workflow_states as $state){
-      if(in_array($state->name, $allowed_state_names)){
+      if($type == 'all'){
         $allowed_states[] = $state->sid;
+      }
+      else{
+        if(in_array($state->name, $allowed_state_names)){
+          $allowed_states[] = $state->sid;
+        }
       }
       $state_objects[$state->sid] = $state;
     }
@@ -484,8 +559,57 @@ function odp_dashboard_blocks_dataset_alerts_block($nid = NULL, $uid = NULL){
   }
   return $output;
 }
+function odp_dashboard_blocks_dataset_workflow_history_block($nid = NULL, $uid = NULL){
+  $output = array();
+  if(!empty($nid)){
+    $node = node_load($nid);
+  }
+  if(!empty($node)){
+    $states = odp_dashboard_blocks_get_all_changes($node);
+    $header = array(
+      'Date',
+      'Old State',
+      'New State',
+      'Comment',
+    );
+
+    $tables = array();
+    foreach($states as $id => $state){
+      $tables[$state['wid']]['workflow_name'] = $state['workflow_name'];
+      $tables[$state['wid']]['rows'][] = array(
+        array('data' => format_date($state['timestamp'], 'custom', 'm/d/Y h:i a'), 'class' => 'field-date'),
+        array('data' => $state['old_state_name'], 'class' => 'field-old-state-name ' . $state['old_state_class']),
+        array('data' => $state['state_name'], 'class' => 'field-state-name ' . $state['state_class']),
+        array('data' => $state['comment'], 'class' => 'field-comment'),
+      );
+    }
+    foreach($tables as $key => $table){
+      $output['table_' . $key] = array(
+        '#markup' => theme(
+          'table',
+          array(
+            'header' => $header,
+            'rows' => $table['rows'],
+            'caption' => $table['workflow_name'],
+            'attributes' => array(
+              'class' => array(
+                'views-table',
+                'table-workflow-history',
+              ),
+            ),
+          )
+        ),
+      );
+    }
+  }
+  return $output;
+}
 
 function odp_dashboard_blocks_term_page($term) {
       drupal_set_title($term->name);
       return taxonomy_term_view($term, 'full');
+}
+
+function odp_dashboard_blocks_node_view($node, $view_mode, $lang){
+  //print render(odp_dashboard_blocks_dataset_workflow_history_block($node->nid));
 }
