@@ -1,0 +1,404 @@
+<?php
+define("ODP_WORKFLOW_ICON_OPEN", " fa fa-circle-o");
+define("ODP_WORKFLOW_ICON_IN_PROGRESS", " fa fa-dot-circle-o");
+define("ODP_WORKFLOW_ICON_COMPLETE", " fa fa-circle");
+
+function odp_workflow_states_menu(){
+
+  $items['node/%/workflow/history/%/%ctools_js/%'] = array(
+    'title' => 'Workflow History Summary',
+    'page arguments' => array(1, 4, 5, 6),
+    'page callback' => 'odp_workflow_states_dataset_workflow_history_block',
+    'access callback' => TRUE,
+    'theme callback' => 'ajax_base_page_theme',
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+}
+
+
+function odp_workflow_states_node_completed($node){
+  module_load_include('inc', 'node', 'node.pages');
+
+  $form = drupal_get_form('page_node_form', $node);
+  $complete = TRUE;
+  foreach($form as $key => $field){
+    if(is_array($field) && !empty($field['#required'])){
+      if(empty($field['#default_value'])){
+        $complete = FALSE;
+      }
+    }
+  }
+  return $complete;
+}
+
+function odp_workflow_states_build_state_history($node, $state){
+
+}
+
+function odp_workflow_states_build_state_display($node, $ajax = FALSE){
+  ctools_include('modal');
+  ctools_modal_add_js();
+
+
+  $states_output = array();
+  global $user;
+
+  // States that non-admin users can update.
+  // TODO: Make this configurable via UI
+  $user_states = array('initial_creation', 'request_a_udi_from_repo');
+  $completed = odp_workflow_states_node_completed($node);
+  if($completed){
+    $user_states[] = 'metadata_supplied';
+  }
+
+  foreach($node as $key => $value){
+    // We will check if a given workflow has any states in the user_states array
+    $has_user_allowed_states = FALSE;
+    $user_allowed_states = array();
+
+    $is_state_field = (($temp = strlen($key) - strlen('_state')) >= 0 && strpos($key, '_state', $temp) !== FALSE);
+    if($is_state_field){
+      $current_sid = !empty($value[LANGUAGE_NONE][0]['value']) ? $value[LANGUAGE_NONE][0]['value'] : '';
+      $wf_name = str_replace('_state', '', $key);
+      $wf_name = str_replace('field_', '', $wf_name);
+
+      $workflow = workflow_helpers_get_workflow_object($wf_name);
+      $wid = workflow_helpers_get_workflow_id($wf_name);
+      $states = workflow_helpers_get_workflow_states($wid);
+
+      $weight = -200;
+      $lightest_weight = 999;
+
+      $default_state = NULL;
+      $complete_state = NULL;
+      $return_state = NULL;
+      $current_state = NULL;
+
+      $state_options = array();
+
+      foreach($states as $skey => $state){
+        $state_options[$state->sid] = $state->state;
+
+        if(in_array($state->name, $user_states)){
+          $has_user_allowed_states = TRUE;
+          array_push($user_allowed_states, $state->sid);
+        }
+
+        if($state->sid == $current_sid){
+          $current_state = $state;
+        }
+
+        // Assume default state is the one with the lightest weight that is NOT the Workflows default (creation)
+        if($state->weight < $lightest_weight && $state->state != '(creation)'){
+          $lightest_weight = $state->weight;
+          $default_state = $state;
+        }
+
+        // Assume that the heaviest weighted state is the completed / final state
+        if($state->weight > $weight){
+          $weight = $state->weight;
+          $complete_state = $state;
+        }
+
+        // If state is a "return" state (hard-coded to assume it ends with _return) we display a different status
+        $is_return = (($temp = strlen($skey) - strlen('_return')) >= 0 && strpos($skey, '_return', $temp) !== FALSE);
+        if($is_return){
+          $return_state = $state;
+        }
+
+      }
+
+      foreach($states as $skey => $state){
+        if($completed && $state->name == 'metadata_supplied'){
+          array_push($user_allowed_states, $current_state->sid);
+          $user_states[] = $current_state->name;
+          $has_user_allowed_states = TRUE;
+        }
+      }
+
+      $state_name = 'N/A';
+      $class = 'in-progress';
+      $icon = ODP_WORKFLOW_ICON_IN_PROGRESS;
+
+      if(!empty($current_state)){
+        $state_name = $current_state->state;
+
+        if(!empty($default_state) && $current_state->sid == $default_state->sid){
+          $class = 'open';
+          $icon = ODP_WORKFLOW_ICON_OPEN;
+        }
+        if(!empty($complete_state) && $current_state->sid == $complete_state->sid){
+          $class = 'complete';
+          $icon = ODP_WORKFLOW_ICON_COMPLETE;
+        }
+        if(!empty($return_state) && $current_state->sid == $return_state->sid){
+          $class = 'return';
+          $icon = ODP_WORKFLOW_ICON_IN_PROGRESS;
+        }
+      }
+      else{
+        $state_name = 'N/A';
+        if(!empty($default_state)){
+          $state_name = $default_state->state;
+        }
+        $class = 'open';
+        $icon = ODP_WORKFLOW_ICON_OPEN;
+      }
+
+      $workflow_html = drupal_clean_css_identifier($key);
+      $states_output[$key] = array(
+        '#prefix' => '<span id="pnl-state-' . $workflow_html .'" class="pnl-state pnl-state-' . $workflow_html . ' ' . $class . ' mode-read">',
+        '#suffix' => '</span>',
+      );
+      $states_output[$key]['state_icon'] = array(
+        '#markup' => '<i class="' . $icon . '"></i><br/><span class="state-type">' . $workflow->label . '</span>',
+        '#prefix' => '<span class="mode-read">',
+        '#suffix' => '</span>',
+      );
+
+      // Some users may have access to an inline form for updating workflow states
+      $form = NULL;
+
+      $is_data_manager = user_access('override dataset edit');
+      $has_node_access = node_access('update', $node);
+      // Must be able to update node to get any inline edit options.
+      // In addition, user must either have permission to override datasets OR the workflow must contain
+      // user-editable states.
+      if($has_node_access && ($is_data_manager || $has_user_allowed_states)){
+        drupal_add_js(
+          array(
+            'ecogig_neat' => array(
+              'is_data_manager' => TRUE,
+              'currentNid' => $node->nid,
+            )
+          ),
+          'setting'
+        );
+
+        $form = array(
+          '#type' => 'form',
+          '#attributes' => array(
+            'data-edit' => $key,
+            'class' => array(
+              'mode-edit',
+              'hidden',
+            )
+          ),
+        );
+        $form_state = array();
+        $values = field_get_items('node', $node, $key);
+        $field_val = '';
+
+        if(!empty($values[0]['value'])){
+          $field_val = $values[0]['value'];
+        }
+
+        if(!empty($values[0]['target_id'])){
+          $field_val = $values[0]['target_id'];
+        }
+
+        $form[$key][LANGUAGE_NONE] = array(
+          '#type' => 'select',
+          '#options' => $state_options,
+          '#attributes' => array(
+            'data-original-sid' => $field_val,
+          ),
+        );
+
+        $form[$key][LANGUAGE_NONE]['#value'] = $field_val;
+        $form[$key][LANGUAGE_NONE]['#default_value'] = $field_val;
+
+        if($form[$key][LANGUAGE_NONE]['#options']){
+          if(!$is_data_manager){
+            $options_remove = array();
+            foreach($form[$key][LANGUAGE_NONE]['#options'] as $option_key => $option_value){
+              if(!in_array($option_key, $user_allowed_states)){
+                array_push($options_remove, $option_key);
+                unset($form[$key][LANGUAGE_NONE]['#options'][$option_key]);
+              }
+            }
+          }
+          if(!empty($form[$key][LANGUAGE_NONE]['#options']['_none'])){
+            unset($form[$key][LANGUAGE_NONE]['#options']['_none']);
+          }
+        }
+
+        $form[$key][LANGUAGE_NONE]['#title_display'] = 'invisible';
+        $form[$key]['btn_update'] = array(
+          '#markup' => '<button class="btn btn-update-workflow workflow-update">Update</button>',
+        );
+
+        $form[$key]['comment'] = array(
+          '#type' => 'textarea',
+          '#title' => 'Comment',
+          '#prefix' => '<div class="workflow-update">',
+          '#suffix' => '</div>',
+          '#value' => '',
+        );
+
+        // If we only have one option available, what's the point in showing a dropdown?
+        if(count($form[$key][LANGUAGE_NONE]['#options']) <= 1){
+          $form = NULL;
+        }
+
+      }
+
+      $modal_link = '<div class="modal-link modal-link-workflow" data-nid="'. $node->nid .'" data-field="'. $key .'">' . l(t("View latest changes"), '/node/' . $node->nid . '/workflow/history/' . $key . '/nojs/5', array('attributes' => array('class' => 'ctools-use-modal lnk-modal'))) . '</div>';
+
+      if(!empty($form)){
+        $states_output[$key]['state_name'] = $form;
+        $states_output[$key]['state_name']['notes_link'] = array(
+          '#markup' => $modal_link,
+        );
+      }
+      else{
+        $states_output[$key]['state_name'] = array(
+          '#prefix' => '<span class="state-name">',
+          '#suffix' => $modal_link . '</span>',
+          '#markup' =>  $state_name,
+        );
+      }
+
+
+    }
+  }
+
+  if($ajax){
+    return drupal_render($states_output);
+
+  }
+  return $states_output;
+}
+
+
+function odp_workflow_states_get_all_changes($node, $limit = NULL, $workflows = array()){
+  if(empty($limit) || !is_numeric($limit)){
+    $limit = 999;
+  }
+
+  if(empty($workflows)){
+    // All of our workflows that we want to check
+    $workflows = array(
+      'field_identify_state',
+      'field_metadata_state',
+      'field_data_state',
+      'field_availability_state',
+      'field_repository_state',
+      'field_dataset_workflow'
+    );
+  }
+
+  foreach($workflows as $workflow){
+    $workflow_name = str_replace(array('field_', '_state'), '', $workflow);
+    // Stupid hacky workaround to support old workflow field
+    if($workflow_name == 'dataset_workflow'){$workflow_name .= 's';}
+    $workflow_obj = workflow_helpers_get_workflow_object($workflow_name);
+
+    $workflow_states = !empty($workflow_obj) ? workflow_helpers_get_workflow_states($workflow_obj->wid) : array();
+    $state_objects = array();
+    foreach($workflow_states as $state){
+      $state_objects[$state->sid] = $state;
+    }
+
+    $results = db_query_range('SELECT hid, sid, old_sid, comment, field_name, stamp FROM {workflow_node_history} h ' .
+      'WHERE nid = :nid ' .
+      'AND field_name = :workflow_field ' .
+      'ORDER BY stamp DESC',
+      0,
+      5,
+      array(
+        ':nid' => $node->nid,
+        ':workflow_field' => $workflow,
+      ))->fetchAll();
+    foreach($results as $row){
+      $hid = $row->hid;
+      $comment = !empty($row->comment) ? $row->comment : '';
+      $sid = $row->sid;
+      $old_sid = $row->old_sid;
+      $state_name = !empty($state_objects[$sid]) ? $state_objects[$sid]->state : '';
+      $old_state_name = !empty($state_objects[$old_sid]) ? $state_objects[$old_sid]->state : '';
+      $workflow_name = !empty($workflow_obj->label) ? $workflow_obj->label : '';
+      $workflow_class = drupal_clean_css_identifier(strtolower($workflow_name));
+      $state_class = drupal_clean_css_identifier(strtolower($state_name));
+      $old_state_class = drupal_clean_css_identifier(strtolower($old_state_name));
+      $timestamp = $row->stamp;
+
+
+      $states[$hid] = array(
+        'wid' => $workflow_obj->wid,
+        'sid' => $sid,
+        'old_sid' => $old_sid,
+        'state_name' => $state_name,
+        'old_state_name' => $old_state_name,
+        'workflow_name' => $workflow_name,
+        'comment' => $comment,
+        'workflow_class' => $workflow_class,
+        'state_class' => $state_class,
+        'old_state_class' => $old_state_class,
+        'timestamp' => $timestamp,
+      );
+    }
+  }
+  return $states;
+}
+
+function odp_workflow_states_dataset_workflow_history_block($nid = NULL, $field = NULL, $js = NULL, $limit = NULL){
+  $output = array();
+  $output['header'] = array();
+  if(!empty($nid)){
+    $node = node_load($nid);
+  }
+  if(!empty($node)){
+
+    $states = odp_workflow_states_get_all_changes($node, $limit, array($field));
+    $header = array(
+      'Date',
+      'Old State',
+      'New State',
+      'Comment',
+    );
+
+    $tables = array();
+    foreach($states as $id => $state){
+      $tables[$state['wid']]['workflow_name'] = $state['workflow_name'];
+      $tables[$state['wid']]['rows'][] = array(
+        array('data' => format_date($state['timestamp'], 'custom', 'm/d/Y h:i a'), 'class' => 'field-date'),
+        array('data' => $state['old_state_name'], 'class' => 'field-old-state-name ' . $state['old_state_class']),
+        array('data' => $state['state_name'], 'class' => 'field-state-name ' . $state['state_class']),
+        array('data' => $state['comment'], 'class' => 'field-comment'),
+      );
+    }
+    foreach($tables as $key => $table){
+      $output['table_' . $key] = array(
+        '#markup' => theme(
+          'table',
+          array(
+            'header' => $header,
+            'rows' => $table['rows'],
+            'caption' => $table['workflow_name'],
+            'attributes' => array(
+              'class' => array(
+                'views-table',
+                'table-workflow-history',
+              ),
+            ),
+          )
+        ),
+      );
+    }
+  }
+
+  if($js){
+    ctools_include('modal');
+    ctools_include('ajax');
+    $output['all_link'] = array(
+      '#markup' => '<a class="btn" href="/node/' . $nid .'/workflow/history">View Full History</a>',
+    );
+
+    return ctools_modal_render('Latest ' .  $state['workflow_name'] . ' Changes', $output);
+  }
+
+  return $output;
+}

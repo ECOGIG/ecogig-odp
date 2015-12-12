@@ -1,0 +1,6 @@
+name = ODP Workflow States
+description = Configuration and inline editing of workflow states.
+core = 7.x
+package = Oceanographic Data Portal
+dependencies[] = workflow
+dependencies[] = workflow_helpers
