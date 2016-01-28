@@ -93,3 +93,17 @@
   width:60%;
   margin:0;
 }
+
+.pnl-state-alert {
+    border: 1px solid #dadada;
+    padding: 20px;
+    background: aliceblue;
+    color: #404040;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.pnl-state-alert .message-body{
+  white-space: pre;
+  word-break: break-word;
+}

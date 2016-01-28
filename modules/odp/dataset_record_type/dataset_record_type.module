@@ -27,8 +27,9 @@ function dataset_record_type_menu(){
 function dataset_record_type_form_dataset_node_form_alter(&$form, &$form_state, $form_id){
   //if($form_id === 'dataset_node_form'){
     $nid = !empty($form['nid']['#value']) ? $form['nid']['#value'] : '';
+    $params = drupal_get_query_parameters();
+    
     if(empty($nid)){
-      $params = drupal_get_query_parameters();
       $record_type = !empty($params['record_type']) ? $params['record_type'] : '';
       $mode = !empty($params['mode']) ? $params['mode'] : '';
 
@@ -87,6 +88,37 @@ function dataset_record_type_form_dataset_node_form_alter(&$form, &$form_state, 
           }
 
         }
+      }
+
+      if(!empty($nid)){
+        $node = node_load($nid);
+        $workflow_field = !empty($params['show_workflow']) ? $params['show_workflow'] : '';
+        if(module_exists('odp_workflow_states')){
+          $states = odp_workflow_states_get_all_changes($node, $limit, array($workflow_field));
+          $state = current($states);
+          if($state){
+              $state_name = !empty($state['state_name']) ? $state['state_name'] : '';
+              $state_comment = !empty($state['comment']) ? $state['comment'] : '';
+              $form['state_alert'] = array(
+                '#prefix' => '<div class="pnl-state-alert">',
+                '#suffix' => '</div>',
+                '#weight' => -99,
+              );
+              $form['state_alert']['header'] = array(
+                '#prefix' => '<h2 class="header header-alert">',
+                '#markup' => $state_name,
+                '#suffix' => '</h2>',
+              );
+              if(!empty($state_comment)){
+                $form['state_alert']['comment'] = array(
+                  '#prefix' => '<h3 class="message message-body">',
+                  '#markup' => $state_comment,
+                  '#suffix' => '</h3>',
+                );
+              }
+          }
+        }
+
       }
     //}
 
