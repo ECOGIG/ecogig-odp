@@ -117,6 +117,30 @@ function workflow_helpers_get_workflow_states($wid = NULL){
   return $states;
 }
 
+// Get a list of nodes that have a given state
+function workflow_helpers_get_nodes_with_state($type, $states){
+  $nids = db_select('node', 'n')
+      ->fields('n', array('nid'))
+      ->fields('n', array('type'))
+      ->condition('n.type', $type)
+      ->orderBy('changed', 'DESC')
+      ->execute()
+      ->fetchCol();
+
+  $nodes = node_load_multiple($nids);
+  $allowed_nodes = array();
+  foreach($nodes as $node){
+    $has_node_access = node_access('update', $node);
+
+    if($has_node_access){
+      if(workflow_helpers_node_has_state($node->nid, $states)){
+        array_push($allowed_nodes, $node);
+      }
+    }
+  }
+  return $allowed_nodes;
+}
+
 // Check if a given node has any of its workflow fields set to a list of provided state machine names
 function workflow_helpers_node_has_state($nid, $states){
   $has_state = FALSE;
