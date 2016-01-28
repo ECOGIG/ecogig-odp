@@ -1,15 +1,4 @@
-.modal-content .node-profile-form .form-item-title,
-.modal-content .node-profile-form .field-name-body,
-.modal-content .node-profile-form .field-name-field-photo,
-.modal-content .node-profile-form .field-name-field-organization,
-.modal-content .node-profile-form .field-name-field-contact-position,
-/*.modal-content .node-profile-form .field-name-field-personnel-term,*/
-.modal-content .node-profile-form .field-name-field-phone,
-.modal-content .node-profile-form .field-name-field-profile-address,
-.modal-content .node-profile-form .field-name-field-website-url,
-.modal-content .node-profile-form .field-name-field-authored,
-.modal-content .node-profile-form .vertical-tabs,
-.modal-content .node-profile-form .vertical-tabs-panes
+.hidden
 {
   display: none;
 }
