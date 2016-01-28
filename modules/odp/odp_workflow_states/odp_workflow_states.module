@@ -41,8 +41,11 @@ function odp_workflow_states_build_state_display($node, $ajax = FALSE){
   ctools_include('modal');
   ctools_modal_add_js();
 
-
   $states_output = array();
+  $states_output['messages'] = array(
+    '#prefix' => '<div id="pnl-workflow-messages" class="messages error hidden">',
+    '#suffix' => '</div>',
+  );
   global $user;
 
   // States that non-admin users can update.
@@ -107,7 +110,6 @@ function odp_workflow_states_build_state_display($node, $ajax = FALSE){
         if($is_return){
           $return_state = $state;
         }
-
       }
 
       foreach($states as $skey => $state){
@@ -397,7 +399,15 @@ function odp_workflow_states_dataset_workflow_history_block($nid = NULL, $field 
       '#markup' => '<a class="btn" href="/node/' . $nid .'/workflow/history">View Full History</a>',
     );
 
-    return ctools_modal_render('Latest ' .  $state['workflow_name'] . ' Changes', $output);
+    if(node_access('update', $node)){
+      $output['edit_link'] = array(
+        '#markup' => '<a class="btn" href="/node/' . $nid .'/edit">Edit Dataset</a>',
+      );
+    }
+    $udi = !empty($node->field_griidc_udi[LANGUAGE_NONE][0]['value']) ? $node->field_griidc_udi[LANGUAGE_NONE][0]['value'] : '';
+    $title = !empty($udi) ? $udi . '<br/>' . $node->title : $node->title;;
+
+    return ctools_modal_render($title, $output);
   }
 
   return $output;
