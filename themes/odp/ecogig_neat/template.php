@@ -169,22 +169,20 @@ function ecogig_neat_image_formatter($vars) {
 
 function ecogig_neat_views_pre_render(&$view) {
   $display_name = '';
-  global $user;
-
-  // Change "My References" view title to "<User>'s References" when viewed by other users
+global $user;
   if ($view->name =='my_references') {
     $uid = arg(2);
     if(!empty($uid)){
       $profile = profile2_load_by_user($uid, 'main');
       if(!empty($profile)){
-      	$first_name = '';
-      	$last_name = '';
-      	if(!empty($profile->field_first_name['und'])){$first_name = $profile->field_first_name['und'][0]['value'];}
-      	if(!empty($profile->field_last_name['und'])){$last_name = $profile->field_last_name['und'][0]['value'];}
+	$first_name = '';
+	$last_name = '';
+	if(!empty($profile->field_first_name['und'])){$first_name = $profile->field_first_name['und'][0]['value'];}
+	if(!empty($profile->field_last_name['und'])){$last_name = $profile->field_last_name['und'][0]['value'];}
 
-      	if(!empty($first_name) && !empty($last_name) && $user->uid != $uid){
-      	  $display_name = $first_name . ' ' . $last_name . "'s ";
-      	}
+	if(!empty($first_name) && !empty($last_name) && $user->uid != $uid){
+	  $display_name = $first_name . ' ' . $last_name . "'s ";
+	}
       }
     }
 
@@ -195,24 +193,21 @@ function ecogig_neat_views_pre_render(&$view) {
     }
   }
 
-  // Include Moment.js with Dataset Progress Report
   if($view->name == 'dataset_progress_report'){
     drupal_add_js(drupal_get_path('theme', 'ecogig_neat') .'/js/moment.min.js', 'file');
   }
-
 }
+
 
 function ecogig_neat_preprocess_page(&$variables){
   if(!empty($variables['node'])){
     $node = $variables['node'];
     if($node->type == 'dataset'){
-      // Add UDI to Dataset node titles if present
       $udi = !empty($node->field_griidc_udi['und'][0]['value']) ? $node->field_griidc_udi['und'][0]['value'] : '';
       if(!empty($udi)){
         $variables['title'] = $udi . '<br/>' . $node->title;
       }
 
-      // Change title for nodes cloned from templates
       if(!empty($variables['page']['content']['content']['content']['system_main']['#node']->clone_from_original_nid)){
         $variables['title'] = 'New Dataset from Template';
         drupal_set_breadcrumb(array());
@@ -224,7 +219,6 @@ function ecogig_neat_preprocess_page(&$variables){
 function ecogig_neat_preprocess_node(&$variables){
   $node = $variables['node'];
   if($node->type == 'dataset'){
-    // Add latest workflow state and comment to node template if available
     $workflow = !empty($node->field_dataset_workflow['und'][0]['value']) ? $node->field_dataset_workflow['und'][0]['value'] : '';
     $workflow = workflow_node_current_state($node);
     if(!empty($workflow)){
@@ -234,7 +228,6 @@ function ecogig_neat_preprocess_node(&$variables){
       $variables['workflow_state'] = !empty($state) ? $state : '';
       $variables['workflow_comment'] = !empty($comment) ? $comment : '';
     }
-
     $record_type = !empty($node->field_record_type[LANGUAGE_NONE][0]['taxonomy_term']) ? $node->field_record_type[LANGUAGE_NONE][0]['taxonomy_term'] : '';
     if(!empty($record_type)){
         $icon_class = !empty($record_type->field_icon_class[LANGUAGE_NONE][0]['value']) ? $record_type->field_icon_class[LANGUAGE_NONE][0]['value'] : '';
@@ -254,9 +247,12 @@ function ecogig_neat_preprocess_node(&$variables){
     }
 
 
+
+
   }
 
 }
+
 
 function ecogig_workflow_get_state_name($sid) {
   $results = db_query('SELECT state FROM {workflow_states} WHERE sid = :sid', array(':sid' => $sid));
