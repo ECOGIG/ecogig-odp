@@ -3,6 +3,13 @@
     attach: function (context, settings) {
       var url = window.location.href;
 
+      var enableForm = function(form){
+        $.each(form.elements, function(i, element){
+          element.readonly = false;
+          element.disabled = false;
+        });
+      };
+
       var disableForm = function(form){
         $.each(form.elements, function(i, element){
           element.readonly = true;
@@ -42,7 +49,7 @@
 
         $('.mode-edit button.workflow-update').click(function(e){
           e.preventDefault();
-
+          $('#pnl-workflow-messages').hide();
           if(!$(this).hasClass('disabled')){
 
             var parentForm = this.form;
@@ -75,7 +82,7 @@
               if(nid){
                 fields[editField] = newState;
 
-                updateNode(nid, fields);
+                updateNode(nid, fields, parentForm);
               }
             }
           }
@@ -153,7 +160,7 @@
 
         var isDataManager = Drupal.settings.ecogig_neat.is_data_manager;
         if(isDataManager){
-          var updateNode = function(nid, fields){
+          var updateNode = function(nid, fields, parentForm){
             var updateType = 'workflow';
             var url =  Drupal.settings.basePath + "odp/node/" + nid + "/update/" + updateType;
             $.ajax({
@@ -176,7 +183,18 @@
                     //window.location.href = window.location.href;
                   }
                   if(response.type && response.type == 'error'){
-
+                    $('.mode-edit button.workflow-update').text('Update');
+                    enableForm(parentForm);
+                    if(response.errors){
+                      $('#pnl-workflow-messages').show().removeClass('hidden');
+                      var errors = '';
+                      $.each(response.errors, function(i, e){
+                        if(e.message){
+                          errors += e.message + "<br/>";
+                        }
+                      });
+                      $('#pnl-workflow-messages').html(errors);
+                    }
                   }
                 }
               },
