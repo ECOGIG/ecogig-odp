@@ -41,6 +41,21 @@ function odp_dashboard_blocks_block_info(){
     'cache' => DRUPAL_NO_CACHE,
   );
 
+  $blocks['pi_action_items'] = array(
+    'info' => t('PI Action Items'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['dm_action_items'] = array(
+    'info' => t('Data Manager Action Items'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  $blocks['all_action_items'] = array(
+    'info' => t('All Action Items'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
   return $blocks;
 }
 
@@ -74,6 +89,15 @@ function odp_dashboard_blocks_block_view($delta = ''){
       break;
     case 'dataset_workflow_history':
       $block['content'] = odp_dashboard_blocks_dataset_workflow_history_block();
+      break;
+    case 'pi_action_items':
+      $block['content'] = odp_dashboard_blocks_pi_action_items_block();
+      break;
+    case 'dm_action_items':
+      $block['content'] = odp_dashboard_blocks_dm_action_items_block();
+      break;
+    case 'all_action_items':
+      $block['content'] = odp_dashboard_blocks_all_action_items_block();
       break;
   }
 
@@ -115,6 +139,43 @@ function odp_dashboard_blocks_dataset_nav_block(){
       '#prefix' => '<li class="action-item action-all-datasets">',
       '#suffix' => '</li>',
       '#markup' => '<a href="/data/all"><i class="fa fa-users"></i>&nbsp;All Datasets</a>',
+    );
+
+    $content['wrapper']['list']['action_action_items'] = array(
+      '#prefix' => '<li class="action-item action-parent action-dataset-action-items">' .
+        '<a href="/data/action-items"><i class="fa fa-check-square-o"></i>&nbsp;Action Items</a>' .
+        '<ul class="action-parent">',
+      '#suffix' => '</ul></li>',
+    );
+
+    $content['wrapper']['list']['action_action_items']['identify'] = array(
+      '#prefix' => '<li class="action-item action-identify">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/data/action-items/identify"><i class="fa fa-circle-o"></i>&nbsp;Identify</a>',
+    );
+
+    $content['wrapper']['list']['action_action_items']['metadata'] = array(
+      '#prefix' => '<li class="action-item action-metadata">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/data/action-items/metadata"><i class="fa fa-circle-o"></i>&nbsp;Metadata</a>',
+    );
+
+    $content['wrapper']['list']['action_action_items']['data'] = array(
+      '#prefix' => '<li class="action-item action-data">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/data/action-items/data"><i class="fa fa-circle-o"></i>&nbsp;Data</a>',
+    );
+
+    $content['wrapper']['list']['action_action_items']['repository'] = array(
+      '#prefix' => '<li class="action-item action-repository">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/data/action-items/repository"><i class="fa fa-circle-o"></i>&nbsp;Repository</a>',
+    );
+
+    $content['wrapper']['list']['action_action_items']['availability'] = array(
+      '#prefix' => '<li class="action-item action-availability">',
+      '#suffix' => '</li>',
+      '#markup' => '<a href="/data/action-items/availability"><i class="fa fa-circle-o"></i>&nbsp;Availability</a>',
     );
 
     $content['wrapper']['list']['action_my_templates'] = array(
@@ -493,7 +554,7 @@ function odp_dashboard_blocks_get_latest_changes($node, $uid = NULL, $type){
           'comment' => $comment,
           'workflow_class' => $workflow_class,
           'state_class' => $state_class,
-
+          'workflow_field' => $workflow,
         );
       }
     }
@@ -602,6 +663,164 @@ function odp_dashboard_blocks_dataset_workflow_history_block($nid = NULL, $uid =
       );
     }
   }
+  return $output;
+}
+
+function odp_dashboard_blocks_all_action_items_block(){
+  $workflow = NULL;
+
+  $path = current_path();
+  $path_arr = explode('/', $path);
+  if(count($path_arr) == 3 && $path_arr[1] == 'action-items'){
+    $workflow = $path_arr[2];
+  }
+
+  $output = array();
+  $is_data_manager = user_access('override dataset edit');
+  if($is_data_manager){
+    $output = odp_dashboard_blocks_dm_action_items_block($limit = NULL, $workflow);
+  }
+  else{
+    $output = odp_dashboard_blocks_pi_action_items_block($limit = NULL, $workflow);
+  }
+  return $output;
+}
+
+function odp_dashboard_blocks_pi_action_items_block($limit = 5, $workflow = NULL){
+  if(empty($states)){
+    $states = array(
+      'need_metadata',
+      'metadata_return',
+      'need_data_files',
+      'need_data_file_review_and_approval',
+      'data_return',
+      'data_listed_as_private',
+    );
+  }
+
+  $nodes = workflow_helpers_get_nodes_with_state('dataset', $states);
+  return odp_dashboard_blocks_build_action_item_table($nodes, $limit, $workflow);
+}
+
+function odp_dashboard_blocks_dm_action_items_block($limit = 5, $workflow = NULL){
+  if(empty($states)){
+    $states = array(
+      'request_a_udi_from_repo',
+      'request_a_doi_from_repo',
+      'metadata_supplied',
+      'repo_return',
+      'data_files_supplied',
+      'data_files_approved_by_pi',
+      'ready_for_submission',
+      'submitted_to_repo',
+      'list_data_as_public',
+    );
+  }
+
+  $nodes = workflow_helpers_get_nodes_with_state('dataset', $states);
+  return odp_dashboard_blocks_build_action_item_table($nodes, $limit, $workflow);
+}
+
+function odp_dashboard_blocks_build_action_item_table($nodes, $limit = NULL, $workflow = NULL){
+  ctools_include('modal');
+  ctools_modal_add_js();
+
+  global $user;
+  $uid = $user->uid;
+
+  $is_data_manager = user_access('override dataset edit', $user);
+
+  $output = array();
+  $table = array();
+  $header = array(
+    'Workflow',
+    'State',
+    'Record Title',
+    '',
+  );
+  $total_rows = 0;
+  foreach($nodes as $node){
+
+    $contact = !empty($node->field_dataset_contact_person[LANGUAGE_NONE][0]['target_id']) ? $node->field_dataset_contact_person[LANGUAGE_NONE][0]['target_id'] : '';
+    $md_contact = !empty($node->field_metadata_contact_person[LANGUAGE_NONE][0]['target_id']) ? $node->field_metadata_contact_person[LANGUAGE_NONE][0]['target_id'] : '';
+    $contact_node = node_load($contact);
+    $md_contact_node = node_load($md_contact);
+
+    $contact_uid = !empty($contact_node) ? $contact_node->uid : '';
+    $md_contact_uid = !empty($md_contact_node) ? $md_contact_node->uid : '';
+    $owner_uid = $node->uid;
+
+    if($is_data_manager || ($uid == $contact_uid || $uid == $md_contact_uid || $uid == $owner_uid)){
+      $states = odp_dashboard_blocks_get_latest_changes($node, NULL, 'action_item');
+      $title = $node->title;
+      if(strlen($node->title) >= 50){
+        $title = substr($title, 0, 50) . '...';
+      }
+
+      foreach($states as $id => $state){
+        $total_rows++;
+        if($workflow == NULL || strtolower($state['workflow_name']) == $workflow){
+          if($limit == NULL || (count($table['rows']) < $limit)){
+            if($workflow != NULL){
+              $workflow_name = $state['workflow_name'];
+            }
+            else{
+              $workflow_name = l($state['workflow_name'], '/data/action-items/' . strtolower($state['workflow_name']));
+            }
+            $wf_name = 'field_' . strtolower($state['workflow_name']) . '_state';
+            $modal_link = '<div class="modal-link modal-link-workflow" data-nid="'. $node->nid .'" data-field="'. $wf_name .'">' . l(t("View"), '/node/' . $node->nid . '/workflow/history/' . $wf_name . '/nojs/5', array('attributes' => array('class' => 'ctools-use-modal lnk-modal btn'))) . '</div>';
+            $table['rows'][] = array(
+              array('data' => $workflow_name, 'class' => 'field-workflow-name'),
+              array('data' => $state['state_name'], 'class' => 'field-state-name'),
+              array('data' => l($title, '/node/' . $node->nid, array('attributes' => array('title' => $node->title))), 'class' => 'field-title'),
+              //array('data' => $modal_link),
+              array('data' => l('Edit', '/node/' . $node->nid . '/edit', array('attributes' => array('class' => 'btn'), 'query' => array('show_workflow' => $state['workflow_field'])))),
+
+            );
+          }
+        }
+      }
+    }
+  }
+  if($limit != NULL){
+    $output['panel_header'] = array(
+      '#markup' => '<span class="panel-header"><a href="/data/action-items">Action Items</a></span>',
+    );
+  }
+
+  if(count($table['rows']) > 0){
+    $output['table'] = array(
+      '#markup' => theme(
+        'table',
+        array(
+          'header' => $header,
+          'rows' => $table['rows'],
+          'attributes' => array(
+            'class' => array(
+              'views-table',
+              'table-action-items',
+            ),
+          ),
+        )
+      ),
+    );
+
+    if($limit != NULL && $total_rows > $limit){
+      $output['footer'] = array(
+        '#prefix' => '<em>',
+        '#markup' => t('Showing the top ' . count($table['rows']) . ' items out of ' . $total_rows . ' total. Click on the "Action Items" link above to view the full list, or click the individual Workflow links to filter by Workflow.'),
+        '#suffix' => '</em>',
+      );
+    }
+  }
+  else{
+    $output['no_results'] = array(
+      '#prefix' => '<div class="panel">',
+      '#markup' => 'There aren\'t currently any action items requiring your attention.',
+      '#suffix' => '</div>',
+    );
+  }
+
   return $output;
 }
 
